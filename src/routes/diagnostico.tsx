@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageShell } from "@/components/page-shell";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { casosDiagnostico } from "@/lib/mock/extra";
+import { useMetricas } from "@/integrations/supabase/hooks";
+
 import { Activity, AlertTriangle, CheckCircle2, RefreshCw } from "lucide-react";
 
 export const Route = createFileRoute("/diagnostico")({
@@ -23,6 +24,21 @@ const statusColor: Record<string, string> = {
 };
 
 function Page() {
+  const { data: metricas, isLoading } = useMetricas();
+
+  if (isLoading) {
+    return (
+      <PageShell title="Diagnóstico de Conversão" description="Carregando diagnóstico...">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {[1, 2].map((i) => (
+            <Card key={i} className="h-64 animate-pulse bg-card/50" />
+          ))}
+        </div>
+      </PageShell>
+    );
+  }
+
+
   return (
     <PageShell
       title="Diagnóstico de Conversão"
