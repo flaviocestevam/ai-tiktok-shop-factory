@@ -3,7 +3,7 @@ import {
   LayoutDashboard, Users, UserCircle2, Package, Sparkles, Megaphone,
   Factory, FileVideo, Send, ClipboardCheck, Truck,
   BarChart3, Activity, Gauge, Brain, Lightbulb, Wallet,
-  Settings, Cpu,
+  Settings, Cpu, Layers, LineChart,
 } from "lucide-react";
 
 import {
@@ -25,6 +25,7 @@ const groups = [
       { title: "Produtos", url: "/produtos", icon: Package },
       { title: "Avatares", url: "/avatares", icon: Sparkles },
       { title: "Campanhas", url: "/campanhas", icon: Megaphone },
+      { title: "Formatos", url: "/formatos", icon: Layers },
     ],
   },
   {
@@ -40,6 +41,7 @@ const groups = [
   {
     label: "Inteligência",
     items: [
+      { title: "Dashboard de Performance", url: "/dashboard-performance", icon: LineChart },
       { title: "Resultados", url: "/resultados", icon: BarChart3 },
       { title: "Diagnóstico de Conversão", url: "/diagnostico", icon: Activity },
       { title: "Menor Esforço, Maior Venda", url: "/menor-esforco", icon: Gauge },
