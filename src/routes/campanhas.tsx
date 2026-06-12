@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Plus, Building2, User } from "lucide-react";
-import { campanhasFull } from "@/lib/mock/extra";
+import { useCampanhas } from "@/integrations/supabase/hooks";
 
 export const Route = createFileRoute("/campanhas")({
   head: () => ({ meta: [{ title: "Campanhas — Video Factory" }] }),

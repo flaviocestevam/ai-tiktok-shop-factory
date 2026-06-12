@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Plus, Filter } from "lucide-react";
-import { produtos } from "@/lib/mock/data";
+import { useProdutos } from "@/integrations/supabase/hooks";
 
 export const Route = createFileRoute("/produtos")({
   head: () => ({ meta: [{ title: "Produtos — Video Factory" }] }),

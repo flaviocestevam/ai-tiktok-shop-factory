@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { MetricCard } from "@/components/metric-card";
-import { geminiAccounts } from "@/lib/mock/financeiro";
+import { useGeminiAccounts } from "@/integrations/supabase/hooks";
 import { ChevronLeft, Plus, KeyRound, Activity, AlertTriangle, Pause } from "lucide-react";
 
 export const Route = createFileRoute("/configuracoes/gemini")({

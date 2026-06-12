@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { perfis, clientes } from "@/lib/mock/data";
-import { custosBreakdown } from "@/lib/mock/financeiro";
+import { useCustos, usePerfis } from "@/integrations/supabase/hooks";
 import { Wallet, Coins, ReceiptText, Percent, TrendingUp } from "lucide-react";
 
 export const Route = createFileRoute("/custos")({
