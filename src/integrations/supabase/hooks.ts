@@ -10,10 +10,19 @@ export const usePerfis = () => {
         .select(`
           *,
           produtos_ativos:produtos(count),
-          campanhas_vinculadas:campanhas(count)
+          campanhas_vinculadas:campanhas(count),
+          receita:publicacoes(metricas(receita.sum())),
+          vendas:publicacoes(metricas(vendas.sum())),
+          custo_total:custos(total_cost.sum())
         `);
       if (error) throw error;
-      return data;
+      
+      return data.map(p => ({
+        ...p,
+        receita: p.publicacoes?.reduce((sum, pub) => sum + (pub.metricas?.[0]?.sum || 0), 0) || 0,
+        vendas: p.publicacoes?.reduce((sum, pub) => sum + (pub.metricas?.[0]?.sum || 0), 0) || 0,
+        custo_producao: p.custos?.reduce((sum, c) => sum + (c.sum || 0), 0) || 0
+      }));
     },
   });
 };
@@ -41,10 +50,18 @@ export const useCampanhas = () => {
           *,
           produto:produtos(nome),
           perfil:perfis(nome),
-          cliente:clientes(empresa)
+          cliente:clientes(empresa),
+          receita:criativos(publicacoes(metricas(receita.sum()))),
+          custo:custos(total_cost.sum())
         `);
       if (error) throw error;
-      return data;
+      
+      return data.map(c => ({
+        ...c,
+        receita: c.criativos?.reduce((sum, cr) => 
+          sum + (cr.publicacoes?.reduce((pSum, pub) => pSum + (pub.metricas?.[0]?.sum || 0), 0) || 0), 0) || 0,
+        custo_real: c.custos?.reduce((sum, cust) => sum + (cust.sum || 0), 0) || 0
+      }));
     },
   });
 };
@@ -75,3 +92,4 @@ export const useCustos = () => {
     },
   });
 };
+
