@@ -113,7 +113,7 @@ export function AppSidebar() {
         ))}
       </SidebarContent>
 
-      <SidebarFooter className="p-3">
+      <SidebarFooter className="p-3 space-y-2">
         {!collapsed && (
           <div className="rounded-lg border border-border bg-card/60 p-3">
             <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
@@ -124,7 +124,40 @@ export function AppSidebar() {
             </div>
           </div>
         )}
+        <UserMenu collapsed={collapsed} />
       </SidebarFooter>
     </Sidebar>
+  );
+}
+
+import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
+import { LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "@tanstack/react-router";
+
+function UserMenu({ collapsed }: { collapsed: boolean }) {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate({ to: "/auth" });
+  };
+  if (!user) return null;
+  const initial = (user.email ?? "?").slice(0, 1).toUpperCase();
+  return (
+    <div className="flex items-center gap-2 rounded-lg border border-border bg-card/60 p-2">
+      <div className="h-7 w-7 rounded-full bg-primary/15 text-primary grid place-items-center text-xs font-semibold">{initial}</div>
+      {!collapsed && (
+        <>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs truncate">{user.email}</div>
+          </div>
+          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={handleLogout} title="Sair">
+            <LogOut className="h-3.5 w-3.5" />
+          </Button>
+        </>
+      )}
+    </div>
   );
 }
