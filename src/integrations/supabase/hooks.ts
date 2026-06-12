@@ -252,7 +252,12 @@ export const useMetricas = () => {
           )
         `);
       if (error) throw error;
-      return data;
+      
+      return (data as any[]).map(m => ({
+        ...m,
+        criativo: m.publicacao?.criativo || null,
+        criativo_id: m.publicacao?.criativo?.id || null
+      }));
     },
   });
 };
