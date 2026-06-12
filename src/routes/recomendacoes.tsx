@@ -4,8 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { perfis, clientes } from "@/lib/mock/data";
+import { usePerfis, useClientes } from "@/integrations/supabase/hooks";
 import { recomendacoesAcoes } from "@/lib/mock/financeiro";
+
 import { Sparkles, Wand2 } from "lucide-react";
 
 export const Route = createFileRoute("/recomendacoes")({
@@ -24,6 +25,18 @@ const respostaIA = {
 };
 
 function Page() {
+  const { data: perfis, isLoading: loadingPerfis } = usePerfis();
+  const { data: clientes, isLoading: loadingClientes } = useClientes();
+
+  if (loadingPerfis || loadingClientes) {
+    return (
+      <PageShell title="Recomendações sob demanda" description="Carregando entidades...">
+        <div className="h-64 animate-pulse bg-card/50 rounded-lg" />
+      </PageShell>
+    );
+  }
+
+
   return (
     <PageShell
       title="Recomendações sob demanda"
