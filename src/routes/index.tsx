@@ -54,8 +54,11 @@ function Dashboard() {
     );
   }
 
+  // Use cast to any for metrics as hook returns mapped data
+  const metricasData = (metricas as any[]);
+
   // Calculate totals from metrics and perfis
-  const totals = metricas.reduce(
+  const totals = metricasData.reduce(
     (a, m) => ({
       views: a.views + (m.views || 0),
       vendas: a.vendas + (m.vendas || 0),
@@ -75,9 +78,9 @@ function Dashboard() {
 
   const perfilBars = perfis.map((p) => {
     // Sum metrics for this profile
-    const profileMetricas = metricas.filter(m => m.criativo?.perfil_id === p.id);
+    const profileMetricas = metricasData.filter(m => m.criativo?.perfil_id === p.id);
     const receita = profileMetricas.reduce((sum, m) => sum + (m.receita || 0), 0);
-    const custo = (p.campanhas_vinculadas?.[0]?.count || 0) * 80; // Mock cost based on campaigns
+    const custo = (p as any).campanhas_vinculadas?.[0]?.count * 80 || 0; 
     return {
       nome: p.nome,
       receita: receita,
@@ -169,7 +172,7 @@ function Dashboard() {
             <CardDescription>Padrões com maior venda por 1.000 views.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
-            {metricas
+            {metricasData
               .filter(m => (m.vendas || 0) > 10)
               .slice(0, 4)
               .map((m, i) => (
@@ -205,12 +208,12 @@ function Dashboard() {
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
             {criativos.filter((c) => c.status === "publicado").slice(0, 4).map((c) => {
-              const creativeMetricas = metricas.find(m => m.criativo_id === c.id);
+              const creativeMetricas = metricasData.find(m => m.criativo_id === c.id);
               return (
                 <div key={c.id} className="flex items-center justify-between rounded-md border border-border bg-card px-3 py-2">
                   <div className="min-w-0">
                     <div className="truncate font-medium">{c.titulo}</div>
-                    <div className="text-xs text-muted-foreground truncate">{c.produto?.nome || "Produto"}</div>
+                    <div className="text-xs text-muted-foreground truncate">{(c as any).produto?.nome || "Produto"}</div>
                   </div>
                   <Badge variant="secondary" className="shrink-0">{creativeMetricas?.vendas || 0} vendas</Badge>
                 </div>
@@ -231,11 +234,11 @@ function Dashboard() {
           </CardHeader>
           <CardContent className="space-y-2">
             {perfis.map((p) => {
-               const pMetricas = metricas.filter(m => m.criativo?.perfil_id === p.id);
+               const pMetricas = metricasData.filter(m => m.criativo?.perfil_id === p.id);
                const pReceita = pMetricas.reduce((s, m) => s + (m.receita || 0), 0);
                const pVendas = pMetricas.reduce((s, m) => s + (m.vendas || 0), 0);
                const pViews = pMetricas.reduce((s, m) => s + (m.views || 0), 0);
-               const pCusto = (p.campanhas_vinculadas?.[0]?.count || 0) * 80;
+               const pCusto = (p as any).campanhas_vinculadas?.[0]?.count * 80 || 0;
                const pRoi = pReceita / Math.max(pCusto, 1);
                const pVendas1k = (pVendas / Math.max(pViews, 1)) * 1000;
 
