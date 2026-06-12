@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { MetricCard } from "@/components/metric-card";
-import { geminiAccounts } from "@/lib/mock/financeiro";
+import { useGeminiAccounts } from "@/integrations/supabase/hooks";
 import { ChevronLeft, Plus, KeyRound, Activity, AlertTriangle, Pause } from "lucide-react";
 
 export const Route = createFileRoute("/configuracoes/gemini")({
@@ -26,10 +26,24 @@ const statusColor: Record<string, string> = {
 };
 
 function Page() {
-  const ativa = geminiAccounts.find((g) => g.status === "ativa");
-  const reserva = geminiAccounts.find((g) => g.status === "reserva");
-  const usoTotal = geminiAccounts.reduce((s, g) => s + g.usoEstimado, 0);
-  const orcamentoTotal = geminiAccounts.reduce((s, g) => s + g.orcamento, 0);
+  const { data: geminiAccounts, isLoading } = useGeminiAccounts();
+
+  if (isLoading) {
+    return (
+      <PageShell title="Contas Gemini" description="Carregando contas...">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {[1, 2, 3, 4].map((i) => (
+            <Card key={i} className="h-24 animate-pulse bg-card/50" />
+          ))}
+        </div>
+      </PageShell>
+    );
+  }
+
+  const ativa = geminiAccounts?.find((g) => g.status === "ativa");
+  const reserva = geminiAccounts?.find((g) => g.status === "reserva");
+  const usoTotal = geminiAccounts?.reduce((s, g) => s + (g.uso_estimado || 0), 0) || 0;
+  const orcamentoTotal = geminiAccounts?.reduce((s, g) => s + (g.orcamento || 0), 0) || 0;
   const restante = orcamentoTotal - usoTotal;
 
   return (
@@ -51,8 +65,8 @@ function Page() {
       </div>
 
       <div className="grid grid-cols-1 gap-3 mt-4">
-        {geminiAccounts.map((g) => {
-          const pct = Math.round((g.usoEstimado / g.orcamento) * 100);
+        {geminiAccounts?.map((g) => {
+          const pct = Math.round(((g.uso_estimado || 0) / (g.orcamento || 1)) * 100);
           return (
             <Card key={g.id} className="bg-card/70">
               <CardHeader className="pb-2">
@@ -64,30 +78,30 @@ function Page() {
                       <Badge className={statusColor[g.status]}>{g.status}</Badge>
                     </div>
                     <CardDescription className="mt-1">
-                      <code className="text-xs">{g.apiKeyMasked}</code> · projeto <span className="font-mono">{g.gcpProject}</span>
+                      <code className="text-xs">{g.api_key_masked}</code> · projeto <span className="font-mono">{g.gcp_project || "default"}</span>
                     </CardDescription>
                   </div>
                   <div className="flex gap-1">
-                    {g.usos.map((u) => <Badge key={u} variant="outline" className="text-[10px]">{u}</Badge>)}
+                    {g.usos?.map((u) => <Badge key={u} variant="outline" className="text-[10px]">{u}</Badge>)}
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-3 text-sm">
                 <div>
                   <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                    <span>Orçamento estimado {brl(g.orcamento)}</span>
-                    <span>Uso {brl(g.usoEstimado)} ({pct}%)</span>
+                    <span>Orçamento estimado {brl(g.orcamento || 0)}</span>
+                    <span>Uso {brl(g.uso_estimado || 0)} ({pct}%)</span>
                   </div>
-                  <Progress value={pct} className={pct >= g.alertaPct ? "[&>div]:bg-warning" : ""} />
+                  <Progress value={pct} className={pct >= (g.alerta_pct || 80) ? "[&>div]:bg-warning" : ""} />
                   <div className="text-[11px] text-muted-foreground mt-1">
-                    Alerta em {g.alertaPct}% · Pausar em 100% · Limite diário {brl(g.limiteDiario)}
+                    Alerta em {g.alerta_pct || 80}% · Pausar em 100% · Limite diário {brl(g.limite_diario || 0)}
                   </div>
                 </div>
                 <div className="grid grid-cols-4 gap-2 text-xs">
-                  <Mini k="Último uso" v={g.ultimoUso} />
-                  <Mini k="Cadastrada" v={g.cadastradoEm} />
-                  <Mini k="Restante" v={brl(g.orcamento - g.usoEstimado)} tone="success" />
-                  <Mini k="Erros" v={g.ultimoErro ?? "—"} />
+                  <Mini k="Último uso" v={g.ultimo_uso ? new Date(g.ultimo_uso).toLocaleDateString() : "—"} />
+                  <Mini k="Cadastrada" v={new Date(g.created_at).toLocaleDateString()} />
+                  <Mini k="Restante" v={brl((g.orcamento || 0) - (g.uso_estimado || 0))} tone="success" />
+                  <Mini k="Erros" v={g.ultimo_erro ?? "—"} />
                 </div>
                 <div className="flex gap-2">
                   <Button size="sm" variant="outline">Pausar</Button>
@@ -123,6 +137,7 @@ function Page() {
     </PageShell>
   );
 }
+
 
 function Mini({ k, v, tone }: { k: string; v: string; tone?: "success" | "warning" }) {
   const c = tone === "success" ? "text-success" : tone === "warning" ? "text-warning" : "";
