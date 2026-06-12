@@ -4,7 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useAprendizados } from "@/integrations/supabase/hooks";
 import { classificacoes, saturacaoSinais, produtosIrmaos } from "@/lib/mock/financeiro";
+
 import { Brain, TrendingUp, Layers, AlertTriangle, Recycle, ShieldAlert, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/inteligencia")({
@@ -29,6 +31,36 @@ const aprendizados = {
 };
 
 function Page() {
+  const { data: aprendizadosReal, isLoading } = useAprendizados();
+
+  if (isLoading) {
+    return (
+      <PageShell title="Inteligência da Fábrica" description="Carregando aprendizados...">
+        <div className="h-64 animate-pulse bg-card/50 rounded-lg" />
+      </PageShell>
+    );
+  }
+
+  // Combine mock and real for presentation if real is empty
+  const hasReal = aprendizadosReal && aprendizadosReal.length > 0;
+  
+  const displayAprendizados = {
+    produtosBons: hasReal ? aprendizadosReal.filter(a => a.categoria === 'produto' && a.peso && a.peso > 0).map(a => a.titulo) : aprendizados.produtosBons,
+    produtosRuins: hasReal ? aprendizadosReal.filter(a => a.categoria === 'produto' && a.peso && a.peso < 0).map(a => a.titulo) : aprendizados.produtosRuins,
+    menorCusto: aprendizados.menorCusto,
+    menosCriativos: aprendizados.menosCriativos,
+    nichosBons: hasReal ? aprendizadosReal.filter(a => a.categoria === 'nicho' && a.peso && a.peso > 0).map(a => a.titulo) : aprendizados.nichosBons,
+    nichosRuins: hasReal ? aprendizadosReal.filter(a => a.categoria === 'nicho' && a.peso && a.peso < 0).map(a => a.titulo) : aprendizados.nichosRuins,
+    formatosVencedores: hasReal ? aprendizadosReal.filter(a => a.categoria === 'formato' && a.peso && a.peso > 0).map(a => a.titulo) : aprendizados.formatosVencedores,
+    formatosViewSemVenda: aprendizados.formatosViewSemVenda,
+    avataresBons: hasReal ? aprendizadosReal.filter(a => a.categoria === 'avatar' && a.peso && a.peso > 0).map(a => a.titulo) : aprendizados.avataresBons,
+    ganchosBons: hasReal ? aprendizadosReal.filter(a => a.categoria === 'gancho' && a.peso && a.peso > 0).map(a => a.titulo) : aprendizados.ganchosBons,
+    ctasBons: hasReal ? aprendizadosReal.filter(a => a.categoria === 'cta' && a.peso && a.peso > 0).map(a => a.titulo) : aprendizados.ctasBons,
+    combosBons: aprendizados.combosBons,
+    errosEvitar: hasReal ? aprendizadosReal.filter(a => a.peso && a.peso < 0).map(a => a.titulo) : aprendizados.errosEvitar,
+  };
+
+
   return (
     <PageShell
       title="Inteligência da Fábrica"
@@ -46,18 +78,19 @@ function Page() {
 
         <TabsContent value="aprendizados">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <KCard icon={TrendingUp} title="Produtos que funcionaram" items={aprendizados.produtosBons} tone="success" />
-            <KCard icon={AlertTriangle} title="Produtos que não funcionaram" items={aprendizados.produtosRuins} tone="warning" />
-            <KCard icon={Sparkles} title="Vendas com menor custo" items={aprendizados.menorCusto} tone="success" />
-            <KCard icon={Sparkles} title="Vendas com menos criativos" items={aprendizados.menosCriativos} tone="success" />
-            <KCard icon={Layers} title="Formatos vencedores" items={aprendizados.formatosVencedores} tone="success" />
-            <KCard icon={Layers} title="View bait — sem venda" items={aprendizados.formatosViewSemVenda} tone="warning" />
-            <KCard icon={Brain} title="Avatares vencedores" items={aprendizados.avataresBons} tone="success" />
-            <KCard icon={Brain} title="Ganchos vencedores" items={aprendizados.ganchosBons} tone="success" />
-            <KCard icon={Brain} title="CTAs vencedores" items={aprendizados.ctasBons} tone="success" />
-            <KCard icon={Sparkles} title="Melhores combinações" items={aprendizados.combosBons} tone="success" />
-            <KCard icon={AlertTriangle} title="Erros a evitar" items={aprendizados.errosEvitar} tone="warning" />
-            <KCard icon={TrendingUp} title="Nichos bons / ruins" items={[...aprendizados.nichosBons.map((n) => `✓ ${n}`), ...aprendizados.nichosRuins.map((n) => `✗ ${n}`)]} />
+            <KCard icon={TrendingUp} title="Produtos que funcionaram" items={displayAprendizados.produtosBons} tone="success" />
+            <KCard icon={AlertTriangle} title="Produtos que não funcionaram" items={displayAprendizados.produtosRuins} tone="warning" />
+            <KCard icon={Sparkles} title="Vendas com menor custo" items={displayAprendizados.menorCusto} tone="success" />
+            <KCard icon={Sparkles} title="Vendas com menos criativos" items={displayAprendizados.menosCriativos} tone="success" />
+            <KCard icon={Layers} title="Formatos vencedores" items={displayAprendizados.formatosVencedores} tone="success" />
+            <KCard icon={Layers} title="View bait — sem venda" items={displayAprendizados.formatosViewSemVenda} tone="warning" />
+            <KCard icon={Brain} title="Avatares vencedores" items={displayAprendizados.avataresBons} tone="success" />
+            <KCard icon={Brain} title="Ganchos vencedores" items={displayAprendizados.ganchosBons} tone="success" />
+            <KCard icon={Brain} title="CTAs vencedores" items={displayAprendizados.ctasBons} tone="success" />
+            <KCard icon={Sparkles} title="Melhores combinações" items={displayAprendizados.combosBons} tone="success" />
+            <KCard icon={AlertTriangle} title="Erros a evitar" items={displayAprendizados.errosEvitar} tone="warning" />
+            <KCard icon={TrendingUp} title="Nichos bons / ruins" items={[...displayAprendizados.nichosBons.map((n) => `✓ ${n}`), ...displayAprendizados.nichosRuins.map((n) => `✗ ${n}`)]} />
+
           </div>
         </TabsContent>
 
