@@ -21,11 +21,13 @@ export const Route = createFileRoute("/campanhas/$id")({
 const brl = (n: number) => n.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 
 function CampanhaDetail() {
-  const { c } = Route.useLoaderData();
-  const fVideo = c.formatosVideo.map((s: { id: string; quantidade: number }) => ({ quantidade: s.quantidade, def: formatosVideo.find((f) => f.id === s.id)! })).filter((x) => x.def);
-  const fCarr = c.formatosCarrossel.map((s: { id: string; quantidade: number }) => ({ quantidade: s.quantidade, def: formatosCarrossel.find((f) => f.id === s.id)! })).filter((x) => x.def);
+  const data = Route.useLoaderData() as { c: import("@/lib/mock/extra").CampanhaFull };
+  const c = data.c;
+  const fVideo = c.formatosVideo.map((s) => ({ quantidade: s.quantidade, def: formatosVideo.find((f) => f.id === s.id)! })).filter((x) => !!x.def);
+  const fCarr = c.formatosCarrossel.map((s) => ({ quantidade: s.quantidade, def: formatosCarrossel.find((f) => f.id === s.id)! })).filter((x) => !!x.def);
   const totalFotos = c.fotos;
   const totalRoteiros = c.roteiros;
+
 
   return (
     <PageShell
