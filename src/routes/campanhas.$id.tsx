@@ -22,8 +22,8 @@ const brl = (n: number) => n.toLocaleString("pt-BR", { style: "currency", curren
 
 function CampanhaDetail() {
   const { c } = Route.useLoaderData();
-  const fVideo = c.formatosVideo.map((s) => ({ ...s, def: formatosVideo.find((f) => f.id === s.id)! }));
-  const fCarr = c.formatosCarrossel.map((s) => ({ ...s, def: formatosCarrossel.find((f) => f.id === s.id)! }));
+  const fVideo = c.formatosVideo.map((s: { id: string; quantidade: number }) => ({ ...s, def: formatosVideo.find((f) => f.id === s.id)! }));
+  const fCarr = c.formatosCarrossel.map((s: { id: string; quantidade: number }) => ({ ...s, def: formatosCarrossel.find((f) => f.id === s.id)! }));
   const totalFotos = c.fotos;
   const totalRoteiros = c.roteiros;
 
