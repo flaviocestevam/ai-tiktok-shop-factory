@@ -2,8 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageShell } from "@/components/page-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { criativos } from "@/lib/mock/data";
+import { useCriativos } from "@/integrations/supabase/hooks";
 import { filaStatuses } from "@/lib/mock/financeiro";
+
 
 export const Route = createFileRoute("/producao")({
   head: () => ({ meta: [{ title: "Fila de Produção — Video Factory" }] }),
@@ -18,9 +19,20 @@ const columns = [
 ] as const;
 
 function Page() {
-  // Simulate distribution of mock creatives into queue counts
+  const { data: criativos, isLoading } = useCriativos();
+  
+  // Simulate distribution of queue counts
   const counts: Record<string, number> = {};
   filaStatuses.forEach((s, i) => { counts[s] = (i * 3) % 7; });
+
+  if (isLoading) {
+    return (
+      <PageShell title="Fila de Produção" description="Carregando fila...">
+        <div className="h-64 animate-pulse bg-card/50 rounded-lg" />
+      </PageShell>
+    );
+  }
+
 
   return (
     <PageShell
@@ -29,7 +41,14 @@ function Page() {
     >
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
         {columns.map((col) => {
-          const items = criativos.filter((c) => c.status === col.key);
+          const items = criativos?.filter((c) => {
+            if (col.key === "em produção") return col.group.includes(c.status);
+            if (col.key === "aprovação") return col.group.includes(c.status);
+            if (col.key === "aprovado") return col.group.includes(c.status);
+            if (col.key === "publicado") return col.group.includes(c.status);
+            return false;
+          }) || [];
+
           return (
             <Card key={col.key} className="bg-card/50">
               <CardHeader className="pb-3 flex flex-row items-center justify-between">
@@ -40,11 +59,12 @@ function Page() {
                 {items.map((c) => (
                   <div key={c.id} className="rounded-lg border border-border bg-card p-3 hover:border-primary/40 transition">
                     <div className="font-medium text-sm">{c.titulo}</div>
-                    <div className="text-xs text-muted-foreground mt-1">{c.produto}</div>
+                    <div className="text-xs text-muted-foreground mt-1">{(c.produto as any)?.nome || "—"}</div>
                     <div className="flex items-center justify-between mt-2 text-xs">
                       <Badge variant="outline" className="capitalize">{c.tipo}</Badge>
-                      <span className="text-muted-foreground">{c.avatar}</span>
+                      <span className="text-muted-foreground">{(c as any).avatar?.nome || "—"}</span>
                     </div>
+
                   </div>
                 ))}
                 <div className="pt-1 space-y-1">
