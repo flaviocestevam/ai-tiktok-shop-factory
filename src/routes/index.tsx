@@ -13,7 +13,7 @@ import {
   ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid,
   BarChart, Bar, Legend,
 } from "recharts";
-import { perfis, clientes, produtos, criativos, trend7d } from "@/lib/mock/data";
+import { usePerfis, useClientes, useProdutos, useCriativos, useMetricas } from "@/integrations/supabase/hooks";
 
 export const Route = createFileRoute("/")({
   head: () => ({ meta: [{ title: "Dashboard Geral — Video Factory" }] }),
@@ -27,26 +27,56 @@ function brl(n: number) {
   return n.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 }
 
+const trend7d_mock = [
+  { dia: "06/06", views: 120, vendas: 15 },
+  { dia: "07/06", views: 150, vendas: 22 },
+  { dia: "08/06", views: 180, vendas: 28 },
+  { dia: "09/06", views: 220, vendas: 35 },
+  { dia: "10/06", views: 190, vendas: 30 },
+  { dia: "11/06", views: 250, vendas: 45 },
+  { dia: "12/06", views: 310, vendas: 58 },
+];
+
 function Dashboard() {
-  const totals = perfis.reduce(
-    (a, p) => ({
-      views: a.views + p.metricas.views,
-      vendas: a.vendas + p.metricas.vendas,
-      receita: a.receita + p.metricas.receita,
-      custo: a.custo + p.metricas.custoProducao,
-      criativos: a.criativos + p.metricas.criativos,
+  const { data: perfis = [], isLoading: loadingPerfis } = usePerfis();
+  const { data: clientes = [], isLoading: loadingClientes } = useClientes();
+  const { data: produtos = [], isLoading: loadingProdutos } = useProdutos();
+  const { data: criativos = [], isLoading: loadingCriativos } = useCriativos();
+  const { data: metricas = [], isLoading: loadingMetricas } = useMetricas();
+
+  if (loadingPerfis || loadingClientes || loadingProdutos || loadingCriativos || loadingMetricas) {
+    return <PageShell title="Dashboard Geral" description="Carregando dados..."><div className="h-96 flex items-center justify-center">Carregando...</div></PageShell>;
+  }
+
+  // Calculate totals from metrics and perfis
+  const totals = metricas.reduce(
+    (a, m) => ({
+      views: a.views + (m.views || 0),
+      vendas: a.vendas + (m.vendas || 0),
+      receita: a.receita + (m.receita || 0),
+      custo: a.custo + 0, // In a real app, this would come from costs table
+      criativos: a.criativos,
     }),
-    { views: 0, vendas: 0, receita: 0, custo: 0, criativos: 0 },
+    { views: 0, vendas: 0, receita: 0, custo: 0, criativos: criativos.length },
   );
+  
+  // Basic estimates for demonstration
+  totals.custo = totals.criativos * 50; // Mock cost per creative
+
   const lucro = totals.receita - totals.custo;
   const roi = totals.receita / Math.max(totals.custo, 1);
   const cpv = totals.custo / Math.max(totals.vendas, 1);
 
-  const perfilBars = perfis.map((p) => ({
-    nome: p.nome,
-    receita: p.metricas.receita,
-    custo: p.metricas.custoProducao,
-  }));
+  const perfilBars = perfis.map((p) => {
+    // Sum metrics for this profile
+    const profileMetricas = metricas.filter(m => m.criativo?.perfil_id === p.id);
+    const receita = profileMetricas.reduce((sum, m) => sum + (m.receita || 0), 0);
+    return {
+      nome: p.nome,
+      receita: receita,
+      custo: (p.campanhas_vinculadas?.[0]?.count || 0) * 100, // Mock cost
+    };
+  });
 
   return (
     <PageShell
