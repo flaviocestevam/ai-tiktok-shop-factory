@@ -35,14 +35,15 @@ function Page() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {clientes?.map((c) => {
 
-          const vContratados = c.videos_contratados || 0;
-          const cContratados = c.carrosseis_contratados || 0;
+          const vContratados = (c as any).videos_contratados || 0;
+          const cContratados = (c as any).carrosseis_contratados || 0;
           const total = vContratados + cContratados;
-          const pend = 0; // Simplified for now
-          const valor = c.valor_contrato || 0;
-          const custo = c.custo_estimado || 0;
+          const pend = 0; 
+          const valor = (c as any).plano_mensal || 0;
+          const custo = 0;
           const lucro = valor - custo;
           const margem = valor > 0 ? ((lucro / valor) * 100).toFixed(1) : "0";
+
 
           return (
             <Card key={c.id} className="bg-card/70">
