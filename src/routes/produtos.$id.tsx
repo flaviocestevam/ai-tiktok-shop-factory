@@ -144,7 +144,7 @@ function ProdutoDetail() {
           <CardDescription>Usado para gerar carrosséis e vídeos respondendo dúvidas reais de compra.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
-          {p.objecoes.map((o, i) => (
+          {p.objecoes.map((o: string, i: number) => (
             <Badge key={i} variant="outline" className="text-sm py-1.5 px-3 font-normal">"{o}"</Badge>
           ))}
           <Button variant="outline" size="sm" className="gap-1.5"><MessageCircleQuestion className="h-4 w-4" />Adicionar objeção</Button>

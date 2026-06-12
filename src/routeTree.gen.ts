@@ -9,38 +9,170 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ProdutosRouteImport } from './routes/produtos'
+import { Route as PerfisRouteImport } from './routes/perfis'
+import { Route as ClientesRouteImport } from './routes/clientes'
+import { Route as AvataresRouteImport } from './routes/avatares'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProdutosIdRouteImport } from './routes/produtos.$id'
+import { Route as PerfisIdRouteImport } from './routes/perfis.$id'
+import { Route as ClientesIdRouteImport } from './routes/clientes.$id'
+import { Route as AvataresIdRouteImport } from './routes/avatares.$id'
 
+const ProdutosRoute = ProdutosRouteImport.update({
+  id: '/produtos',
+  path: '/produtos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerfisRoute = PerfisRouteImport.update({
+  id: '/perfis',
+  path: '/perfis',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClientesRoute = ClientesRouteImport.update({
+  id: '/clientes',
+  path: '/clientes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AvataresRoute = AvataresRouteImport.update({
+  id: '/avatares',
+  path: '/avatares',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProdutosIdRoute = ProdutosIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ProdutosRoute,
+} as any)
+const PerfisIdRoute = PerfisIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => PerfisRoute,
+} as any)
+const ClientesIdRoute = ClientesIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ClientesRoute,
+} as any)
+const AvataresIdRoute = AvataresIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AvataresRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/avatares': typeof AvataresRouteWithChildren
+  '/clientes': typeof ClientesRouteWithChildren
+  '/perfis': typeof PerfisRouteWithChildren
+  '/produtos': typeof ProdutosRouteWithChildren
+  '/avatares/$id': typeof AvataresIdRoute
+  '/clientes/$id': typeof ClientesIdRoute
+  '/perfis/$id': typeof PerfisIdRoute
+  '/produtos/$id': typeof ProdutosIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/avatares': typeof AvataresRouteWithChildren
+  '/clientes': typeof ClientesRouteWithChildren
+  '/perfis': typeof PerfisRouteWithChildren
+  '/produtos': typeof ProdutosRouteWithChildren
+  '/avatares/$id': typeof AvataresIdRoute
+  '/clientes/$id': typeof ClientesIdRoute
+  '/perfis/$id': typeof PerfisIdRoute
+  '/produtos/$id': typeof ProdutosIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/avatares': typeof AvataresRouteWithChildren
+  '/clientes': typeof ClientesRouteWithChildren
+  '/perfis': typeof PerfisRouteWithChildren
+  '/produtos': typeof ProdutosRouteWithChildren
+  '/avatares/$id': typeof AvataresIdRoute
+  '/clientes/$id': typeof ClientesIdRoute
+  '/perfis/$id': typeof PerfisIdRoute
+  '/produtos/$id': typeof ProdutosIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/avatares'
+    | '/clientes'
+    | '/perfis'
+    | '/produtos'
+    | '/avatares/$id'
+    | '/clientes/$id'
+    | '/perfis/$id'
+    | '/produtos/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/avatares'
+    | '/clientes'
+    | '/perfis'
+    | '/produtos'
+    | '/avatares/$id'
+    | '/clientes/$id'
+    | '/perfis/$id'
+    | '/produtos/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/avatares'
+    | '/clientes'
+    | '/perfis'
+    | '/produtos'
+    | '/avatares/$id'
+    | '/clientes/$id'
+    | '/perfis/$id'
+    | '/produtos/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AvataresRoute: typeof AvataresRouteWithChildren
+  ClientesRoute: typeof ClientesRouteWithChildren
+  PerfisRoute: typeof PerfisRouteWithChildren
+  ProdutosRoute: typeof ProdutosRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/produtos': {
+      id: '/produtos'
+      path: '/produtos'
+      fullPath: '/produtos'
+      preLoaderRoute: typeof ProdutosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/perfis': {
+      id: '/perfis'
+      path: '/perfis'
+      fullPath: '/perfis'
+      preLoaderRoute: typeof PerfisRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/clientes': {
+      id: '/clientes'
+      path: '/clientes'
+      fullPath: '/clientes'
+      preLoaderRoute: typeof ClientesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/avatares': {
+      id: '/avatares'
+      path: '/avatares'
+      fullPath: '/avatares'
+      preLoaderRoute: typeof AvataresRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +180,90 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/produtos/$id': {
+      id: '/produtos/$id'
+      path: '/$id'
+      fullPath: '/produtos/$id'
+      preLoaderRoute: typeof ProdutosIdRouteImport
+      parentRoute: typeof ProdutosRoute
+    }
+    '/perfis/$id': {
+      id: '/perfis/$id'
+      path: '/$id'
+      fullPath: '/perfis/$id'
+      preLoaderRoute: typeof PerfisIdRouteImport
+      parentRoute: typeof PerfisRoute
+    }
+    '/clientes/$id': {
+      id: '/clientes/$id'
+      path: '/$id'
+      fullPath: '/clientes/$id'
+      preLoaderRoute: typeof ClientesIdRouteImport
+      parentRoute: typeof ClientesRoute
+    }
+    '/avatares/$id': {
+      id: '/avatares/$id'
+      path: '/$id'
+      fullPath: '/avatares/$id'
+      preLoaderRoute: typeof AvataresIdRouteImport
+      parentRoute: typeof AvataresRoute
+    }
   }
 }
 
+interface AvataresRouteChildren {
+  AvataresIdRoute: typeof AvataresIdRoute
+}
+
+const AvataresRouteChildren: AvataresRouteChildren = {
+  AvataresIdRoute: AvataresIdRoute,
+}
+
+const AvataresRouteWithChildren = AvataresRoute._addFileChildren(
+  AvataresRouteChildren,
+)
+
+interface ClientesRouteChildren {
+  ClientesIdRoute: typeof ClientesIdRoute
+}
+
+const ClientesRouteChildren: ClientesRouteChildren = {
+  ClientesIdRoute: ClientesIdRoute,
+}
+
+const ClientesRouteWithChildren = ClientesRoute._addFileChildren(
+  ClientesRouteChildren,
+)
+
+interface PerfisRouteChildren {
+  PerfisIdRoute: typeof PerfisIdRoute
+}
+
+const PerfisRouteChildren: PerfisRouteChildren = {
+  PerfisIdRoute: PerfisIdRoute,
+}
+
+const PerfisRouteWithChildren =
+  PerfisRoute._addFileChildren(PerfisRouteChildren)
+
+interface ProdutosRouteChildren {
+  ProdutosIdRoute: typeof ProdutosIdRoute
+}
+
+const ProdutosRouteChildren: ProdutosRouteChildren = {
+  ProdutosIdRoute: ProdutosIdRoute,
+}
+
+const ProdutosRouteWithChildren = ProdutosRoute._addFileChildren(
+  ProdutosRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AvataresRoute: AvataresRouteWithChildren,
+  ClientesRoute: ClientesRouteWithChildren,
+  PerfisRoute: PerfisRouteWithChildren,
+  ProdutosRoute: ProdutosRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

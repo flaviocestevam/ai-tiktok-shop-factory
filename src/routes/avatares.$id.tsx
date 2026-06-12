@@ -42,8 +42,8 @@ function AvatarDetail() {
       }
     >
       <div className="flex flex-wrap gap-2 mb-4 text-xs">
-        {a.nichos.map((n) => <Badge key={n} variant="outline">{n}</Badge>)}
-        {a.idiomas.map((i) => <Badge key={i} variant="outline">{i}</Badge>)}
+        {a.nichos.map((n: string) => <Badge key={n} variant="outline">{n}</Badge>)}
+        {a.idiomas.map((i: string) => <Badge key={i} variant="outline">{i}</Badge>)}
         <Badge variant="outline" className="capitalize">{a.tipo}</Badge>
         <Badge className={a.status === "ativo" ? "bg-success/15 text-success border-success/30" : "bg-muted text-muted-foreground"}>{a.status}</Badge>
       </div>
@@ -111,7 +111,7 @@ function Info({ title, items }: { title: string; items: string[] }) {
     <Card className="bg-card/70">
       <CardHeader className="pb-2"><CardTitle className="text-base">{title}</CardTitle></CardHeader>
       <CardContent className="flex flex-wrap gap-2">
-        {items.map((i) => <Badge key={i} variant="outline" className="capitalize">{i}</Badge>)}
+        {items.map((i: string) => <Badge key={i} variant="outline" className="capitalize">{i}</Badge>)}
       </CardContent>
     </Card>
   );

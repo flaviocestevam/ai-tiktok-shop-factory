@@ -235,13 +235,13 @@ function PerfilDetail() {
           <Card className="bg-card/70">
             <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-success" />Repetir</CardTitle></CardHeader>
             <CardContent className="space-y-2 text-sm">
-              {perfil.recomendacoes.repetir.map((r, i) => <div key={i} className="rounded-md border border-success/20 bg-success/5 px-3 py-2">{r}</div>)}
+              {perfil.recomendacoes.repetir.map((r: string, i: number) => <div key={i} className="rounded-md border border-success/20 bg-success/5 px-3 py-2">{r}</div>)}
             </CardContent>
           </Card>
           <Card className="bg-card/70">
             <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-warning" />Evitar</CardTitle></CardHeader>
             <CardContent className="space-y-2 text-sm">
-              {perfil.recomendacoes.evitar.map((r, i) => <div key={i} className="rounded-md border border-warning/20 bg-warning/5 px-3 py-2">{r}</div>)}
+              {perfil.recomendacoes.evitar.map((r: string, i: number) => <div key={i} className="rounded-md border border-warning/20 bg-warning/5 px-3 py-2">{r}</div>)}
             </CardContent>
           </Card>
         </TabsContent>
