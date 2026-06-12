@@ -10,7 +10,10 @@ export const Route = createFileRoute("/diagnostico")({
   component: Page,
 });
 
-const fmt = (n: number) => new Intl.NumberFormat("pt-BR").format(n);
+function fmt(n: number) {
+  return new Intl.NumberFormat("pt-BR").format(n);
+}
+
 const statusColor: Record<string, string> = {
   "Escalar": "bg-success/15 text-success border-success/30",
   "Corrigir CTA": "bg-warning/15 text-warning border-warning/30",
@@ -35,7 +38,7 @@ function getDiagnosis(views: number, cliques: number, vendas: number) {
 }
 
 function Page() {
-  const { data: metricas, isLoading } = useMetricas();
+  const { data: metricasData, isLoading } = useMetricas();
 
   if (isLoading) {
     return (
@@ -49,13 +52,15 @@ function Page() {
     );
   }
 
+  const metricas = (metricasData as any[]) || [];
+
   return (
     <PageShell
       title="Diagnóstico de Conversão"
       description="5 cenários típicos, com diagnóstico e ação automática para cada criativo."
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {metricas?.map((m) => {
+        {metricas.map((m) => {
           const diagData = getDiagnosis(m.views || 0, m.cliques || 0, m.vendas || 0);
           const Icon = diagData.status === "Escalar" ? CheckCircle2 : diagData.status === "Pausar" ? AlertTriangle : diagData.status === "Corrigir CTA" || diagData.status === "Corrigir gancho" ? RefreshCw : Activity;
           
@@ -64,9 +69,9 @@ function Page() {
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <CardDescription>Criativo: {(m.criativo as any)?.titulo || "—"}</CardDescription>
+                    <CardDescription>Criativo: {m.criativo?.titulo || "—"}</CardDescription>
                     <CardTitle className="text-base flex items-center gap-2">
-                      <Icon className="h-4 w-4 text-primary" />{(m.criativo as any)?.produto?.nome || "Sem produto"}
+                      <Icon className="h-4 w-4 text-primary" />{m.criativo?.produto?.nome || "Sem produto"}
                     </CardTitle>
                   </div>
                   <Badge className={statusColor[diagData.status] || statusColor["Pausar"]}>{diagData.status}</Badge>
