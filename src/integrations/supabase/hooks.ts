@@ -241,7 +241,7 @@ export const useMetricas = () => {
         .from("metricas")
         .select(`
           *,
-          criativo:criativos(titulo, produto:produtos(nome))
+          criativo:criativos(titulo, perfil_id, produto:produtos(nome))
         `);
       if (error) throw error;
       return data;
