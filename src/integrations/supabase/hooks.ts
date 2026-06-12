@@ -110,7 +110,9 @@ export const useCriativos = () => {
         .select(`
           *,
           produto:produtos(nome),
-          campanha:campanhas(nome)
+          campanha:campanhas(nome),
+          avatar:avatares(nome)
+
         `);
       if (error) throw error;
       return data;
