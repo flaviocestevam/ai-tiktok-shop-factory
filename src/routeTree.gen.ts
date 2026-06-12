@@ -27,11 +27,13 @@ import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
 import { Route as ClientesRouteImport } from './routes/clientes'
 import { Route as CampanhasRouteImport } from './routes/campanhas'
 import { Route as AvataresRouteImport } from './routes/avatares'
+import { Route as AutomacoesRouteImport } from './routes/automacoes'
 import { Route as AprovacoesRouteImport } from './routes/aprovacoes'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProdutosIdRouteImport } from './routes/produtos.$id'
 import { Route as PerfisIdRouteImport } from './routes/perfis.$id'
 import { Route as ConfiguracoesProvedoresRouteImport } from './routes/configuracoes.provedores'
+import { Route as ConfiguracoesGeminiRouteImport } from './routes/configuracoes.gemini'
 import { Route as ClientesIdRouteImport } from './routes/clientes.$id'
 import { Route as CampanhasIdRouteImport } from './routes/campanhas.$id'
 import { Route as AvataresIdRouteImport } from './routes/avatares.$id'
@@ -126,6 +128,11 @@ const AvataresRoute = AvataresRouteImport.update({
   path: '/avatares',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AutomacoesRoute = AutomacoesRouteImport.update({
+  id: '/automacoes',
+  path: '/automacoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AprovacoesRoute = AprovacoesRouteImport.update({
   id: '/aprovacoes',
   path: '/aprovacoes',
@@ -151,6 +158,11 @@ const ConfiguracoesProvedoresRoute = ConfiguracoesProvedoresRouteImport.update({
   path: '/provedores',
   getParentRoute: () => ConfiguracoesRoute,
 } as any)
+const ConfiguracoesGeminiRoute = ConfiguracoesGeminiRouteImport.update({
+  id: '/gemini',
+  path: '/gemini',
+  getParentRoute: () => ConfiguracoesRoute,
+} as any)
 const ClientesIdRoute = ClientesIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -170,6 +182,7 @@ const AvataresIdRoute = AvataresIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/aprovacoes': typeof AprovacoesRoute
+  '/automacoes': typeof AutomacoesRoute
   '/avatares': typeof AvataresRouteWithChildren
   '/campanhas': typeof CampanhasRouteWithChildren
   '/clientes': typeof ClientesRouteWithChildren
@@ -191,6 +204,7 @@ export interface FileRoutesByFullPath {
   '/avatares/$id': typeof AvataresIdRoute
   '/campanhas/$id': typeof CampanhasIdRoute
   '/clientes/$id': typeof ClientesIdRoute
+  '/configuracoes/gemini': typeof ConfiguracoesGeminiRoute
   '/configuracoes/provedores': typeof ConfiguracoesProvedoresRoute
   '/perfis/$id': typeof PerfisIdRoute
   '/produtos/$id': typeof ProdutosIdRoute
@@ -198,6 +212,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/aprovacoes': typeof AprovacoesRoute
+  '/automacoes': typeof AutomacoesRoute
   '/avatares': typeof AvataresRouteWithChildren
   '/campanhas': typeof CampanhasRouteWithChildren
   '/clientes': typeof ClientesRouteWithChildren
@@ -219,6 +234,7 @@ export interface FileRoutesByTo {
   '/avatares/$id': typeof AvataresIdRoute
   '/campanhas/$id': typeof CampanhasIdRoute
   '/clientes/$id': typeof ClientesIdRoute
+  '/configuracoes/gemini': typeof ConfiguracoesGeminiRoute
   '/configuracoes/provedores': typeof ConfiguracoesProvedoresRoute
   '/perfis/$id': typeof PerfisIdRoute
   '/produtos/$id': typeof ProdutosIdRoute
@@ -227,6 +243,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/aprovacoes': typeof AprovacoesRoute
+  '/automacoes': typeof AutomacoesRoute
   '/avatares': typeof AvataresRouteWithChildren
   '/campanhas': typeof CampanhasRouteWithChildren
   '/clientes': typeof ClientesRouteWithChildren
@@ -248,6 +265,7 @@ export interface FileRoutesById {
   '/avatares/$id': typeof AvataresIdRoute
   '/campanhas/$id': typeof CampanhasIdRoute
   '/clientes/$id': typeof ClientesIdRoute
+  '/configuracoes/gemini': typeof ConfiguracoesGeminiRoute
   '/configuracoes/provedores': typeof ConfiguracoesProvedoresRoute
   '/perfis/$id': typeof PerfisIdRoute
   '/produtos/$id': typeof ProdutosIdRoute
@@ -257,6 +275,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/aprovacoes'
+    | '/automacoes'
     | '/avatares'
     | '/campanhas'
     | '/clientes'
@@ -278,6 +297,7 @@ export interface FileRouteTypes {
     | '/avatares/$id'
     | '/campanhas/$id'
     | '/clientes/$id'
+    | '/configuracoes/gemini'
     | '/configuracoes/provedores'
     | '/perfis/$id'
     | '/produtos/$id'
@@ -285,6 +305,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/aprovacoes'
+    | '/automacoes'
     | '/avatares'
     | '/campanhas'
     | '/clientes'
@@ -306,6 +327,7 @@ export interface FileRouteTypes {
     | '/avatares/$id'
     | '/campanhas/$id'
     | '/clientes/$id'
+    | '/configuracoes/gemini'
     | '/configuracoes/provedores'
     | '/perfis/$id'
     | '/produtos/$id'
@@ -313,6 +335,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/aprovacoes'
+    | '/automacoes'
     | '/avatares'
     | '/campanhas'
     | '/clientes'
@@ -334,6 +357,7 @@ export interface FileRouteTypes {
     | '/avatares/$id'
     | '/campanhas/$id'
     | '/clientes/$id'
+    | '/configuracoes/gemini'
     | '/configuracoes/provedores'
     | '/perfis/$id'
     | '/produtos/$id'
@@ -342,6 +366,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AprovacoesRoute: typeof AprovacoesRoute
+  AutomacoesRoute: typeof AutomacoesRoute
   AvataresRoute: typeof AvataresRouteWithChildren
   CampanhasRoute: typeof CampanhasRouteWithChildren
   ClientesRoute: typeof ClientesRouteWithChildren
@@ -490,6 +515,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AvataresRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/automacoes': {
+      id: '/automacoes'
+      path: '/automacoes'
+      fullPath: '/automacoes'
+      preLoaderRoute: typeof AutomacoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/aprovacoes': {
       id: '/aprovacoes'
       path: '/aprovacoes'
@@ -523,6 +555,13 @@ declare module '@tanstack/react-router' {
       path: '/provedores'
       fullPath: '/configuracoes/provedores'
       preLoaderRoute: typeof ConfiguracoesProvedoresRouteImport
+      parentRoute: typeof ConfiguracoesRoute
+    }
+    '/configuracoes/gemini': {
+      id: '/configuracoes/gemini'
+      path: '/gemini'
+      fullPath: '/configuracoes/gemini'
+      preLoaderRoute: typeof ConfiguracoesGeminiRouteImport
       parentRoute: typeof ConfiguracoesRoute
     }
     '/clientes/$id': {
@@ -586,10 +625,12 @@ const ClientesRouteWithChildren = ClientesRoute._addFileChildren(
 )
 
 interface ConfiguracoesRouteChildren {
+  ConfiguracoesGeminiRoute: typeof ConfiguracoesGeminiRoute
   ConfiguracoesProvedoresRoute: typeof ConfiguracoesProvedoresRoute
 }
 
 const ConfiguracoesRouteChildren: ConfiguracoesRouteChildren = {
+  ConfiguracoesGeminiRoute: ConfiguracoesGeminiRoute,
   ConfiguracoesProvedoresRoute: ConfiguracoesProvedoresRoute,
 }
 
@@ -623,6 +664,7 @@ const ProdutosRouteWithChildren = ProdutosRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AprovacoesRoute: AprovacoesRoute,
+  AutomacoesRoute: AutomacoesRoute,
   AvataresRoute: AvataresRouteWithChildren,
   CampanhasRoute: CampanhasRouteWithChildren,
   ClientesRoute: ClientesRouteWithChildren,
