@@ -10,7 +10,8 @@ export const usePerfis = () => {
         .select(`
           *,
           produtos_ativos:produtos(count),
-          campanhas_vinculadas:campanhas(count)
+          campanhas_vinculadas:campanhas(count),
+          conectores:conectores_api(*)
         `);
       if (error) throw error;
       
