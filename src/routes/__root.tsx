@@ -114,22 +114,20 @@ function RootComponent() {
   const isAuthRoute = pathname === "/auth";
   const { session, loading } = useAuth();
   const navigate = useNavigate();
-  
-  // Set this to false to re-enable authentication
-  const DISABLE_AUTH = true;
 
   useEffect(() => {
-    if (DISABLE_AUTH) return;
-    if (!loading && !session && !isAuthRoute) navigate({ to: "/auth" });
-  }, [loading, session, isAuthRoute, navigate, DISABLE_AUTH]);
-
-  const showApp = DISABLE_AUTH || session;
+    // Auth logic is now partially controlled by DISABLE_AUTH in use-auth.ts
+    // but we still handle the redirect here if needed.
+    if (!loading && !session && !isAuthRoute) {
+      navigate({ to: "/auth" });
+    }
+  }, [loading, session, isAuthRoute, navigate]);
 
   return (
     <QueryClientProvider client={queryClient}>
       {isAuthRoute ? (
         <Outlet />
-      ) : !showApp ? (
+      ) : !session && loading ? (
         <div className="min-h-svh grid place-items-center text-muted-foreground">Carregando...</div>
       ) : (
         <SidebarProvider>
