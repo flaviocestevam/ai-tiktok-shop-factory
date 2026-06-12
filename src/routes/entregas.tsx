@@ -3,7 +3,8 @@ import { PageShell } from "@/components/page-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { clientes } from "@/lib/mock/data";
+import { useClientes } from "@/integrations/supabase/hooks";
+
 import { Download, FileText } from "lucide-react";
 
 export const Route = createFileRoute("/entregas")({
@@ -14,10 +15,26 @@ export const Route = createFileRoute("/entregas")({
 const brl = (n: number) => n.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 
 function Page() {
+  const { data: clientes, isLoading } = useClientes();
+
+  if (isLoading) {
+    return (
+      <PageShell title="Entregas" description="Carregando entregas...">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[1, 2].map((i) => (
+            <Card key={i} className="h-64 animate-pulse bg-card/50" />
+          ))}
+        </div>
+      </PageShell>
+    );
+  }
+
+
   return (
     <PageShell title="Entregas" description="Pacote completo por cliente — vídeos, carrosséis, links, custo, lucro, margem e relatório.">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {clientes.map((c) => {
+        {clientes?.map((c) => {
+
           const total = c.criativosProduzidos;
           const pend = c.criativosProduzidos - c.criativosEntregues;
           const lucro = c.valor - c.custoProducao;

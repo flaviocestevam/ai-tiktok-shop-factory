@@ -88,4 +88,77 @@ export const useCustos = () => {
   });
 };
 
+export const useClientes = () => {
+  return useQuery({
+    queryKey: ["clientes"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("clientes")
+        .select("*");
+      if (error) throw error;
+      return data;
+    },
+  });
+};
+
+export const useCriativos = () => {
+  return useQuery({
+    queryKey: ["criativos"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("criativos")
+        .select(`
+          *,
+          produto:produtos(nome),
+          campanha:campanhas(nome)
+        `);
+      if (error) throw error;
+      return data;
+    },
+  });
+};
+
+export const useAutomacoes = () => {
+  return useQuery({
+    queryKey: ["automacoes"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("automacoes")
+        .select("*");
+      if (error) throw error;
+      return data;
+    },
+  });
+};
+
+export const useAprendizados = () => {
+  return useQuery({
+    queryKey: ["aprendizados"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("aprendizados")
+        .select("*");
+      if (error) throw error;
+      return data;
+    },
+  });
+};
+
+export const useMetricas = () => {
+  return useQuery({
+    queryKey: ["metricas"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("metricas")
+        .select(`
+          *,
+          criativo:criativos(titulo, produto:produtos(nome))
+        `);
+      if (error) throw error;
+      return data;
+    },
+  });
+};
+
+
 
