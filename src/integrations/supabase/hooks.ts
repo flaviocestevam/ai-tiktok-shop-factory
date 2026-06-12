@@ -25,6 +25,55 @@ export const usePerfis = () => {
   });
 };
 
+export const usePerfil = (id: string) => {
+  return useQuery({
+    queryKey: ["perfis", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("perfis")
+        .select(`
+          *,
+          produtos_ativos:produtos(count),
+          campanhas_vinculadas:campanhas(count)
+        `)
+        .eq("id", id)
+        .single();
+      if (error) throw error;
+      
+      return {
+        ...data,
+        metricas: {
+          views: 0,
+          vendas: 0,
+          receita: 0,
+          custoProducao: 0,
+          lucro: 0,
+          roi: 0,
+          ctr: 0,
+          cvr: 0,
+          vendasPor1k: 0,
+          receitaPor1k: 0,
+          custoPorVenda: 0,
+          custoPorCriativo: 0,
+          melhorProduto: "—",
+          piorProduto: "—",
+          melhorFormato: "—",
+          piorFormato: "—",
+          melhorAvatar: "—",
+          melhorGancho: "—",
+          melhorTipo: "—"
+        },
+        recomendacoes: {
+          repetir: [],
+          evitar: []
+        }
+      };
+    },
+    enabled: !!id,
+  });
+};
+
+
 export const useProdutos = () => {
   return useQuery({
     queryKey: ["produtos"],
@@ -37,6 +86,27 @@ export const useProdutos = () => {
     },
   });
 };
+
+export const useProduto = (id: string) => {
+  return useQuery({
+    queryKey: ["produtos", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("produtos")
+        .select(`
+          *,
+          perfil:perfis(nome),
+          cliente:clientes(empresa)
+        `)
+        .eq("id", id)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!id,
+  });
+};
+
 
 export const useCampanhas = () => {
   return useQuery({
@@ -100,6 +170,23 @@ export const useClientes = () => {
     },
   });
 };
+
+export const useCliente = (id: string) => {
+  return useQuery({
+    queryKey: ["clientes", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("clientes")
+        .select("*")
+        .eq("id", id)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!id,
+  });
+};
+
 
 export const useCriativos = () => {
   return useQuery({
