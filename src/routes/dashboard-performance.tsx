@@ -15,11 +15,15 @@ export const Route = createFileRoute("/dashboard-performance")({
   component: Page,
 });
 
-const brl = (n: number) => n.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
-const fmt = (n: number) => new Intl.NumberFormat("pt-BR").format(n);
+function fmt(n: number) {
+  return new Intl.NumberFormat("pt-BR").format(n);
+}
+function brl(n: number) {
+  return n.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
+}
 
 function Page() {
-  const { data: metricas, isLoading: loadingMetricas } = useMetricas();
+  const { data: metricasData, isLoading: loadingMetricas } = useMetricas();
   const { data: criativos, isLoading: loadingCriativos } = useCriativos();
   const { data: perfis, isLoading: loadingPerfis } = usePerfis();
 
@@ -31,10 +35,12 @@ function Page() {
     );
   }
 
+  const metricas = (metricasData as any[]) || [];
+
   const totals = {
-    views: metricas?.reduce((s, m) => s + (m.views || 0), 0) || 0,
-    vendas: metricas?.reduce((s, m) => s + (m.vendas || 0), 0) || 0,
-    receita: metricas?.reduce((s, m) => s + (m.receita || 0), 0) || 0,
+    views: metricas.reduce((s, m) => s + (m.views || 0), 0),
+    vendas: metricas.reduce((s, m) => s + (m.vendas || 0), 0),
+    receita: metricas.reduce((s, m) => s + (m.receita || 0), 0),
     custo: 0, // Placeholder
   };
 
@@ -105,16 +111,16 @@ function Page() {
               </tr>
             </thead>
             <tbody>
-              {metricas?.map((m) => (
+              {metricas.map((m) => (
                 <tr key={m.id} className="border-b border-border/60 hover:bg-accent/40">
-                  <td className="p-3 font-medium">{(m.criativo as any)?.titulo || "—"}</td>
+                  <td className="p-3 font-medium">{m.criativo?.titulo || "—"}</td>
                   <td className="p-3 text-right">{fmt(m.views || 0)}</td>
                   <td className="p-3 text-right">{fmt(m.cliques || 0)}</td>
                   <td className="p-3 text-right">{fmt(m.vendas || 0)}</td>
                   <td className="p-3 text-right text-success">{brl(m.receita || 0)}</td>
                 </tr>
               ))}
-              {metricas?.length === 0 && (
+              {metricas.length === 0 && (
                 <tr>
                   <td colSpan={5} className="p-8 text-center text-muted-foreground">Nenhuma métrica coletada ainda.</td>
                 </tr>
