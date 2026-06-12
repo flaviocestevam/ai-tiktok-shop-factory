@@ -257,7 +257,7 @@ function RecommendationCard({ item }: { item: any }) {
             <span>Saturação</span>
             <span>{satValue}%</span>
           </div>
-          <Progress value={satValue} className={`h-1.5 ${isSaturated ? "bg-warning/20" : "bg-success/20"}`} />
+          <Progress value={satValue} className="h-1.5" indicatorClassName={isSaturated ? "bg-warning" : "bg-success"} />
         </div>
 
         <div className="pt-2 border-t flex items-center justify-between">
