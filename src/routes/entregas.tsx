@@ -3,7 +3,8 @@ import { PageShell } from "@/components/page-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { clientes } from "@/lib/mock/data";
+import { useClientes } from "@/integrations/supabase/hooks";
+
 import { Download, FileText } from "lucide-react";
 
 export const Route = createFileRoute("/entregas")({
@@ -14,14 +15,36 @@ export const Route = createFileRoute("/entregas")({
 const brl = (n: number) => n.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 
 function Page() {
+  const { data: clientes, isLoading } = useClientes();
+
+  if (isLoading) {
+    return (
+      <PageShell title="Entregas" description="Carregando entregas...">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[1, 2].map((i) => (
+            <Card key={i} className="h-64 animate-pulse bg-card/50" />
+          ))}
+        </div>
+      </PageShell>
+    );
+  }
+
+
   return (
     <PageShell title="Entregas" description="Pacote completo por cliente — vídeos, carrosséis, links, custo, lucro, margem e relatório.">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {clientes.map((c) => {
-          const total = c.criativosProduzidos;
-          const pend = c.criativosProduzidos - c.criativosEntregues;
-          const lucro = c.valor - c.custoProducao;
-          const margem = ((lucro / c.valor) * 100).toFixed(1);
+        {clientes?.map((c) => {
+
+          const vContratados = (c as any).videos_contratados || 0;
+          const cContratados = (c as any).carrosseis_contratados || 0;
+          const total = vContratados + cContratados;
+          const pend = 0; 
+          const valor = (c as any).plano_mensal || 0;
+          const custo = 0;
+          const lucro = valor - custo;
+          const margem = valor > 0 ? ((lucro / valor) * 100).toFixed(1) : "0";
+
+
           return (
             <Card key={c.id} className="bg-card/70">
               <CardHeader className="pb-2">
@@ -34,13 +57,14 @@ function Page() {
               </CardHeader>
               <CardContent className="space-y-3 text-sm">
                 <div className="grid grid-cols-3 gap-2 text-xs">
-                  <Mini k="Vídeos" v={String(c.videosContratados)} />
-                  <Mini k="Carrosséis" v={String(c.carrosseisContratados)} />
+                  <Mini k="Vídeos" v={String(vContratados)} />
+                  <Mini k="Carrosséis" v={String(cContratados)} />
                   <Mini k="Total criativos" v={String(total)} />
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-xs">
-                  <Mini k="Custo" v={brl(c.custoProducao)} tone="warning" />
+                  <Mini k="Custo" v={brl(custo)} tone="warning" />
                   <Mini k="Lucro" v={brl(lucro)} tone="success" />
+
                   <Mini k="Margem" v={`${margem}%`} tone="success" />
                 </div>
                 <div className="rounded-md border border-border bg-card p-2 text-xs text-muted-foreground">

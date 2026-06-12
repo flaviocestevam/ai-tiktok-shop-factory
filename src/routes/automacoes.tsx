@@ -3,7 +3,8 @@ import { PageShell } from "@/components/page-shell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { automacoes } from "@/lib/mock/financeiro";
+import { useAutomacoes } from "@/integrations/supabase/hooks";
+
 import { Zap } from "lucide-react";
 
 export const Route = createFileRoute("/automacoes")({
@@ -12,13 +13,29 @@ export const Route = createFileRoute("/automacoes")({
 });
 
 function Page() {
+  const { data: automacoes, isLoading } = useAutomacoes();
+
+  if (isLoading) {
+    return (
+      <PageShell title="Automações" description="Carregando automações...">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[1, 2, 3, 4].map((i) => (
+            <Card key={i} className="h-32 animate-pulse bg-card/50" />
+          ))}
+        </div>
+      </PageShell>
+    );
+  }
+
+
   return (
     <PageShell
       title="Automações"
       description="Gatilhos internos que conectam aprovações, geração, métricas e aprendizado."
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {automacoes.map((a) => (
+        {automacoes?.map((a) => (
+
           <Card key={a.trigger} className="bg-card/70">
             <CardHeader className="pb-2">
               <div className="flex items-start justify-between gap-3">

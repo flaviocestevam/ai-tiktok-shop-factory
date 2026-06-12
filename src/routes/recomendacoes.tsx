@@ -4,8 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { perfis, clientes } from "@/lib/mock/data";
+import { usePerfis, useClientes } from "@/integrations/supabase/hooks";
 import { recomendacoesAcoes } from "@/lib/mock/financeiro";
+
 import { Sparkles, Wand2 } from "lucide-react";
 
 export const Route = createFileRoute("/recomendacoes")({
@@ -24,6 +25,18 @@ const respostaIA = {
 };
 
 function Page() {
+  const { data: perfis, isLoading: loadingPerfis } = usePerfis();
+  const { data: clientes, isLoading: loadingClientes } = useClientes();
+
+  if (loadingPerfis || loadingClientes) {
+    return (
+      <PageShell title="Recomendações sob demanda" description="Carregando entidades...">
+        <div className="h-64 animate-pulse bg-card/50 rounded-lg" />
+      </PageShell>
+    );
+  }
+
+
   return (
     <PageShell
       title="Recomendações sob demanda"
@@ -82,7 +95,7 @@ function Page() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
-              {(tipo === "perfil" ? perfis : tipo === "cliente" ? clientes : perfis).slice(0, 3).map((item: any) => (
+              {(tipo === "perfil" ? perfis || [] : tipo === "cliente" ? clientes || [] : perfis || []).slice(0, 3).map((item: any) => (
                 <Card key={item.id} className="bg-card/70">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm">{item.nome || item.empresa}</CardTitle>

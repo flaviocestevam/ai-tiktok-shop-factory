@@ -4,7 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { criativos } from "@/lib/mock/data";
+import { useCriativos } from "@/integrations/supabase/hooks";
+
 import { Check, X } from "lucide-react";
 
 export const Route = createFileRoute("/aprovacoes")({
@@ -16,7 +17,19 @@ const fluxoPerfil = ["Produto", "Plano de campanha", "Roteiro", "Fotos base", "C
 const fluxoCliente = ["Produto recebido", "Avatar escolhido", "Plano de vídeos/carrosséis", "Roteiros", "Criativos finais"];
 
 function Page() {
-  const pendentes = criativos.filter((c) => c.status === "aprovação");
+  const { data: criativos, isLoading } = useCriativos();
+
+  if (isLoading) {
+    return (
+      <PageShell title="Aprovações Internas" description="Carregando aprovações...">
+        <div className="h-64 animate-pulse bg-card/50 rounded-lg" />
+      </PageShell>
+    );
+  }
+
+  const pendentes = criativos?.filter((c) => c.status === "aguardando aprovação") || [];
+
+
 
   return (
     <PageShell
@@ -38,7 +51,9 @@ function Page() {
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="font-display text-lg font-semibold">{c.titulo}</div>
-                      <div className="text-xs text-muted-foreground">{c.produto} • {c.avatar}</div>
+                      <div className="text-xs text-muted-foreground">{(c.produto as any)?.nome || "Sem produto"} • {(c.avatar as any)?.nome || "Sem avatar"}</div>
+
+
                     </div>
                     <Badge variant="outline" className="capitalize">{c.tipo}</Badge>
                   </div>
