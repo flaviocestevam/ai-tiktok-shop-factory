@@ -51,7 +51,8 @@ function Page() {
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="font-display text-lg font-semibold">{c.titulo}</div>
-                      <div className="text-xs text-muted-foreground">{c.produto} • {c.avatar}</div>
+                      <div className="text-xs text-muted-foreground">{(c.produto as any)?.nome} • {(c.avatar as any)?.nome}</div>
+
                     </div>
                     <Badge variant="outline" className="capitalize">{c.tipo}</Badge>
                   </div>

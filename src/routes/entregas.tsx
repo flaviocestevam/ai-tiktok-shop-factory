@@ -35,10 +35,15 @@ function Page() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {clientes?.map((c) => {
 
-          const total = c.criativosProduzidos;
-          const pend = c.criativosProduzidos - c.criativosEntregues;
-          const lucro = c.valor - c.custoProducao;
-          const margem = ((lucro / c.valor) * 100).toFixed(1);
+          const vContratados = c.videos_contratados || 0;
+          const cContratados = c.carrosseis_contratados || 0;
+          const total = vContratados + cContratados;
+          const pend = 0; // Simplified for now
+          const valor = c.valor_contrato || 0;
+          const custo = c.custo_estimado || 0;
+          const lucro = valor - custo;
+          const margem = valor > 0 ? ((lucro / valor) * 100).toFixed(1) : "0";
+
           return (
             <Card key={c.id} className="bg-card/70">
               <CardHeader className="pb-2">
@@ -51,13 +56,14 @@ function Page() {
               </CardHeader>
               <CardContent className="space-y-3 text-sm">
                 <div className="grid grid-cols-3 gap-2 text-xs">
-                  <Mini k="Vídeos" v={String(c.videosContratados)} />
-                  <Mini k="Carrosséis" v={String(c.carrosseisContratados)} />
+                  <Mini k="Vídeos" v={String(vContratados)} />
+                  <Mini k="Carrosséis" v={String(cContratados)} />
                   <Mini k="Total criativos" v={String(total)} />
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-xs">
-                  <Mini k="Custo" v={brl(c.custoProducao)} tone="warning" />
+                  <Mini k="Custo" v={brl(custo)} tone="warning" />
                   <Mini k="Lucro" v={brl(lucro)} tone="success" />
+
                   <Mini k="Margem" v={`${margem}%`} tone="success" />
                 </div>
                 <div className="rounded-md border border-border bg-card p-2 text-xs text-muted-foreground">
