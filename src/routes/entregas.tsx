@@ -1,53 +1,70 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageShell } from "@/components/page-shell";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { clientes } from "@/lib/mock/data";
+import { Download, FileText } from "lucide-react";
 
 export const Route = createFileRoute("/entregas")({
   head: () => ({ meta: [{ title: "Entregas — Video Factory" }] }),
   component: Page,
 });
 
+const brl = (n: number) => n.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
+
 function Page() {
   return (
-    <PageShell title="Entregas" description="Status de entrega por cliente recorrente.">
-      <Card className="bg-card/70">
-        <CardContent className="p-0">
-          <table className="w-full text-sm">
-            <thead className="text-xs text-muted-foreground border-b border-border">
-              <tr>
-                <th className="text-left p-3">Cliente</th>
-                <th className="text-right p-3">Contratado</th>
-                <th className="text-right p-3">Produzido</th>
-                <th className="text-right p-3">Entregue</th>
-                <th className="text-right p-3">Pendente</th>
-                <th className="text-left p-3">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {clientes.map((c) => {
-                const total = c.videosContratados + c.carrosseisContratados;
-                const pend = c.criativosProduzidos - c.criativosEntregues;
-                return (
-                  <tr key={c.id} className="border-b border-border/60 hover:bg-accent/40">
-                    <td className="p-3 font-medium">{c.empresa}</td>
-                    <td className="p-3 text-right">{total}</td>
-                    <td className="p-3 text-right">{c.criativosProduzidos}</td>
-                    <td className="p-3 text-right">{c.criativosEntregues}</td>
-                    <td className="p-3 text-right">{pend}</td>
-                    <td className="p-3">
-                      <Badge className={pend === 0 ? "bg-success/15 text-success border-success/30" : "bg-warning/15 text-warning border-warning/30"}>
-                        {pend === 0 ? "completo" : "em andamento"}
-                      </Badge>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </CardContent>
-      </Card>
+    <PageShell title="Entregas" description="Pacote completo por cliente — vídeos, carrosséis, links, custo, lucro, margem e relatório.">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {clientes.map((c) => {
+          const total = c.criativosProduzidos;
+          const pend = c.criativosProduzidos - c.criativosEntregues;
+          const lucro = c.valor - c.custoProducao;
+          const margem = ((lucro / c.valor) * 100).toFixed(1);
+          return (
+            <Card key={c.id} className="bg-card/70">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base">{c.empresa}</CardTitle>
+                  <Badge className={pend === 0 ? "bg-success/15 text-success border-success/30" : "bg-warning/15 text-warning border-warning/30"}>
+                    {pend === 0 ? "completo" : `${pend} pendente(s)`}
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm">
+                <div className="grid grid-cols-3 gap-2 text-xs">
+                  <Mini k="Vídeos" v={String(c.videosContratados)} />
+                  <Mini k="Carrosséis" v={String(c.carrosseisContratados)} />
+                  <Mini k="Total criativos" v={String(total)} />
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-xs">
+                  <Mini k="Custo" v={brl(c.custoProducao)} tone="warning" />
+                  <Mini k="Lucro" v={brl(lucro)} tone="success" />
+                  <Mini k="Margem" v={`${margem}%`} tone="success" />
+                </div>
+                <div className="rounded-md border border-border bg-card p-2 text-xs text-muted-foreground">
+                  Data prevista: 30/06 · Observações: revisão final concluída
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" className="gap-1.5"><Download className="h-3.5 w-3.5" />Pacote ZIP</Button>
+                  <Button size="sm" variant="outline" className="gap-1.5"><FileText className="h-3.5 w-3.5" />Relatório</Button>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
     </PageShell>
+  );
+}
+
+function Mini({ k, v, tone }: { k: string; v: string; tone?: "success" | "warning" }) {
+  const c = tone === "success" ? "text-success" : tone === "warning" ? "text-warning" : "";
+  return (
+    <div className="rounded-md border border-border bg-card px-2 py-1.5">
+      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{k}</div>
+      <div className={`text-sm font-semibold ${c}`}>{v}</div>
+    </div>
   );
 }
