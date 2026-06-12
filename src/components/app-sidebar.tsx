@@ -53,8 +53,10 @@ const groups = [
   {
     label: "Sistema",
     items: [
+      { title: "Automações", url: "/automacoes", icon: Zap },
       { title: "Configurações", url: "/configuracoes", icon: Settings },
       { title: "Provedores de IA", url: "/configuracoes/provedores", icon: Cpu },
+      { title: "Contas Gemini", url: "/configuracoes/gemini", icon: KeyRound },
     ],
   },
 ];
