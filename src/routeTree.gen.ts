@@ -9,38 +9,442 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ResultadosRouteImport } from './routes/resultados'
+import { Route as RecomendacoesRouteImport } from './routes/recomendacoes'
+import { Route as PublicacoesRouteImport } from './routes/publicacoes'
+import { Route as ProdutosRouteImport } from './routes/produtos'
+import { Route as ProducaoRouteImport } from './routes/producao'
+import { Route as PerfisRouteImport } from './routes/perfis'
+import { Route as MenorEsforcoRouteImport } from './routes/menor-esforco'
+import { Route as InteligenciaRouteImport } from './routes/inteligencia'
+import { Route as EntregasRouteImport } from './routes/entregas'
+import { Route as DiagnosticoRouteImport } from './routes/diagnostico'
+import { Route as CustosRouteImport } from './routes/custos'
+import { Route as CriativosRouteImport } from './routes/criativos'
+import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
+import { Route as ClientesRouteImport } from './routes/clientes'
+import { Route as CampanhasRouteImport } from './routes/campanhas'
+import { Route as AvataresRouteImport } from './routes/avatares'
+import { Route as AprovacoesRouteImport } from './routes/aprovacoes'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProdutosIdRouteImport } from './routes/produtos.$id'
+import { Route as PerfisIdRouteImport } from './routes/perfis.$id'
+import { Route as ConfiguracoesProvedoresRouteImport } from './routes/configuracoes.provedores'
+import { Route as ClientesIdRouteImport } from './routes/clientes.$id'
+import { Route as AvataresIdRouteImport } from './routes/avatares.$id'
 
+const ResultadosRoute = ResultadosRouteImport.update({
+  id: '/resultados',
+  path: '/resultados',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecomendacoesRoute = RecomendacoesRouteImport.update({
+  id: '/recomendacoes',
+  path: '/recomendacoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PublicacoesRoute = PublicacoesRouteImport.update({
+  id: '/publicacoes',
+  path: '/publicacoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProdutosRoute = ProdutosRouteImport.update({
+  id: '/produtos',
+  path: '/produtos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProducaoRoute = ProducaoRouteImport.update({
+  id: '/producao',
+  path: '/producao',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerfisRoute = PerfisRouteImport.update({
+  id: '/perfis',
+  path: '/perfis',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MenorEsforcoRoute = MenorEsforcoRouteImport.update({
+  id: '/menor-esforco',
+  path: '/menor-esforco',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InteligenciaRoute = InteligenciaRouteImport.update({
+  id: '/inteligencia',
+  path: '/inteligencia',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EntregasRoute = EntregasRouteImport.update({
+  id: '/entregas',
+  path: '/entregas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiagnosticoRoute = DiagnosticoRouteImport.update({
+  id: '/diagnostico',
+  path: '/diagnostico',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CustosRoute = CustosRouteImport.update({
+  id: '/custos',
+  path: '/custos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CriativosRoute = CriativosRouteImport.update({
+  id: '/criativos',
+  path: '/criativos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
+  id: '/configuracoes',
+  path: '/configuracoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClientesRoute = ClientesRouteImport.update({
+  id: '/clientes',
+  path: '/clientes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CampanhasRoute = CampanhasRouteImport.update({
+  id: '/campanhas',
+  path: '/campanhas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AvataresRoute = AvataresRouteImport.update({
+  id: '/avatares',
+  path: '/avatares',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AprovacoesRoute = AprovacoesRouteImport.update({
+  id: '/aprovacoes',
+  path: '/aprovacoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProdutosIdRoute = ProdutosIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ProdutosRoute,
+} as any)
+const PerfisIdRoute = PerfisIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => PerfisRoute,
+} as any)
+const ConfiguracoesProvedoresRoute = ConfiguracoesProvedoresRouteImport.update({
+  id: '/provedores',
+  path: '/provedores',
+  getParentRoute: () => ConfiguracoesRoute,
+} as any)
+const ClientesIdRoute = ClientesIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ClientesRoute,
+} as any)
+const AvataresIdRoute = AvataresIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AvataresRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/aprovacoes': typeof AprovacoesRoute
+  '/avatares': typeof AvataresRouteWithChildren
+  '/campanhas': typeof CampanhasRoute
+  '/clientes': typeof ClientesRouteWithChildren
+  '/configuracoes': typeof ConfiguracoesRouteWithChildren
+  '/criativos': typeof CriativosRoute
+  '/custos': typeof CustosRoute
+  '/diagnostico': typeof DiagnosticoRoute
+  '/entregas': typeof EntregasRoute
+  '/inteligencia': typeof InteligenciaRoute
+  '/menor-esforco': typeof MenorEsforcoRoute
+  '/perfis': typeof PerfisRouteWithChildren
+  '/producao': typeof ProducaoRoute
+  '/produtos': typeof ProdutosRouteWithChildren
+  '/publicacoes': typeof PublicacoesRoute
+  '/recomendacoes': typeof RecomendacoesRoute
+  '/resultados': typeof ResultadosRoute
+  '/avatares/$id': typeof AvataresIdRoute
+  '/clientes/$id': typeof ClientesIdRoute
+  '/configuracoes/provedores': typeof ConfiguracoesProvedoresRoute
+  '/perfis/$id': typeof PerfisIdRoute
+  '/produtos/$id': typeof ProdutosIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/aprovacoes': typeof AprovacoesRoute
+  '/avatares': typeof AvataresRouteWithChildren
+  '/campanhas': typeof CampanhasRoute
+  '/clientes': typeof ClientesRouteWithChildren
+  '/configuracoes': typeof ConfiguracoesRouteWithChildren
+  '/criativos': typeof CriativosRoute
+  '/custos': typeof CustosRoute
+  '/diagnostico': typeof DiagnosticoRoute
+  '/entregas': typeof EntregasRoute
+  '/inteligencia': typeof InteligenciaRoute
+  '/menor-esforco': typeof MenorEsforcoRoute
+  '/perfis': typeof PerfisRouteWithChildren
+  '/producao': typeof ProducaoRoute
+  '/produtos': typeof ProdutosRouteWithChildren
+  '/publicacoes': typeof PublicacoesRoute
+  '/recomendacoes': typeof RecomendacoesRoute
+  '/resultados': typeof ResultadosRoute
+  '/avatares/$id': typeof AvataresIdRoute
+  '/clientes/$id': typeof ClientesIdRoute
+  '/configuracoes/provedores': typeof ConfiguracoesProvedoresRoute
+  '/perfis/$id': typeof PerfisIdRoute
+  '/produtos/$id': typeof ProdutosIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/aprovacoes': typeof AprovacoesRoute
+  '/avatares': typeof AvataresRouteWithChildren
+  '/campanhas': typeof CampanhasRoute
+  '/clientes': typeof ClientesRouteWithChildren
+  '/configuracoes': typeof ConfiguracoesRouteWithChildren
+  '/criativos': typeof CriativosRoute
+  '/custos': typeof CustosRoute
+  '/diagnostico': typeof DiagnosticoRoute
+  '/entregas': typeof EntregasRoute
+  '/inteligencia': typeof InteligenciaRoute
+  '/menor-esforco': typeof MenorEsforcoRoute
+  '/perfis': typeof PerfisRouteWithChildren
+  '/producao': typeof ProducaoRoute
+  '/produtos': typeof ProdutosRouteWithChildren
+  '/publicacoes': typeof PublicacoesRoute
+  '/recomendacoes': typeof RecomendacoesRoute
+  '/resultados': typeof ResultadosRoute
+  '/avatares/$id': typeof AvataresIdRoute
+  '/clientes/$id': typeof ClientesIdRoute
+  '/configuracoes/provedores': typeof ConfiguracoesProvedoresRoute
+  '/perfis/$id': typeof PerfisIdRoute
+  '/produtos/$id': typeof ProdutosIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/aprovacoes'
+    | '/avatares'
+    | '/campanhas'
+    | '/clientes'
+    | '/configuracoes'
+    | '/criativos'
+    | '/custos'
+    | '/diagnostico'
+    | '/entregas'
+    | '/inteligencia'
+    | '/menor-esforco'
+    | '/perfis'
+    | '/producao'
+    | '/produtos'
+    | '/publicacoes'
+    | '/recomendacoes'
+    | '/resultados'
+    | '/avatares/$id'
+    | '/clientes/$id'
+    | '/configuracoes/provedores'
+    | '/perfis/$id'
+    | '/produtos/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/aprovacoes'
+    | '/avatares'
+    | '/campanhas'
+    | '/clientes'
+    | '/configuracoes'
+    | '/criativos'
+    | '/custos'
+    | '/diagnostico'
+    | '/entregas'
+    | '/inteligencia'
+    | '/menor-esforco'
+    | '/perfis'
+    | '/producao'
+    | '/produtos'
+    | '/publicacoes'
+    | '/recomendacoes'
+    | '/resultados'
+    | '/avatares/$id'
+    | '/clientes/$id'
+    | '/configuracoes/provedores'
+    | '/perfis/$id'
+    | '/produtos/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/aprovacoes'
+    | '/avatares'
+    | '/campanhas'
+    | '/clientes'
+    | '/configuracoes'
+    | '/criativos'
+    | '/custos'
+    | '/diagnostico'
+    | '/entregas'
+    | '/inteligencia'
+    | '/menor-esforco'
+    | '/perfis'
+    | '/producao'
+    | '/produtos'
+    | '/publicacoes'
+    | '/recomendacoes'
+    | '/resultados'
+    | '/avatares/$id'
+    | '/clientes/$id'
+    | '/configuracoes/provedores'
+    | '/perfis/$id'
+    | '/produtos/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AprovacoesRoute: typeof AprovacoesRoute
+  AvataresRoute: typeof AvataresRouteWithChildren
+  CampanhasRoute: typeof CampanhasRoute
+  ClientesRoute: typeof ClientesRouteWithChildren
+  ConfiguracoesRoute: typeof ConfiguracoesRouteWithChildren
+  CriativosRoute: typeof CriativosRoute
+  CustosRoute: typeof CustosRoute
+  DiagnosticoRoute: typeof DiagnosticoRoute
+  EntregasRoute: typeof EntregasRoute
+  InteligenciaRoute: typeof InteligenciaRoute
+  MenorEsforcoRoute: typeof MenorEsforcoRoute
+  PerfisRoute: typeof PerfisRouteWithChildren
+  ProducaoRoute: typeof ProducaoRoute
+  ProdutosRoute: typeof ProdutosRouteWithChildren
+  PublicacoesRoute: typeof PublicacoesRoute
+  RecomendacoesRoute: typeof RecomendacoesRoute
+  ResultadosRoute: typeof ResultadosRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/resultados': {
+      id: '/resultados'
+      path: '/resultados'
+      fullPath: '/resultados'
+      preLoaderRoute: typeof ResultadosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recomendacoes': {
+      id: '/recomendacoes'
+      path: '/recomendacoes'
+      fullPath: '/recomendacoes'
+      preLoaderRoute: typeof RecomendacoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/publicacoes': {
+      id: '/publicacoes'
+      path: '/publicacoes'
+      fullPath: '/publicacoes'
+      preLoaderRoute: typeof PublicacoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/produtos': {
+      id: '/produtos'
+      path: '/produtos'
+      fullPath: '/produtos'
+      preLoaderRoute: typeof ProdutosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/producao': {
+      id: '/producao'
+      path: '/producao'
+      fullPath: '/producao'
+      preLoaderRoute: typeof ProducaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/perfis': {
+      id: '/perfis'
+      path: '/perfis'
+      fullPath: '/perfis'
+      preLoaderRoute: typeof PerfisRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/menor-esforco': {
+      id: '/menor-esforco'
+      path: '/menor-esforco'
+      fullPath: '/menor-esforco'
+      preLoaderRoute: typeof MenorEsforcoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/inteligencia': {
+      id: '/inteligencia'
+      path: '/inteligencia'
+      fullPath: '/inteligencia'
+      preLoaderRoute: typeof InteligenciaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/entregas': {
+      id: '/entregas'
+      path: '/entregas'
+      fullPath: '/entregas'
+      preLoaderRoute: typeof EntregasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/diagnostico': {
+      id: '/diagnostico'
+      path: '/diagnostico'
+      fullPath: '/diagnostico'
+      preLoaderRoute: typeof DiagnosticoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/custos': {
+      id: '/custos'
+      path: '/custos'
+      fullPath: '/custos'
+      preLoaderRoute: typeof CustosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/criativos': {
+      id: '/criativos'
+      path: '/criativos'
+      fullPath: '/criativos'
+      preLoaderRoute: typeof CriativosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/configuracoes': {
+      id: '/configuracoes'
+      path: '/configuracoes'
+      fullPath: '/configuracoes'
+      preLoaderRoute: typeof ConfiguracoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/clientes': {
+      id: '/clientes'
+      path: '/clientes'
+      fullPath: '/clientes'
+      preLoaderRoute: typeof ClientesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/campanhas': {
+      id: '/campanhas'
+      path: '/campanhas'
+      fullPath: '/campanhas'
+      preLoaderRoute: typeof CampanhasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/avatares': {
+      id: '/avatares'
+      path: '/avatares'
+      fullPath: '/avatares'
+      preLoaderRoute: typeof AvataresRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/aprovacoes': {
+      id: '/aprovacoes'
+      path: '/aprovacoes'
+      fullPath: '/aprovacoes'
+      preLoaderRoute: typeof AprovacoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +452,122 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/produtos/$id': {
+      id: '/produtos/$id'
+      path: '/$id'
+      fullPath: '/produtos/$id'
+      preLoaderRoute: typeof ProdutosIdRouteImport
+      parentRoute: typeof ProdutosRoute
+    }
+    '/perfis/$id': {
+      id: '/perfis/$id'
+      path: '/$id'
+      fullPath: '/perfis/$id'
+      preLoaderRoute: typeof PerfisIdRouteImport
+      parentRoute: typeof PerfisRoute
+    }
+    '/configuracoes/provedores': {
+      id: '/configuracoes/provedores'
+      path: '/provedores'
+      fullPath: '/configuracoes/provedores'
+      preLoaderRoute: typeof ConfiguracoesProvedoresRouteImport
+      parentRoute: typeof ConfiguracoesRoute
+    }
+    '/clientes/$id': {
+      id: '/clientes/$id'
+      path: '/$id'
+      fullPath: '/clientes/$id'
+      preLoaderRoute: typeof ClientesIdRouteImport
+      parentRoute: typeof ClientesRoute
+    }
+    '/avatares/$id': {
+      id: '/avatares/$id'
+      path: '/$id'
+      fullPath: '/avatares/$id'
+      preLoaderRoute: typeof AvataresIdRouteImport
+      parentRoute: typeof AvataresRoute
+    }
   }
 }
 
+interface AvataresRouteChildren {
+  AvataresIdRoute: typeof AvataresIdRoute
+}
+
+const AvataresRouteChildren: AvataresRouteChildren = {
+  AvataresIdRoute: AvataresIdRoute,
+}
+
+const AvataresRouteWithChildren = AvataresRoute._addFileChildren(
+  AvataresRouteChildren,
+)
+
+interface ClientesRouteChildren {
+  ClientesIdRoute: typeof ClientesIdRoute
+}
+
+const ClientesRouteChildren: ClientesRouteChildren = {
+  ClientesIdRoute: ClientesIdRoute,
+}
+
+const ClientesRouteWithChildren = ClientesRoute._addFileChildren(
+  ClientesRouteChildren,
+)
+
+interface ConfiguracoesRouteChildren {
+  ConfiguracoesProvedoresRoute: typeof ConfiguracoesProvedoresRoute
+}
+
+const ConfiguracoesRouteChildren: ConfiguracoesRouteChildren = {
+  ConfiguracoesProvedoresRoute: ConfiguracoesProvedoresRoute,
+}
+
+const ConfiguracoesRouteWithChildren = ConfiguracoesRoute._addFileChildren(
+  ConfiguracoesRouteChildren,
+)
+
+interface PerfisRouteChildren {
+  PerfisIdRoute: typeof PerfisIdRoute
+}
+
+const PerfisRouteChildren: PerfisRouteChildren = {
+  PerfisIdRoute: PerfisIdRoute,
+}
+
+const PerfisRouteWithChildren =
+  PerfisRoute._addFileChildren(PerfisRouteChildren)
+
+interface ProdutosRouteChildren {
+  ProdutosIdRoute: typeof ProdutosIdRoute
+}
+
+const ProdutosRouteChildren: ProdutosRouteChildren = {
+  ProdutosIdRoute: ProdutosIdRoute,
+}
+
+const ProdutosRouteWithChildren = ProdutosRoute._addFileChildren(
+  ProdutosRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AprovacoesRoute: AprovacoesRoute,
+  AvataresRoute: AvataresRouteWithChildren,
+  CampanhasRoute: CampanhasRoute,
+  ClientesRoute: ClientesRouteWithChildren,
+  ConfiguracoesRoute: ConfiguracoesRouteWithChildren,
+  CriativosRoute: CriativosRoute,
+  CustosRoute: CustosRoute,
+  DiagnosticoRoute: DiagnosticoRoute,
+  EntregasRoute: EntregasRoute,
+  InteligenciaRoute: InteligenciaRoute,
+  MenorEsforcoRoute: MenorEsforcoRoute,
+  PerfisRoute: PerfisRouteWithChildren,
+  ProducaoRoute: ProducaoRoute,
+  ProdutosRoute: ProdutosRouteWithChildren,
+  PublicacoesRoute: PublicacoesRoute,
+  RecomendacoesRoute: RecomendacoesRoute,
+  ResultadosRoute: ResultadosRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
