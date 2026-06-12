@@ -113,7 +113,7 @@ export function AppSidebar() {
         ))}
       </SidebarContent>
 
-      <SidebarFooter className="p-3">
+      <SidebarFooter className="p-3 space-y-2">
         {!collapsed && (
           <div className="rounded-lg border border-border bg-card/60 p-3">
             <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
@@ -124,6 +124,7 @@ export function AppSidebar() {
             </div>
           </div>
         )}
+        <UserMenu collapsed={collapsed} />
       </SidebarFooter>
     </Sidebar>
   );
