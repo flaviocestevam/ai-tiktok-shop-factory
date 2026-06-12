@@ -116,14 +116,18 @@ function RootComponent() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading && !session && !isAuthRoute) navigate({ to: "/auth" });
+    // Auth logic is now partially controlled by DISABLE_AUTH in use-auth.ts
+    // but we still handle the redirect here if needed.
+    if (!loading && !session && !isAuthRoute) {
+      navigate({ to: "/auth" });
+    }
   }, [loading, session, isAuthRoute, navigate]);
 
   return (
     <QueryClientProvider client={queryClient}>
       {isAuthRoute ? (
         <Outlet />
-      ) : !session ? (
+      ) : !session && loading ? (
         <div className="min-h-svh grid place-items-center text-muted-foreground">Carregando...</div>
       ) : (
         <SidebarProvider>
