@@ -5,9 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { produtos } from "@/lib/mock/data";
+import { recomendarCaminho } from "@/lib/mock/extra";
 import {
   ChevronLeft, AlertTriangle, Sparkles, Target, MessageCircleQuestion,
-  CheckCircle2, Eye,
+  CheckCircle2, Eye, Film, Images, Wand2,
 } from "lucide-react";
 
 export const Route = createFileRoute("/produtos/$id")({
@@ -27,6 +28,10 @@ function ProdutoDetail() {
   const { p } = Route.useLoaderData();
   const viewBait = p.classificacao === "view bait";
   const silenciosa = p.classificacao === "conversão silenciosa";
+  const rec = recomendarCaminho(p);
+  const baratoSuficiente = p.potencialCarrossel >= 85 && p.antesDepois >= 80;
+
+
 
   return (
     <PageShell
@@ -135,6 +140,42 @@ function ProdutoDetail() {
           </CardContent>
         </Card>
       </div>
+
+      <Card className="bg-card/70 mt-4 border-primary/30">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base flex items-center gap-2"><Wand2 className="h-4 w-4 text-primary" />Recomendação de caminho de produção</CardTitle>
+          <CardDescription>Vídeo, carrossel ou misto? Cálculo do motor com base no produto e histórico.</CardDescription>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="lg:col-span-2 space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="flex-1">
+                <div className="flex justify-between text-xs mb-1"><span className="flex items-center gap-1"><Images className="h-3 w-3" />Carrossel</span><span className="font-medium">{rec.pctCarrossel}%</span></div>
+                <Progress value={rec.pctCarrossel} className="h-2" />
+              </div>
+              <div className="flex-1">
+                <div className="flex justify-between text-xs mb-1"><span className="flex items-center gap-1"><Film className="h-3 w-3" />Vídeo</span><span className="font-medium">{rec.pctVideo}%</span></div>
+                <Progress value={rec.pctVideo} className="h-2" />
+              </div>
+            </div>
+            <div className="rounded-md border border-border bg-background/40 p-3 text-sm">
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Justificativas</div>
+              <ul className="list-disc list-inside text-muted-foreground space-y-0.5 text-xs">
+                {rec.justificativas.map((j, i) => <li key={i} className="text-foreground/90">{j}</li>)}
+              </ul>
+            </div>
+          </div>
+          <div className={`rounded-lg border p-3 text-sm ${baratoSuficiente ? "border-success/40 bg-success/5" : "border-info/40 bg-info/5"}`}>
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Score de criativo barato</div>
+            <div className="font-display text-lg font-semibold">
+              {baratoSuficiente ? "Carrossel barato é suficiente" : "Vídeo vale o investimento"}
+            </div>
+            <div className="text-xs text-muted-foreground mt-1">
+              {baratoSuficiente ? "Esse produto não precisa de vídeo caro. Carrossel com antes/depois deve resolver." : "Esse produto precisa de movimento real. Priorizar vídeo."}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card className="bg-card/70 mt-4">
         <CardHeader className="pb-2">
