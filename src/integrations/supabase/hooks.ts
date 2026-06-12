@@ -241,7 +241,15 @@ export const useMetricas = () => {
         .from("metricas")
         .select(`
           *,
-          criativo:criativos(titulo, perfil_id, produto:produtos(nome))
+          publicacao:publicacoes(
+            id,
+            criativo:criativos(
+              id,
+              titulo,
+              perfil_id,
+              produto:produtos(nome)
+            )
+          )
         `);
       if (error) throw error;
       return data;
