@@ -14,6 +14,20 @@ export const Route = createFileRoute("/perfis")({
 const brl = (n: number) => n.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 
 function Page() {
+  const { data: perfis, isLoading } = usePerfis();
+
+  if (isLoading) {
+    return (
+      <PageShell title="Meus Perfis" description="Carregando perfis...">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[1, 2, 3].map((i) => (
+            <Card key={i} className="h-48 animate-pulse bg-card/50" />
+          ))}
+        </div>
+      </PageShell>
+    );
+  }
+
   return (
     <PageShell
       title="Meus Perfis"
@@ -21,7 +35,7 @@ function Page() {
       actions={<Button size="sm" className="gap-1.5"><Plus className="h-4 w-4" /> Novo perfil</Button>}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {perfis.map((p) => (
+        {perfis?.map((p) => (
           <Card key={p.id} className="bg-card/70 hover:border-primary/40 transition overflow-hidden">
             <CardContent className="p-5">
               <div className="flex items-start justify-between">
@@ -39,13 +53,15 @@ function Page() {
               <p className="text-sm text-muted-foreground mt-3 line-clamp-2">{p.descricao}</p>
 
               <div className="grid grid-cols-3 gap-2 mt-4">
-                <Stat label="ROI" value={`${p.metricas.roi.toFixed(1)}x`} />
-                <Stat label="Vendas" value={p.metricas.vendas.toLocaleString("pt-BR")} />
-                <Stat label="Receita" value={brl(p.metricas.receita)} />
+                <Stat label="ROI" value={`${(p.receita / Math.max(p.custo_producao || 1, 1)).toFixed(1)}x`} />
+                <Stat label="Vendas" value={(p.vendas || 0).toLocaleString("pt-BR")} />
+                <Stat label="Receita" value={brl(p.receita || 0)} />
               </div>
 
               <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
-                <span>{p.produtosAtivos} produtos • {p.campanhasVinculadas} campanhas</span>
+                <span>
+                  {p.produtos_ativos?.[0]?.count ?? 0} produtos • {p.campanhas_vinculadas?.[0]?.count ?? 0} campanhas
+                </span>
                 <Link to="/perfis/$id" params={{ id: p.id }} className="inline-flex items-center gap-1 text-primary hover:underline">
                   Abrir <ArrowUpRight className="h-3 w-3" />
                 </Link>
@@ -57,6 +73,7 @@ function Page() {
     </PageShell>
   );
 }
+
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
