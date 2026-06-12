@@ -102,17 +102,32 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (r) => r.location.pathname });
+  const isAuthRoute = pathname === "/auth";
+  const { session, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && !session && !isAuthRoute) navigate({ to: "/auth" });
+  }, [loading, session, isAuthRoute, navigate]);
+
   return (
     <QueryClientProvider client={queryClient}>
-      <SidebarProvider>
-        <div className="flex min-h-svh w-full">
-          <AppSidebar />
-          <div className="flex-1 min-w-0">
-            <Outlet />
+      {isAuthRoute ? (
+        <Outlet />
+      ) : !session ? (
+        <div className="min-h-svh grid place-items-center text-muted-foreground">Carregando...</div>
+      ) : (
+        <SidebarProvider>
+          <div className="flex min-h-svh w-full">
+            <AppSidebar />
+            <div className="flex-1 min-w-0">
+              <Outlet />
+            </div>
           </div>
-        </div>
-        <Toaster />
-      </SidebarProvider>
+          <Toaster />
+        </SidebarProvider>
+      )}
     </QueryClientProvider>
   );
 }
