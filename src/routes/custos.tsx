@@ -17,66 +17,39 @@ const brl = (n: number) =>
   n.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 2 });
 
 function Page() {
-  const g = custosBreakdown.geral;
+  const { data: custos, isLoading } = useCustos();
+  const { data: perfis } = usePerfis();
+
+  if (isLoading) {
+    return (
+      <PageShell title="Custos" description="Carregando custos...">
+        <div className="h-64 animate-pulse bg-card/50 rounded-lg" />
+      </PageShell>
+    );
+  }
+
+  const totals = {
+    ia: custos?.filter(c => ["script_generation", "image_generation", "video_generation", "carousel_generation", "voice_generation"].includes(c.cost_type))
+              .reduce((s, c) => s + (c.total_cost || 0), 0) || 0,
+    storage: custos?.filter(c => c.cost_type === "storage").reduce((s, c) => s + (c.total_cost || 0), 0) || 0,
+    outros: custos?.filter(c => !["storage", "script_generation", "image_generation", "video_generation", "carousel_generation", "voice_generation"].includes(c.cost_type))
+                  .reduce((s, c) => s + (c.total_cost || 0), 0) || 0,
+  };
 
   return (
     <PageShell title="Custos" description="Custo por foto, vídeo, carrossel, voz, render, storage, campanha, produto, avatar, perfil e cliente.">
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-        <MetricCard label="Custo IA" value={brl(g.custoIA)} icon={Coins} tone="warning" />
-        <MetricCard label="Storage" value={brl(g.custoStorage)} icon={Wallet} />
-        <MetricCard label="Ferramentas" value={brl(g.custoFerramentas)} icon={ReceiptText} />
-        <MetricCard label="Receita total" value={brl(g.receitaTotal)} icon={TrendingUp} tone="success" />
-        <MetricCard label="Margem geral" value={`${g.margem}%`} icon={Percent} tone="success" />
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <MetricCard label="Custo IA" value={brl(totals.ia)} icon={Coins} tone="warning" />
+        <MetricCard label="Storage" value={brl(totals.storage)} icon={Wallet} />
+        <MetricCard label="Outros" value={brl(totals.outros)} icon={ReceiptText} />
+        <MetricCard label="Total Operacional" value={brl(totals.ia + totals.storage + totals.outros)} icon={TrendingUp} tone="success" />
       </div>
 
-      <Tabs defaultValue="campanha" className="mt-6">
+      <Tabs defaultValue="perfil" className="mt-6">
         <TabsList>
-          <TabsTrigger value="campanha">Por Campanha</TabsTrigger>
           <TabsTrigger value="perfil">Por Perfil</TabsTrigger>
-          <TabsTrigger value="cliente">Por Cliente</TabsTrigger>
           <TabsTrigger value="geral">Dashboard Geral</TabsTrigger>
         </TabsList>
-
-        <TabsContent value="campanha">
-          <Card className="bg-card/70">
-            <CardHeader>
-              <CardDescription>Campanha exemplo</CardDescription>
-              <CardTitle className="text-base">{custosBreakdown.campanha.nome}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-3 gap-2 text-xs">
-                <Stat k="Vídeos" v={String(custosBreakdown.campanha.videosGerados)} />
-                <Stat k="Carrosséis" v={String(custosBreakdown.campanha.carrosseisGerados)} />
-                <Stat k="Publicados" v={String(custosBreakdown.campanha.criativosPublicados)} />
-              </div>
-              <div className="rounded-md border border-border divide-y divide-border">
-                {custosBreakdown.campanha.items.map((it) => (
-                  <div key={it.label} className="flex justify-between px-3 py-2 text-sm">
-                    <span className="text-muted-foreground">Custo {it.label.toLowerCase()}</span>
-                    <span className="font-medium">{brl(it.value)}</span>
-                  </div>
-                ))}
-                <div className="flex justify-between px-3 py-2 text-sm bg-muted/40">
-                  <span>Custo total</span>
-                  <span className="font-bold text-warning">{brl(custosBreakdown.campanha.total)}</span>
-                </div>
-                <div className="flex justify-between px-3 py-2 text-sm">
-                  <span className="text-muted-foreground">Receita atribuída</span>
-                  <span className="font-medium text-success">{brl(custosBreakdown.campanha.receita)}</span>
-                </div>
-                <div className="flex justify-between px-3 py-2 text-sm">
-                  <span className="text-muted-foreground">Lucro estimado</span>
-                  <span className="font-bold text-success">{brl(custosBreakdown.campanha.lucro)}</span>
-                </div>
-              </div>
-              <div className="grid grid-cols-3 gap-2 text-xs">
-                <Stat k="ROI" v={`${custosBreakdown.campanha.roi}%`} tone="success" />
-                <Stat k="Custo/criativo" v={brl(custosBreakdown.campanha.custoPorCriativo)} />
-                <Stat k="Custo/venda" v={brl(custosBreakdown.campanha.custoPorVenda)} />
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
 
         <TabsContent value="perfil">
           <Card className="bg-card/70">
@@ -84,49 +57,21 @@ function Page() {
               <CardTitle className="text-base">Custos por perfil próprio</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              {perfis.map((p) => (
+              {perfis?.map((p) => (
                 <div key={p.id} className="rounded-md border border-border bg-card px-3 py-3">
                   <div className="flex justify-between items-center">
                     <div>
                       <div className="font-medium">{p.nome}</div>
-                      <div className="text-xs text-muted-foreground">{p.metricas.criativos} criativos · ROI {p.metricas.roi}x</div>
+                      <div className="text-xs text-muted-foreground">{p.nicho}</div>
                     </div>
                     <div className="flex gap-4 text-xs">
-                      <Stat k="Custo/criativo" v={brl(p.metricas.custoPorCriativo)} />
-                      <Stat k="Custo/venda" v={brl(p.metricas.custoPorVenda)} />
-                      <Stat k="Total" v={brl(p.metricas.custoProducao)} tone="warning" />
-                      <Stat k="Lucro" v={brl(p.metricas.lucro)} tone="success" />
+                      <Stat k="Custo Total" v={brl(p.custo_producao || 0)} tone="warning" />
+                      <Stat k="Receita" v={brl(p.receita || 0)} tone="success" />
+                      <Stat k="Lucro" v={brl((p.receita || 0) - (p.custo_producao || 0))} tone="success" />
                     </div>
                   </div>
                 </div>
               ))}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="cliente">
-          <Card className="bg-card/70">
-            <CardHeader>
-              <CardTitle className="text-base">Custos por cliente recorrente</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {clientes.map((c) => {
-                const lucro = c.valor - c.custoProducao;
-                const margem = ((lucro / c.valor) * 100).toFixed(1);
-                return (
-                  <div key={c.id} className="rounded-md border border-border bg-card px-3 py-3 flex justify-between items-center">
-                    <div>
-                      <div className="font-medium">{c.empresa}</div>
-                      <div className="text-xs text-muted-foreground">Plano {brl(c.valor)}/mês</div>
-                    </div>
-                    <div className="flex gap-4 text-xs">
-                      <Stat k="Custo produção" v={brl(c.custoProducao)} tone="warning" />
-                      <Stat k="Lucro bruto" v={brl(lucro)} tone="success" />
-                      <Badge className="bg-success/15 text-success border-success/30">{margem}% margem</Badge>
-                    </div>
-                  </div>
-                );
-              })}
             </CardContent>
           </Card>
         </TabsContent>
@@ -136,20 +81,16 @@ function Page() {
             <Card className="bg-card/70">
               <CardHeader><CardTitle className="text-base">Custos operacionais</CardTitle></CardHeader>
               <CardContent className="space-y-2 text-sm">
-                <Row k="Custo total com IA" v={brl(g.custoIA)} />
-                <Row k="Custo de storage" v={brl(g.custoStorage)} />
-                <Row k="Custo de ferramentas" v={brl(g.custoFerramentas)} />
-                <Row k="Custo total operacional" v={brl(g.custoOperacional)} bold tone="warning" />
+                <Row k="Custo total com IA" v={brl(totals.ia)} />
+                <Row k="Custo de storage" v={brl(totals.storage)} />
+                <Row k="Outros custos" v={brl(totals.outros)} />
+                <Row k="Custo total operacional" v={brl(totals.ia + totals.storage + totals.outros)} bold tone="warning" />
               </CardContent>
             </Card>
             <Card className="bg-card/70">
-              <CardHeader><CardTitle className="text-base">Receita & lucro</CardTitle></CardHeader>
+              <CardHeader><CardTitle className="text-base">Resumo financeiro</CardTitle></CardHeader>
               <CardContent className="space-y-2 text-sm">
-                <Row k="Receita com clientes" v={brl(g.receitaClientes)} />
-                <Row k="Comissão dos perfis próprios" v={brl(g.comissaoPerfis)} />
-                <Row k="Receita total" v={brl(g.receitaTotal)} bold tone="success" />
-                <Row k="Lucro estimado" v={brl(g.lucro)} bold tone="success" />
-                <Row k="Margem geral" v={`${g.margem}%`} bold tone="success" />
+                <p className="text-muted-foreground italic">Selecione uma aba para mais detalhes por categoria.</p>
               </CardContent>
             </Card>
           </div>
@@ -158,6 +99,7 @@ function Page() {
     </PageShell>
   );
 }
+
 
 function Stat({ k, v, tone }: { k: string; v: string; tone?: "success" | "warning" }) {
   const c = tone === "success" ? "text-success" : tone === "warning" ? "text-warning" : "text-foreground";
