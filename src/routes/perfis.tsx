@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Plus, ArrowUpRight } from "lucide-react";
-import { perfis } from "@/lib/mock/data";
+import { usePerfis } from "@/integrations/supabase/hooks";
 
 export const Route = createFileRoute("/perfis")({
   head: () => ({ meta: [{ title: "Meus Perfis — Video Factory" }] }),
