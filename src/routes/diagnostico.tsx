@@ -3,7 +3,6 @@ import { PageShell } from "@/components/page-shell";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useMetricas } from "@/integrations/supabase/hooks";
-
 import { Activity, AlertTriangle, CheckCircle2, RefreshCw } from "lucide-react";
 
 export const Route = createFileRoute("/diagnostico")({
@@ -38,43 +37,42 @@ function Page() {
     );
   }
 
-
   return (
     <PageShell
       title="Diagnóstico de Conversão"
       description="5 cenários típicos, com diagnóstico e ação automática para cada criativo."
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {casosDiagnostico.map((c) => {
-          const Icon = c.status === "Escalar" ? CheckCircle2 : c.status === "Pausar" ? AlertTriangle : c.status === "Corrigir CTA" || c.status === "Corrigir gancho" ? RefreshCw : Activity;
+        {metricas?.map((m) => {
+          const status = m.conclusao || "Em análise";
+          const Icon = status === "Escalar" ? CheckCircle2 : status === "Pausar" ? AlertTriangle : status === "Corrigir CTA" || status === "Corrigir gancho" ? RefreshCw : Activity;
           return (
-            <Card key={c.id} className={`bg-card/70 ${c.status === "Escalar" ? "border-success/40" : c.status === "Pausar" ? "border-destructive/40" : ""}`}>
+            <Card key={m.id} className={`bg-card/70 ${status === "Escalar" ? "border-success/40" : status === "Pausar" ? "border-destructive/40" : ""}`}>
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <CardDescription>Caso</CardDescription>
+                    <CardDescription>Criativo: {(m.criativo as any)?.titulo || "—"}</CardDescription>
                     <CardTitle className="text-base flex items-center gap-2">
-                      <Icon className="h-4 w-4 text-primary" />{c.titulo}
+                      <Icon className="h-4 w-4 text-primary" />{(m.criativo as any)?.produto?.nome || "Sem produto"}
                     </CardTitle>
                   </div>
-                  <Badge className={statusColor[c.status]}>{c.status}</Badge>
+                  <Badge className={statusColor[status] || statusColor["Pausar"]}>{status}</Badge>
                 </div>
               </CardHeader>
               <CardContent className="space-y-3 text-sm">
                 <div className="grid grid-cols-3 gap-2 text-xs">
-                  <Stat k="Views" v={fmt(c.views)} />
-                  <Stat k="Cliques" v={fmt(c.cliques)} />
-                  <Stat k="Vendas" v={fmt(c.vendas)} />
+                  <Stat k="Views" v={fmt(m.visualizacoes || 0)} />
+                  <Stat k="Cliques" v={fmt(m.cliques || 0)} />
+                  <Stat k="Vendas" v={fmt(m.vendas || 0)} />
                 </div>
                 <div className="rounded-md border border-border bg-background/40 p-3">
                   <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Diagnóstico</div>
-                  <div>{c.diagnostico}</div>
+                  <div>{m.diagnostico || "Aguardando métricas suficientes para diagnóstico."}</div>
                 </div>
                 <div className="rounded-md border border-primary/30 bg-primary/5 p-3">
                   <div className="text-[10px] uppercase tracking-wider text-primary mb-1">Ação</div>
-                  <div>{c.acao}</div>
+                  <div>{m.acao_sugerida || "Nenhuma ação necessária no momento."}</div>
                 </div>
-                <div className="text-xs text-muted-foreground">Exemplo de criativo: "{c.exemploCriativo}"</div>
               </CardContent>
             </Card>
           );
