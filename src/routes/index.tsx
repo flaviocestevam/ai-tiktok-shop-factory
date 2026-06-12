@@ -45,7 +45,13 @@ function Dashboard() {
   const { data: metricas = [], isLoading: loadingMetricas } = useMetricas();
 
   if (loadingPerfis || loadingClientes || loadingProdutos || loadingCriativos || loadingMetricas) {
-    return <PageShell title="Dashboard Geral" description="Carregando dados..."><div className="h-96 flex items-center justify-center">Carregando...</div></PageShell>;
+    return (
+      <PageShell title="Dashboard Geral" description="Carregando dados...">
+        <div className="h-96 flex items-center justify-center text-muted-foreground animate-pulse">
+          Sincronizando métricas do sistema...
+        </div>
+      </PageShell>
+    );
   }
 
   // Calculate totals from metrics and perfis
@@ -54,14 +60,14 @@ function Dashboard() {
       views: a.views + (m.views || 0),
       vendas: a.vendas + (m.vendas || 0),
       receita: a.receita + (m.receita || 0),
-      custo: a.custo + 0, // In a real app, this would come from costs table
+      custo: a.custo,
       criativos: a.criativos,
     }),
     { views: 0, vendas: 0, receita: 0, custo: 0, criativos: criativos.length },
   );
   
   // Basic estimates for demonstration
-  totals.custo = totals.criativos * 50; // Mock cost per creative
+  totals.custo = totals.criativos * 45; // Mock cost per creative (production)
 
   const lucro = totals.receita - totals.custo;
   const roi = totals.receita / Math.max(totals.custo, 1);
@@ -71,10 +77,11 @@ function Dashboard() {
     // Sum metrics for this profile
     const profileMetricas = metricas.filter(m => m.criativo?.perfil_id === p.id);
     const receita = profileMetricas.reduce((sum, m) => sum + (m.receita || 0), 0);
+    const custo = (p.campanhas_vinculadas?.[0]?.count || 0) * 80; // Mock cost based on campaigns
     return {
       nome: p.nome,
       receita: receita,
-      custo: (p.campanhas_vinculadas?.[0]?.count || 0) * 100, // Mock cost
+      custo: custo,
     };
   });
 
@@ -107,7 +114,7 @@ function Dashboard() {
           <CardContent>
             <div className="h-64">
               <ResponsiveContainer>
-                <AreaChart data={trend7d} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <AreaChart data={trend7d_mock} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="var(--color-chart-1)" stopOpacity={0.5} />
@@ -144,8 +151,8 @@ function Dashboard() {
                   <YAxis stroke="var(--color-muted-foreground)" fontSize={10} />
                   <Tooltip contentStyle={{ background: "var(--color-card)", border: "1px solid var(--color-border)", borderRadius: 8, fontSize: 12 }} />
                   <Legend wrapperStyle={{ fontSize: 11 }} />
-                  <Bar dataKey="receita" fill="var(--color-chart-3)" radius={[6, 6, 0, 0]} />
-                  <Bar dataKey="custo" fill="var(--color-chart-1)" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="receita" name="Receita" fill="var(--color-chart-3)" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="custo" name="Custo" fill="var(--color-chart-1)" radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -162,10 +169,15 @@ function Dashboard() {
             <CardDescription>Padrões com maior venda por 1.000 views.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
-            {perfis.flatMap((p) => p.recomendacoes.repetir.map((r) => ({ p: p.nome, r }))).slice(0, 6).map((x, i) => (
+            {metricas
+              .filter(m => (m.vendas || 0) > 10)
+              .slice(0, 4)
+              .map((m, i) => (
               <div key={i} className="flex items-start gap-2 rounded-md border border-success/20 bg-success/5 px-3 py-2">
-                <Badge variant="outline" className="border-success/40 text-success">{x.p}</Badge>
-                <span className="text-foreground/90">{x.r}</span>
+                <Badge variant="outline" className="border-success/40 text-success">
+                  {m.criativo?.perfil_id === perfis[0]?.id ? perfis[0]?.nome : "Perfil"}
+                </Badge>
+                <span className="text-foreground/90">Gancho: {m.criativo?.titulo} está performando bem.</span>
               </div>
             ))}
           </CardContent>
@@ -179,12 +191,10 @@ function Dashboard() {
             <CardDescription>Padrões com views altas e poucas vendas.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
-            {perfis.flatMap((p) => p.recomendacoes.evitar.map((r) => ({ p: p.nome, r }))).slice(0, 6).map((x, i) => (
-              <div key={i} className="flex items-start gap-2 rounded-md border border-warning/20 bg-warning/5 px-3 py-2">
-                <Badge variant="outline" className="border-warning/40 text-warning">{x.p}</Badge>
-                <span className="text-foreground/90">{x.r}</span>
-              </div>
-            ))}
+            <div className="flex items-start gap-2 rounded-md border border-warning/20 bg-warning/5 px-3 py-2">
+              <Badge variant="outline" className="border-warning/40 text-warning">Geral</Badge>
+              <span className="text-foreground/90">Evitar excesso de emojis na legenda inicial.</span>
+            </div>
           </CardContent>
         </Card>
 
@@ -194,15 +204,18 @@ function Dashboard() {
             <CardDescription>Maior venda por 1.000 views.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
-            {criativos.filter((c) => c.status === "publicado").map((c) => (
-              <div key={c.id} className="flex items-center justify-between rounded-md border border-border bg-card px-3 py-2">
-                <div className="min-w-0">
-                  <div className="truncate font-medium">{c.titulo}</div>
-                  <div className="text-xs text-muted-foreground truncate">{c.produto} • {c.avatar}</div>
+            {criativos.filter((c) => c.status === "publicado").slice(0, 4).map((c) => {
+              const creativeMetricas = metricas.find(m => m.criativo_id === c.id);
+              return (
+                <div key={c.id} className="flex items-center justify-between rounded-md border border-border bg-card px-3 py-2">
+                  <div className="min-w-0">
+                    <div className="truncate font-medium">{c.titulo}</div>
+                    <div className="text-xs text-muted-foreground truncate">{c.produto?.nome || "Produto"}</div>
+                  </div>
+                  <Badge variant="secondary" className="shrink-0">{creativeMetricas?.vendas || 0} vendas</Badge>
                 </div>
-                <Badge variant="secondary" className="shrink-0">{c.vendas} vendas</Badge>
-              </div>
-            ))}
+              );
+            })}
           </CardContent>
         </Card>
       </div>
@@ -217,20 +230,30 @@ function Dashboard() {
             <Button asChild size="sm" variant="ghost"><Link to="/perfis">Ver todos</Link></Button>
           </CardHeader>
           <CardContent className="space-y-2">
-            {perfis.map((p) => (
-              <Link key={p.id} to="/perfis/$id" params={{ id: p.id }}
-                className="flex items-center justify-between gap-3 rounded-lg border border-border bg-card px-3 py-3 hover:border-primary/40 transition">
-                <div className="min-w-0">
-                  <div className="font-medium truncate">{p.nome}</div>
-                  <div className="text-xs text-muted-foreground truncate">{p.nicho} • {p.metricas.criativos} criativos</div>
-                </div>
-                <div className="flex items-center gap-4 text-xs">
-                  <div className="text-right"><div className="text-muted-foreground">ROI</div><div className="font-display font-semibold">{p.metricas.roi.toFixed(1)}x</div></div>
-                  <div className="text-right"><div className="text-muted-foreground">Vendas/1k</div><div className="font-display font-semibold">{p.metricas.vendasPor1k.toFixed(2)}</div></div>
-                  <div className="text-right"><div className="text-muted-foreground">Receita</div><div className="font-display font-semibold">{brl(p.metricas.receita)}</div></div>
-                </div>
-              </Link>
-            ))}
+            {perfis.map((p) => {
+               const pMetricas = metricas.filter(m => m.criativo?.perfil_id === p.id);
+               const pReceita = pMetricas.reduce((s, m) => s + (m.receita || 0), 0);
+               const pVendas = pMetricas.reduce((s, m) => s + (m.vendas || 0), 0);
+               const pViews = pMetricas.reduce((s, m) => s + (m.views || 0), 0);
+               const pCusto = (p.campanhas_vinculadas?.[0]?.count || 0) * 80;
+               const pRoi = pReceita / Math.max(pCusto, 1);
+               const pVendas1k = (pVendas / Math.max(pViews, 1)) * 1000;
+
+               return (
+                <Link key={p.id} to="/perfis/$id" params={{ id: p.id }}
+                  className="flex items-center justify-between gap-3 rounded-lg border border-border bg-card px-3 py-3 hover:border-primary/40 transition">
+                  <div className="min-w-0">
+                    <div className="font-medium truncate">{p.nome}</div>
+                    <div className="text-xs text-muted-foreground truncate">{p.nicho} • {(p as any).campanhas_vinculadas?.[0]?.count || 0} campanhas</div>
+                  </div>
+                  <div className="flex items-center gap-4 text-xs">
+                    <div className="text-right"><div className="text-muted-foreground">ROI</div><div className="font-display font-semibold">{pRoi.toFixed(1)}x</div></div>
+                    <div className="text-right"><div className="text-muted-foreground">Vendas/1k</div><div className="font-display font-semibold">{pVendas1k.toFixed(2)}</div></div>
+                    <div className="text-right"><div className="text-muted-foreground">Receita</div><div className="font-display font-semibold">{brl(pReceita)}</div></div>
+                  </div>
+                </Link>
+               );
+            })}
           </CardContent>
         </Card>
 
@@ -244,17 +267,21 @@ function Dashboard() {
           </CardHeader>
           <CardContent className="space-y-2">
             {clientes.map((c) => {
-              const margem = ((c.valor - c.custoProducao) / c.valor) * 100;
+              const valor = c.plano_mensal || 1000;
+              const custo = 400; // Mock
+              const margem = ((valor - custo) / valor) * 100;
               return (
                 <Link key={c.id} to="/clientes/$id" params={{ id: c.id }}
                   className="flex items-center justify-between gap-3 rounded-lg border border-border bg-card px-3 py-3 hover:border-primary/40 transition">
                   <div className="min-w-0">
                     <div className="font-medium truncate">{c.empresa}</div>
-                    <div className="text-xs text-muted-foreground truncate">{c.plano} • {c.criativosEntregues}/{c.videosContratados + c.carrosseisContratados} entregues</div>
+                    <div className="text-xs text-muted-foreground truncate">
+                      Plano • {c.videos_contratados || 0} vídeos
+                    </div>
                   </div>
                   <div className="flex items-center gap-4 text-xs">
                     <div className="text-right"><div className="text-muted-foreground">Margem</div><div className="font-display font-semibold text-success">{margem.toFixed(1)}%</div></div>
-                    <div className="text-right"><div className="text-muted-foreground">Lucro</div><div className="font-display font-semibold">{brl(c.valor - c.custoProducao)}</div></div>
+                    <div className="text-right"><div className="text-muted-foreground">Lucro</div><div className="font-display font-semibold">{brl(valor - custo)}</div></div>
                   </div>
                 </Link>
               );
@@ -276,15 +303,15 @@ function Dashboard() {
             {produtos.slice(0, 4).map((p) => (
               <Link key={p.id} to="/produtos/$id" params={{ id: p.id }}
                 className="group rounded-xl border border-border bg-card overflow-hidden hover:border-primary/40 transition">
-                <div className="aspect-[16/10] bg-muted overflow-hidden">
-                  <img src={p.imagem} alt={p.nome} className="h-full w-full object-cover group-hover:scale-105 transition" />
+                <div className="aspect-[16/10] bg-muted overflow-hidden flex items-center justify-center">
+                  <ShoppingCart className="h-8 w-8 text-muted-foreground/30" />
                 </div>
                 <div className="p-3">
                   <div className="flex items-center justify-between">
                     <div className="font-medium truncate">{p.nome}</div>
-                    <Badge className="bg-primary/15 text-primary border-primary/30">{p.score}</Badge>
+                    <Badge className="bg-primary/15 text-primary border-primary/30">{p.score || 0}</Badge>
                   </div>
-                  <div className="text-xs text-muted-foreground mt-1">{p.categoria} • {p.classificacao}</div>
+                  <div className="text-xs text-muted-foreground mt-1">{p.nicho} • {p.status}</div>
                 </div>
               </Link>
             ))}
