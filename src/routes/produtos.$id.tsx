@@ -1,87 +1,81 @@
-import { createFileRoute, notFound, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { PageShell } from "@/components/page-shell";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { produtos } from "@/lib/mock/data";
-import { recomendarCaminho } from "@/lib/mock/extra";
+import { useProduto } from "@/integrations/supabase/hooks";
 import {
   ChevronLeft, AlertTriangle, Sparkles, Target, MessageCircleQuestion,
   CheckCircle2, Eye, Film, Images, Wand2,
 } from "lucide-react";
 
 export const Route = createFileRoute("/produtos/$id")({
-  loader: ({ params }) => {
-    const p = produtos.find((x) => x.id === params.id);
-    if (!p) throw notFound();
-    return { p };
-  },
-  head: ({ loaderData }) => ({ meta: [{ title: `${loaderData?.p.nome ?? "Produto"} — Video Factory` }] }),
+  head: () => ({ meta: [{ title: "Produto — Video Factory" }] }),
   component: ProdutoDetail,
-  notFoundComponent: () => (
-    <PageShell title="Produto não encontrado"><p className="text-muted-foreground">Esse produto não existe.</p></PageShell>
-  ),
 });
 
 function ProdutoDetail() {
-  const { p } = Route.useLoaderData();
-  const viewBait = p.classificacao === "view bait";
-  const silenciosa = p.classificacao === "conversão silenciosa";
-  const rec = recomendarCaminho(p);
-  const baratoSuficiente = p.potencialCarrossel >= 85 && p.antesDepois >= 80;
+  const { id } = useParams({ from: "/produtos/$id" });
+  const { data: p, isLoading } = useProduto(id);
 
+  if (isLoading) {
+    return (
+      <PageShell title="Carregando..." description="Buscando dados do produto...">
+        <div className="h-64 animate-pulse bg-card/50 rounded-lg" />
+      </PageShell>
+    );
+  }
 
+  if (!p) {
+    return (
+      <PageShell title="Produto não encontrado">
+        <p className="text-muted-foreground">Esse produto não existe.</p>
+        <Button asChild variant="outline" className="mt-4">
+          <Link to="/produtos">Voltar para produtos</Link>
+        </Button>
+      </PageShell>
+    );
+  }
 
   return (
     <PageShell
       title={p.nome}
-      description={`${p.categoria} • ${p.nicho} • ${p.pais}`}
+      description={`${p.nicho || "Geral"} • ${p.pais || "Brasil"}`}
       actions={<Button asChild variant="ghost" size="sm"><Link to="/produtos"><ChevronLeft className="h-4 w-4 mr-1" />Voltar</Link></Button>}
     >
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <Card className="lg:col-span-2 bg-card/70 overflow-hidden">
           <div className="aspect-[21/9] bg-muted overflow-hidden">
-            <img src={p.imagem} alt={p.nome} className="h-full w-full object-cover" />
+            <img src={p.link_tiktok || "/placeholder.svg"} alt={p.nome} className="h-full w-full object-cover" />
           </div>
           <CardContent className="p-5">
             <div className="flex flex-wrap items-center gap-2 mb-3">
               <Badge variant="outline">{p.status}</Badge>
-              <Badge variant="outline">Risco: {p.risco}</Badge>
-              <Badge variant="outline">Concorrência: {p.concorrencia}</Badge>
-              <Badge variant="outline">Saturação: {p.saturacao}</Badge>
+              <Badge variant="outline" className="capitalize">Tipo: {p.recomendacao_tipo || "Geral"}</Badge>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-              <Field label="Preço" value={`R$${p.preco.toFixed(2)}`} />
-              <Field label="Comissão" value={`${p.comissao}%`} />
-              <Field label="Ticket médio" value={`R$${p.ticketMedio}`} />
-              <Field label="Devolução" value={`${p.devolucao}%`} />
-              <Field label="Avaliação" value={`${p.avaliacao} ★`} />
-              <Field label="Reviews" value={p.reviews.toLocaleString("pt-BR")} />
-              <Field label="Estoque" value={p.estoque.toString()} />
-              <Field label="Entrega" value={`${p.entregaDias} dias`} />
+              <Field label="Preço" value={`R$${(p.preco || 0).toFixed(2)}`} />
+              <Field label="Comissão" value={`${p.comissao_pct}%`} />
+              <Field label="Clareza da dor" value={`${p.score}/100`} />
             </div>
             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-              <Box title="Benefício principal" body={p.beneficio} />
-              <Box title="Dor que resolve" body={p.dor} />
-              <Box title="Público-alvo" body={p.publico} />
-              <Box title="Reclamações comuns" body={p.reclamacoes.join(" • ") || "—"} />
+              <Box title="Dor que resolve" body={p.dor || "—"} />
+              <Box title="Oferta irresistível" body={p.oferta || "—"} />
+              <Box title="Público-alvo" body={p.publico || "—"} />
+              <Box title="Observações" body={p.observacoes || "—"} />
             </div>
           </CardContent>
         </Card>
 
         <Card className="bg-card/70">
           <CardHeader className="pb-2">
-            <CardDescription>Chance de venda</CardDescription>
+            <CardDescription>Score de Chance de Venda</CardDescription>
             <CardTitle className="font-display text-5xl text-gradient-brand">{p.score}/100</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Score label="Clareza da dor" v={p.clarezaDor} />
-            <Score label="Facilidade visual" v={p.facilidadeVisual} />
-            <Score label="Força do antes/depois" v={p.antesDepois} />
-            <Score label="Compra por impulso" v={p.impulso} />
-            <Score label="Potencial vídeo" v={p.potencialVideo} />
-            <Score label="Potencial carrossel" v={p.potencialCarrossel} />
+            <Score label="Facilidade visual" v={p.facilidade_visual || 50} />
+            <Score label="Antes e depois" v={p.tem_antes_depois ? 90 : 20} />
           </CardContent>
         </Card>
       </div>
@@ -90,107 +84,27 @@ function ProdutoDetail() {
         <Card className="bg-card/70 lg:col-span-2">
           <CardHeader className="pb-2">
             <CardTitle className="text-base flex items-center gap-2"><Sparkles className="h-4 w-4 text-primary" />Simulador de Campanha</CardTitle>
-            <CardDescription>Sugestão da fábrica antes de produzir.</CardDescription>
+            <CardDescription>Cálculo da fábrica com base no produto.</CardDescription>
           </CardHeader>
           <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-            <SimItem k="Criativos sugeridos" v="5" />
-            <SimItem k="Carrosséis" v="3" />
-            <SimItem k="Vídeos" v="2" />
-            <SimItem k="Custo estimado" v="R$18" />
-            <SimItem k="Meta de vendas" v="4 vendas" />
-            <SimItem k="CPV máximo" v="R$4,50" />
-            <SimItem k="Avatar sugerido" v="Marina BR" />
-            <SimItem k="Gancho sugerido" v="Descoberta" />
+            <SimItem k="Sugestão" v={p.recomendacao_tipo || "Mista"} />
+            <SimItem k="V/criativo alvo" v="8+" />
+            <SimItem k="Custo est." v="R$12,50" />
             <div className="md:col-span-4">
-              <Button size="sm" className="gap-1.5"><Target className="h-4 w-4" />Criar campanha com essas configurações</Button>
+              <Button size="sm" className="gap-1.5"><Target className="h-4 w-4" />Criar campanha rápida</Button>
             </div>
           </CardContent>
         </Card>
 
-        <Card className={`bg-card/70 ${viewBait ? "border-destructive/40" : silenciosa ? "border-success/40" : ""}`}>
+        <Card className="bg-card/70">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2">
-              {viewBait ? <AlertTriangle className="h-4 w-4 text-destructive" /> :
-               silenciosa ? <CheckCircle2 className="h-4 w-4 text-success" /> :
-               <Eye className="h-4 w-4" />}
-              Classificação automática
-            </CardTitle>
-            <CardDescription className="capitalize">{p.classificacao}</CardDescription>
+            <CardTitle className="text-base flex items-center gap-2"><Eye className="h-4 w-4 text-primary" />Classificação</CardTitle>
           </CardHeader>
           <CardContent className="text-sm space-y-2">
-            {viewBait && (
-              <>
-                <p className="text-muted-foreground">Sinais: muitas views, poucas vendas, baixa utilidade prática.</p>
-                <div className="rounded-md border border-destructive/20 bg-destructive/5 px-3 py-2">
-                  Ação: <strong>não escalar</strong> só por views. Validar vendas/1k antes de produzir mais.
-                </div>
-              </>
-            )}
-            {silenciosa && (
-              <>
-                <p className="text-muted-foreground">Sinais: poucas views, ótima conversão, baixo custo por venda.</p>
-                <div className="rounded-md border border-success/20 bg-success/5 px-3 py-2">
-                  Ação: <strong>escalar variações</strong> de baixo custo, priorizando carrosséis e vídeos curtos.
-                </div>
-              </>
-            )}
-            {!viewBait && !silenciosa && (
-              <p className="text-muted-foreground">Sem sinais claros. Manter teste controlado de 5 criativos.</p>
-            )}
+             <p className="text-muted-foreground">Sistema classificará automaticamente após as primeiras 1k visualizações.</p>
           </CardContent>
         </Card>
       </div>
-
-      <Card className="bg-card/70 mt-4 border-primary/30">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base flex items-center gap-2"><Wand2 className="h-4 w-4 text-primary" />Recomendação de caminho de produção</CardTitle>
-          <CardDescription>Vídeo, carrossel ou misto? Cálculo do motor com base no produto e histórico.</CardDescription>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <div className="lg:col-span-2 space-y-3">
-            <div className="flex items-center gap-3">
-              <div className="flex-1">
-                <div className="flex justify-between text-xs mb-1"><span className="flex items-center gap-1"><Images className="h-3 w-3" />Carrossel</span><span className="font-medium">{rec.pctCarrossel}%</span></div>
-                <Progress value={rec.pctCarrossel} className="h-2" />
-              </div>
-              <div className="flex-1">
-                <div className="flex justify-between text-xs mb-1"><span className="flex items-center gap-1"><Film className="h-3 w-3" />Vídeo</span><span className="font-medium">{rec.pctVideo}%</span></div>
-                <Progress value={rec.pctVideo} className="h-2" />
-              </div>
-            </div>
-            <div className="rounded-md border border-border bg-background/40 p-3 text-sm">
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Justificativas</div>
-              <ul className="list-disc list-inside text-muted-foreground space-y-0.5 text-xs">
-                {rec.justificativas.map((j, i) => <li key={i} className="text-foreground/90">{j}</li>)}
-              </ul>
-            </div>
-          </div>
-          <div className={`rounded-lg border p-3 text-sm ${baratoSuficiente ? "border-success/40 bg-success/5" : "border-info/40 bg-info/5"}`}>
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Score de criativo barato</div>
-            <div className="font-display text-lg font-semibold">
-              {baratoSuficiente ? "Carrossel barato é suficiente" : "Vídeo vale o investimento"}
-            </div>
-            <div className="text-xs text-muted-foreground mt-1">
-              {baratoSuficiente ? "Esse produto não precisa de vídeo caro. Carrossel com antes/depois deve resolver." : "Esse produto precisa de movimento real. Priorizar vídeo."}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="bg-card/70 mt-4">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base flex items-center gap-2">
-            <MessageCircleQuestion className="h-4 w-4 text-primary" /> Banco de objeções
-          </CardTitle>
-          <CardDescription>Usado para gerar carrosséis e vídeos respondendo dúvidas reais de compra.</CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-wrap gap-2">
-          {p.objecoes.map((o: string, i: number) => (
-            <Badge key={i} variant="outline" className="text-sm py-1.5 px-3 font-normal">"{o}"</Badge>
-          ))}
-          <Button variant="outline" size="sm" className="gap-1.5"><MessageCircleQuestion className="h-4 w-4" />Adicionar objeção</Button>
-        </CardContent>
-      </Card>
     </PageShell>
   );
 }
