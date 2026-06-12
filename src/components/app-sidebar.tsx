@@ -3,7 +3,7 @@ import {
   LayoutDashboard, Users, UserCircle2, Package, Sparkles, Megaphone,
   Factory, FileVideo, Send, ClipboardCheck, Truck,
   BarChart3, Activity, Gauge, Brain, Lightbulb, Wallet,
-  Settings, Cpu, Layers, LineChart,
+  Settings, Cpu, Layers, LineChart, Zap, KeyRound,
 } from "lucide-react";
 
 import {
@@ -53,8 +53,10 @@ const groups = [
   {
     label: "Sistema",
     items: [
+      { title: "Automações", url: "/automacoes", icon: Zap },
       { title: "Configurações", url: "/configuracoes", icon: Settings },
       { title: "Provedores de IA", url: "/configuracoes/provedores", icon: Cpu },
+      { title: "Contas Gemini", url: "/configuracoes/gemini", icon: KeyRound },
     ],
   },
 ];
