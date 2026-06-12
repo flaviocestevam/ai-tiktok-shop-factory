@@ -17,8 +17,10 @@ import { Route as ProducaoRouteImport } from './routes/producao'
 import { Route as PerfisRouteImport } from './routes/perfis'
 import { Route as MenorEsforcoRouteImport } from './routes/menor-esforco'
 import { Route as InteligenciaRouteImport } from './routes/inteligencia'
+import { Route as FormatosRouteImport } from './routes/formatos'
 import { Route as EntregasRouteImport } from './routes/entregas'
 import { Route as DiagnosticoRouteImport } from './routes/diagnostico'
+import { Route as DashboardPerformanceRouteImport } from './routes/dashboard-performance'
 import { Route as CustosRouteImport } from './routes/custos'
 import { Route as CriativosRouteImport } from './routes/criativos'
 import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
@@ -31,6 +33,7 @@ import { Route as ProdutosIdRouteImport } from './routes/produtos.$id'
 import { Route as PerfisIdRouteImport } from './routes/perfis.$id'
 import { Route as ConfiguracoesProvedoresRouteImport } from './routes/configuracoes.provedores'
 import { Route as ClientesIdRouteImport } from './routes/clientes.$id'
+import { Route as CampanhasIdRouteImport } from './routes/campanhas.$id'
 import { Route as AvataresIdRouteImport } from './routes/avatares.$id'
 
 const ResultadosRoute = ResultadosRouteImport.update({
@@ -73,6 +76,11 @@ const InteligenciaRoute = InteligenciaRouteImport.update({
   path: '/inteligencia',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FormatosRoute = FormatosRouteImport.update({
+  id: '/formatos',
+  path: '/formatos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EntregasRoute = EntregasRouteImport.update({
   id: '/entregas',
   path: '/entregas',
@@ -81,6 +89,11 @@ const EntregasRoute = EntregasRouteImport.update({
 const DiagnosticoRoute = DiagnosticoRouteImport.update({
   id: '/diagnostico',
   path: '/diagnostico',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardPerformanceRoute = DashboardPerformanceRouteImport.update({
+  id: '/dashboard-performance',
+  path: '/dashboard-performance',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CustosRoute = CustosRouteImport.update({
@@ -143,6 +156,11 @@ const ClientesIdRoute = ClientesIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => ClientesRoute,
 } as any)
+const CampanhasIdRoute = CampanhasIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => CampanhasRoute,
+} as any)
 const AvataresIdRoute = AvataresIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -153,13 +171,15 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/aprovacoes': typeof AprovacoesRoute
   '/avatares': typeof AvataresRouteWithChildren
-  '/campanhas': typeof CampanhasRoute
+  '/campanhas': typeof CampanhasRouteWithChildren
   '/clientes': typeof ClientesRouteWithChildren
   '/configuracoes': typeof ConfiguracoesRouteWithChildren
   '/criativos': typeof CriativosRoute
   '/custos': typeof CustosRoute
+  '/dashboard-performance': typeof DashboardPerformanceRoute
   '/diagnostico': typeof DiagnosticoRoute
   '/entregas': typeof EntregasRoute
+  '/formatos': typeof FormatosRoute
   '/inteligencia': typeof InteligenciaRoute
   '/menor-esforco': typeof MenorEsforcoRoute
   '/perfis': typeof PerfisRouteWithChildren
@@ -169,6 +189,7 @@ export interface FileRoutesByFullPath {
   '/recomendacoes': typeof RecomendacoesRoute
   '/resultados': typeof ResultadosRoute
   '/avatares/$id': typeof AvataresIdRoute
+  '/campanhas/$id': typeof CampanhasIdRoute
   '/clientes/$id': typeof ClientesIdRoute
   '/configuracoes/provedores': typeof ConfiguracoesProvedoresRoute
   '/perfis/$id': typeof PerfisIdRoute
@@ -178,13 +199,15 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/aprovacoes': typeof AprovacoesRoute
   '/avatares': typeof AvataresRouteWithChildren
-  '/campanhas': typeof CampanhasRoute
+  '/campanhas': typeof CampanhasRouteWithChildren
   '/clientes': typeof ClientesRouteWithChildren
   '/configuracoes': typeof ConfiguracoesRouteWithChildren
   '/criativos': typeof CriativosRoute
   '/custos': typeof CustosRoute
+  '/dashboard-performance': typeof DashboardPerformanceRoute
   '/diagnostico': typeof DiagnosticoRoute
   '/entregas': typeof EntregasRoute
+  '/formatos': typeof FormatosRoute
   '/inteligencia': typeof InteligenciaRoute
   '/menor-esforco': typeof MenorEsforcoRoute
   '/perfis': typeof PerfisRouteWithChildren
@@ -194,6 +217,7 @@ export interface FileRoutesByTo {
   '/recomendacoes': typeof RecomendacoesRoute
   '/resultados': typeof ResultadosRoute
   '/avatares/$id': typeof AvataresIdRoute
+  '/campanhas/$id': typeof CampanhasIdRoute
   '/clientes/$id': typeof ClientesIdRoute
   '/configuracoes/provedores': typeof ConfiguracoesProvedoresRoute
   '/perfis/$id': typeof PerfisIdRoute
@@ -204,13 +228,15 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/aprovacoes': typeof AprovacoesRoute
   '/avatares': typeof AvataresRouteWithChildren
-  '/campanhas': typeof CampanhasRoute
+  '/campanhas': typeof CampanhasRouteWithChildren
   '/clientes': typeof ClientesRouteWithChildren
   '/configuracoes': typeof ConfiguracoesRouteWithChildren
   '/criativos': typeof CriativosRoute
   '/custos': typeof CustosRoute
+  '/dashboard-performance': typeof DashboardPerformanceRoute
   '/diagnostico': typeof DiagnosticoRoute
   '/entregas': typeof EntregasRoute
+  '/formatos': typeof FormatosRoute
   '/inteligencia': typeof InteligenciaRoute
   '/menor-esforco': typeof MenorEsforcoRoute
   '/perfis': typeof PerfisRouteWithChildren
@@ -220,6 +246,7 @@ export interface FileRoutesById {
   '/recomendacoes': typeof RecomendacoesRoute
   '/resultados': typeof ResultadosRoute
   '/avatares/$id': typeof AvataresIdRoute
+  '/campanhas/$id': typeof CampanhasIdRoute
   '/clientes/$id': typeof ClientesIdRoute
   '/configuracoes/provedores': typeof ConfiguracoesProvedoresRoute
   '/perfis/$id': typeof PerfisIdRoute
@@ -236,8 +263,10 @@ export interface FileRouteTypes {
     | '/configuracoes'
     | '/criativos'
     | '/custos'
+    | '/dashboard-performance'
     | '/diagnostico'
     | '/entregas'
+    | '/formatos'
     | '/inteligencia'
     | '/menor-esforco'
     | '/perfis'
@@ -247,6 +276,7 @@ export interface FileRouteTypes {
     | '/recomendacoes'
     | '/resultados'
     | '/avatares/$id'
+    | '/campanhas/$id'
     | '/clientes/$id'
     | '/configuracoes/provedores'
     | '/perfis/$id'
@@ -261,8 +291,10 @@ export interface FileRouteTypes {
     | '/configuracoes'
     | '/criativos'
     | '/custos'
+    | '/dashboard-performance'
     | '/diagnostico'
     | '/entregas'
+    | '/formatos'
     | '/inteligencia'
     | '/menor-esforco'
     | '/perfis'
@@ -272,6 +304,7 @@ export interface FileRouteTypes {
     | '/recomendacoes'
     | '/resultados'
     | '/avatares/$id'
+    | '/campanhas/$id'
     | '/clientes/$id'
     | '/configuracoes/provedores'
     | '/perfis/$id'
@@ -286,8 +319,10 @@ export interface FileRouteTypes {
     | '/configuracoes'
     | '/criativos'
     | '/custos'
+    | '/dashboard-performance'
     | '/diagnostico'
     | '/entregas'
+    | '/formatos'
     | '/inteligencia'
     | '/menor-esforco'
     | '/perfis'
@@ -297,6 +332,7 @@ export interface FileRouteTypes {
     | '/recomendacoes'
     | '/resultados'
     | '/avatares/$id'
+    | '/campanhas/$id'
     | '/clientes/$id'
     | '/configuracoes/provedores'
     | '/perfis/$id'
@@ -307,13 +343,15 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AprovacoesRoute: typeof AprovacoesRoute
   AvataresRoute: typeof AvataresRouteWithChildren
-  CampanhasRoute: typeof CampanhasRoute
+  CampanhasRoute: typeof CampanhasRouteWithChildren
   ClientesRoute: typeof ClientesRouteWithChildren
   ConfiguracoesRoute: typeof ConfiguracoesRouteWithChildren
   CriativosRoute: typeof CriativosRoute
   CustosRoute: typeof CustosRoute
+  DashboardPerformanceRoute: typeof DashboardPerformanceRoute
   DiagnosticoRoute: typeof DiagnosticoRoute
   EntregasRoute: typeof EntregasRoute
+  FormatosRoute: typeof FormatosRoute
   InteligenciaRoute: typeof InteligenciaRoute
   MenorEsforcoRoute: typeof MenorEsforcoRoute
   PerfisRoute: typeof PerfisRouteWithChildren
@@ -382,6 +420,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InteligenciaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/formatos': {
+      id: '/formatos'
+      path: '/formatos'
+      fullPath: '/formatos'
+      preLoaderRoute: typeof FormatosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/entregas': {
       id: '/entregas'
       path: '/entregas'
@@ -394,6 +439,13 @@ declare module '@tanstack/react-router' {
       path: '/diagnostico'
       fullPath: '/diagnostico'
       preLoaderRoute: typeof DiagnosticoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard-performance': {
+      id: '/dashboard-performance'
+      path: '/dashboard-performance'
+      fullPath: '/dashboard-performance'
+      preLoaderRoute: typeof DashboardPerformanceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/custos': {
@@ -480,6 +532,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ClientesIdRouteImport
       parentRoute: typeof ClientesRoute
     }
+    '/campanhas/$id': {
+      id: '/campanhas/$id'
+      path: '/$id'
+      fullPath: '/campanhas/$id'
+      preLoaderRoute: typeof CampanhasIdRouteImport
+      parentRoute: typeof CampanhasRoute
+    }
     '/avatares/$id': {
       id: '/avatares/$id'
       path: '/$id'
@@ -500,6 +559,18 @@ const AvataresRouteChildren: AvataresRouteChildren = {
 
 const AvataresRouteWithChildren = AvataresRoute._addFileChildren(
   AvataresRouteChildren,
+)
+
+interface CampanhasRouteChildren {
+  CampanhasIdRoute: typeof CampanhasIdRoute
+}
+
+const CampanhasRouteChildren: CampanhasRouteChildren = {
+  CampanhasIdRoute: CampanhasIdRoute,
+}
+
+const CampanhasRouteWithChildren = CampanhasRoute._addFileChildren(
+  CampanhasRouteChildren,
 )
 
 interface ClientesRouteChildren {
@@ -553,13 +624,15 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AprovacoesRoute: AprovacoesRoute,
   AvataresRoute: AvataresRouteWithChildren,
-  CampanhasRoute: CampanhasRoute,
+  CampanhasRoute: CampanhasRouteWithChildren,
   ClientesRoute: ClientesRouteWithChildren,
   ConfiguracoesRoute: ConfiguracoesRouteWithChildren,
   CriativosRoute: CriativosRoute,
   CustosRoute: CustosRoute,
+  DashboardPerformanceRoute: DashboardPerformanceRoute,
   DiagnosticoRoute: DiagnosticoRoute,
   EntregasRoute: EntregasRoute,
+  FormatosRoute: FormatosRoute,
   InteligenciaRoute: InteligenciaRoute,
   MenorEsforcoRoute: MenorEsforcoRoute,
   PerfisRoute: PerfisRouteWithChildren,
@@ -572,13 +645,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
