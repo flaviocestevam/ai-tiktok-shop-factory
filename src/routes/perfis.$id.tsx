@@ -58,6 +58,7 @@ function PerfilDetail() {
       actions={
         <>
           <Button asChild variant="ghost" size="sm"><Link to="/perfis"><ChevronLeft className="h-4 w-4 mr-1" />Voltar</Link></Button>
+          <SyncButton profileId={perfil.id} />
           <Button size="sm" className="gap-1.5"><Sparkles className="h-4 w-4" />Nova campanha</Button>
         </>
       }
@@ -67,7 +68,14 @@ function PerfilDetail() {
         <Badge variant="outline">{perfil.pais}</Badge>
         <Badge variant="outline">{perfil.plataforma}</Badge>
         <Badge className="bg-success/15 text-success border-success/30">{perfil.status}</Badge>
-        <span className="text-muted-foreground">Avatar principal: <strong className="text-foreground">{perfil.avatar_principal || "Nenhum"}</strong></span>
+        
+        {(perfil as any).conectores?.[0] && (
+          <div className="flex items-center gap-2 ml-auto text-muted-foreground bg-muted/30 px-2 py-1 rounded border border-border/50">
+            <span className="flex items-center gap-1"><CheckCircle2 className="h-3 w-3 text-success" /> API Conectada</span>
+            <span className="border-l border-border h-3 mx-1" />
+            <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> Sincronizado: {new Date((perfil as any).conectores[0].ultima_sync).toLocaleString('pt-BR')}</span>
+          </div>
+        )}
       </div>
 
       <Tabs defaultValue="overview">
