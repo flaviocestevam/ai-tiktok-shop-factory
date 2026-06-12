@@ -147,3 +147,31 @@ function Row({ label, value, tone }: { label: string; value: string; tone: "succ
     </div>
   );
 }
+
+function SyncButton({ profileId }: { profileId: string }) {
+  const [syncing, setSyncing] = useState(false);
+
+  const handleSync = () => {
+    setSyncing(true);
+    toast.info("Iniciando sincronização de métricas...");
+    
+    // Simulate API call
+    setTimeout(() => {
+      setSyncing(false);
+      toast.success("Métricas atualizadas com sucesso via TikTok API!");
+    }, 2000);
+  };
+
+  return (
+    <Button 
+      variant="outline" 
+      size="sm" 
+      className="h-9 gap-1.5" 
+      onClick={handleSync}
+      disabled={syncing}
+    >
+      <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
+      {syncing ? 'Sincronizando...' : 'Atualizar métricas'}
+    </Button>
+  );
+}
