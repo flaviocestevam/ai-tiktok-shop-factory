@@ -8,8 +8,10 @@ import { Button } from "@/components/ui/button";
 import { usePerfil } from "@/integrations/supabase/hooks";
 import {
   Eye, ShoppingCart, DollarSign, Target, TrendingUp, Zap, ChevronLeft,
-  CheckCircle2, AlertTriangle, Sparkles,
+  CheckCircle2, AlertTriangle, Sparkles, RefreshCw, Clock
 } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, AreaChart, Area,
 } from "recharts";
