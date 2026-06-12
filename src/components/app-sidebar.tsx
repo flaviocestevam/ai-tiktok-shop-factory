@@ -3,7 +3,7 @@ import {
   LayoutDashboard, Users, UserCircle2, Package, Sparkles, Megaphone,
   Factory, FileVideo, Send, ClipboardCheck, Truck,
   BarChart3, Activity, Gauge, Brain, Lightbulb, Wallet,
-  Settings, Cpu, Layers, LineChart,
+  Settings, Cpu, Layers, LineChart, Zap, KeyRound,
 } from "lucide-react";
 
 import {
