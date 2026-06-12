@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
-  Outlet, Link, createRootRouteWithContext, useRouter,
-  HeadContent, Scripts,
+  Outlet, Link, createRootRouteWithContext, useRouter, useRouterState,
+  HeadContent, Scripts, useNavigate,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
@@ -10,6 +10,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Toaster } from "@/components/ui/sonner";
+import { useAuth } from "@/hooks/use-auth";
 
 function NotFoundComponent() {
   return (
