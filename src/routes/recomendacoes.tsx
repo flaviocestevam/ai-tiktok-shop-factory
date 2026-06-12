@@ -95,7 +95,7 @@ function Page() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
-              {(tipo === "perfil" ? perfis : tipo === "cliente" ? clientes : perfis).slice(0, 3).map((item: any) => (
+              {(tipo === "perfil" ? perfis || [] : tipo === "cliente" ? clientes || [] : perfis || []).slice(0, 3).map((item: any) => (
                 <Card key={item.id} className="bg-card/70">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm">{item.nome || item.empresa}</CardTitle>
