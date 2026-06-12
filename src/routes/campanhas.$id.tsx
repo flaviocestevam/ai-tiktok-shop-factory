@@ -22,8 +22,8 @@ const brl = (n: number) => n.toLocaleString("pt-BR", { style: "currency", curren
 
 function CampanhaDetail() {
   const { c } = Route.useLoaderData();
-  const fVideo = c.formatosVideo.map((s: { id: string; quantidade: number }) => ({ ...s, def: formatosVideo.find((f) => f.id === s.id)! }));
-  const fCarr = c.formatosCarrossel.map((s: { id: string; quantidade: number }) => ({ ...s, def: formatosCarrossel.find((f) => f.id === s.id)! }));
+  const fVideo = c.formatosVideo.map((s: { id: string; quantidade: number }) => ({ quantidade: s.quantidade, def: formatosVideo.find((f) => f.id === s.id)! })).filter((x) => x.def);
+  const fCarr = c.formatosCarrossel.map((s: { id: string; quantidade: number }) => ({ quantidade: s.quantidade, def: formatosCarrossel.find((f) => f.id === s.id)! })).filter((x) => x.def);
   const totalFotos = c.fotos;
   const totalRoteiros = c.roteiros;
 
@@ -82,8 +82,8 @@ function CampanhaDetail() {
           <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Film className="h-4 w-4 text-primary" />Formatos de vídeo selecionados</CardTitle></CardHeader>
           <CardContent className="space-y-2">
             {fVideo.length === 0 && <p className="text-xs text-muted-foreground">Nenhum vídeo planejado.</p>}
-            {fVideo.map((f) => (
-              <div key={f.id} className="flex items-center justify-between rounded-md border border-border px-3 py-2 text-sm">
+            {fVideo.map((f, i) => (
+              <div key={i} className="flex items-center justify-between rounded-md border border-border px-3 py-2 text-sm">
                 <div>
                   <div className="font-medium">{f.def.nome}</div>
                   <div className="text-xs text-muted-foreground">{f.def.quandoUsar}</div>
@@ -101,8 +101,8 @@ function CampanhaDetail() {
           <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Images className="h-4 w-4 text-primary" />Formatos de carrossel selecionados</CardTitle></CardHeader>
           <CardContent className="space-y-2">
             {fCarr.length === 0 && <p className="text-xs text-muted-foreground">Nenhum carrossel planejado.</p>}
-            {fCarr.map((f) => (
-              <div key={f.id} className="flex items-center justify-between rounded-md border border-border px-3 py-2 text-sm">
+            {fCarr.map((f, i) => (
+              <div key={i} className="flex items-center justify-between rounded-md border border-border px-3 py-2 text-sm">
                 <div>
                   <div className="font-medium">{f.def.nome}</div>
                   <div className="text-xs text-muted-foreground">{f.def.slidesPadrao} slides padrão • {f.def.quandoUsar}</div>
