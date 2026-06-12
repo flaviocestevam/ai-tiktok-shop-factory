@@ -42,12 +42,13 @@ function Page() {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
         {columns.map((col) => {
           const items = criativos?.filter((c) => {
-            if (col.key === "em produção") return col.group.includes(c.status);
-            if (col.key === "aprovação") return col.group.includes(c.status);
-            if (col.key === "aprovado") return col.group.includes(c.status);
-            if (col.key === "publicado") return col.group.includes(c.status);
+            if (col.key === "em produção") return (col.group as any).includes(c.status);
+            if (col.key === "aprovação") return (col.group as any).includes(c.status);
+            if (col.key === "aprovado") return (col.group as any).includes(c.status);
+            if (col.key === "publicado") return (col.group as any).includes(c.status);
             return false;
           }) || [];
+
 
           return (
             <Card key={col.key} className="bg-card/50">
