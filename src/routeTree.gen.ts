@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ReferenciasRouteImport } from './routes/referencias'
 import { Route as PublicacoesRouteImport } from './routes/publicacoes'
 import { Route as ProdutosRouteImport } from './routes/produtos'
 import { Route as PerfisRouteImport } from './routes/perfis'
@@ -20,12 +21,18 @@ import { Route as AvataresRouteImport } from './routes/avatares'
 import { Route as AutomacoesRouteImport } from './routes/automacoes'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ReferenciasIdRouteImport } from './routes/referencias.$id'
 import { Route as ProdutosIdRouteImport } from './routes/produtos.$id'
 import { Route as PerfisIdRouteImport } from './routes/perfis.$id'
 import { Route as ConfiguracoesProvedoresRouteImport } from './routes/configuracoes.provedores'
 import { Route as ConfiguracoesGeminiRouteImport } from './routes/configuracoes.gemini'
 import { Route as AvataresIdRouteImport } from './routes/avatares.$id'
 
+const ReferenciasRoute = ReferenciasRouteImport.update({
+  id: '/referencias',
+  path: '/referencias',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PublicacoesRoute = PublicacoesRouteImport.update({
   id: '/publicacoes',
   path: '/publicacoes',
@@ -81,6 +88,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReferenciasIdRoute = ReferenciasIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ReferenciasRoute,
+} as any)
 const ProdutosIdRoute = ProdutosIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -119,11 +131,13 @@ export interface FileRoutesByFullPath {
   '/perfis': typeof PerfisRouteWithChildren
   '/produtos': typeof ProdutosRouteWithChildren
   '/publicacoes': typeof PublicacoesRoute
+  '/referencias': typeof ReferenciasRouteWithChildren
   '/avatares/$id': typeof AvataresIdRoute
   '/configuracoes/gemini': typeof ConfiguracoesGeminiRoute
   '/configuracoes/provedores': typeof ConfiguracoesProvedoresRoute
   '/perfis/$id': typeof PerfisIdRoute
   '/produtos/$id': typeof ProdutosIdRoute
+  '/referencias/$id': typeof ReferenciasIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -137,11 +151,13 @@ export interface FileRoutesByTo {
   '/perfis': typeof PerfisRouteWithChildren
   '/produtos': typeof ProdutosRouteWithChildren
   '/publicacoes': typeof PublicacoesRoute
+  '/referencias': typeof ReferenciasRouteWithChildren
   '/avatares/$id': typeof AvataresIdRoute
   '/configuracoes/gemini': typeof ConfiguracoesGeminiRoute
   '/configuracoes/provedores': typeof ConfiguracoesProvedoresRoute
   '/perfis/$id': typeof PerfisIdRoute
   '/produtos/$id': typeof ProdutosIdRoute
+  '/referencias/$id': typeof ReferenciasIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -156,11 +172,13 @@ export interface FileRoutesById {
   '/perfis': typeof PerfisRouteWithChildren
   '/produtos': typeof ProdutosRouteWithChildren
   '/publicacoes': typeof PublicacoesRoute
+  '/referencias': typeof ReferenciasRouteWithChildren
   '/avatares/$id': typeof AvataresIdRoute
   '/configuracoes/gemini': typeof ConfiguracoesGeminiRoute
   '/configuracoes/provedores': typeof ConfiguracoesProvedoresRoute
   '/perfis/$id': typeof PerfisIdRoute
   '/produtos/$id': typeof ProdutosIdRoute
+  '/referencias/$id': typeof ReferenciasIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -176,11 +194,13 @@ export interface FileRouteTypes {
     | '/perfis'
     | '/produtos'
     | '/publicacoes'
+    | '/referencias'
     | '/avatares/$id'
     | '/configuracoes/gemini'
     | '/configuracoes/provedores'
     | '/perfis/$id'
     | '/produtos/$id'
+    | '/referencias/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -194,11 +214,13 @@ export interface FileRouteTypes {
     | '/perfis'
     | '/produtos'
     | '/publicacoes'
+    | '/referencias'
     | '/avatares/$id'
     | '/configuracoes/gemini'
     | '/configuracoes/provedores'
     | '/perfis/$id'
     | '/produtos/$id'
+    | '/referencias/$id'
   id:
     | '__root__'
     | '/'
@@ -212,11 +234,13 @@ export interface FileRouteTypes {
     | '/perfis'
     | '/produtos'
     | '/publicacoes'
+    | '/referencias'
     | '/avatares/$id'
     | '/configuracoes/gemini'
     | '/configuracoes/provedores'
     | '/perfis/$id'
     | '/produtos/$id'
+    | '/referencias/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -231,10 +255,18 @@ export interface RootRouteChildren {
   PerfisRoute: typeof PerfisRouteWithChildren
   ProdutosRoute: typeof ProdutosRouteWithChildren
   PublicacoesRoute: typeof PublicacoesRoute
+  ReferenciasRoute: typeof ReferenciasRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/referencias': {
+      id: '/referencias'
+      path: '/referencias'
+      fullPath: '/referencias'
+      preLoaderRoute: typeof ReferenciasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/publicacoes': {
       id: '/publicacoes'
       path: '/publicacoes'
@@ -311,6 +343,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/referencias/$id': {
+      id: '/referencias/$id'
+      path: '/$id'
+      fullPath: '/referencias/$id'
+      preLoaderRoute: typeof ReferenciasIdRouteImport
+      parentRoute: typeof ReferenciasRoute
     }
     '/produtos/$id': {
       id: '/produtos/$id'
@@ -399,6 +438,18 @@ const ProdutosRouteWithChildren = ProdutosRoute._addFileChildren(
   ProdutosRouteChildren,
 )
 
+interface ReferenciasRouteChildren {
+  ReferenciasIdRoute: typeof ReferenciasIdRoute
+}
+
+const ReferenciasRouteChildren: ReferenciasRouteChildren = {
+  ReferenciasIdRoute: ReferenciasIdRoute,
+}
+
+const ReferenciasRouteWithChildren = ReferenciasRoute._addFileChildren(
+  ReferenciasRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
@@ -411,6 +462,7 @@ const rootRouteChildren: RootRouteChildren = {
   PerfisRoute: PerfisRouteWithChildren,
   ProdutosRoute: ProdutosRouteWithChildren,
   PublicacoesRoute: PublicacoesRoute,
+  ReferenciasRoute: ReferenciasRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
