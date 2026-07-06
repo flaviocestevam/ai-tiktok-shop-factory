@@ -9,46 +9,23 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ResultadosRouteImport } from './routes/resultados'
-import { Route as RecomendacoesRouteImport } from './routes/recomendacoes'
 import { Route as PublicacoesRouteImport } from './routes/publicacoes'
 import { Route as ProdutosRouteImport } from './routes/produtos'
-import { Route as ProducaoRouteImport } from './routes/producao'
 import { Route as PerfisRouteImport } from './routes/perfis'
-import { Route as MenorEsforcoRouteImport } from './routes/menor-esforco'
 import { Route as InteligenciaRouteImport } from './routes/inteligencia'
-import { Route as FormatosRouteImport } from './routes/formatos'
-import { Route as EntregasRouteImport } from './routes/entregas'
-import { Route as DiagnosticoRouteImport } from './routes/diagnostico'
-import { Route as DashboardPerformanceRouteImport } from './routes/dashboard-performance'
 import { Route as CustosRouteImport } from './routes/custos'
 import { Route as CriativosRouteImport } from './routes/criativos'
 import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
-import { Route as ClientesRouteImport } from './routes/clientes'
-import { Route as CampanhasRouteImport } from './routes/campanhas'
 import { Route as AvataresRouteImport } from './routes/avatares'
 import { Route as AutomacoesRouteImport } from './routes/automacoes'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AprovacoesRouteImport } from './routes/aprovacoes'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProdutosIdRouteImport } from './routes/produtos.$id'
 import { Route as PerfisIdRouteImport } from './routes/perfis.$id'
 import { Route as ConfiguracoesProvedoresRouteImport } from './routes/configuracoes.provedores'
 import { Route as ConfiguracoesGeminiRouteImport } from './routes/configuracoes.gemini'
-import { Route as ClientesIdRouteImport } from './routes/clientes.$id'
-import { Route as CampanhasIdRouteImport } from './routes/campanhas.$id'
 import { Route as AvataresIdRouteImport } from './routes/avatares.$id'
 
-const ResultadosRoute = ResultadosRouteImport.update({
-  id: '/resultados',
-  path: '/resultados',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RecomendacoesRoute = RecomendacoesRouteImport.update({
-  id: '/recomendacoes',
-  path: '/recomendacoes',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PublicacoesRoute = PublicacoesRouteImport.update({
   id: '/publicacoes',
   path: '/publicacoes',
@@ -59,44 +36,14 @@ const ProdutosRoute = ProdutosRouteImport.update({
   path: '/produtos',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProducaoRoute = ProducaoRouteImport.update({
-  id: '/producao',
-  path: '/producao',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PerfisRoute = PerfisRouteImport.update({
   id: '/perfis',
   path: '/perfis',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MenorEsforcoRoute = MenorEsforcoRouteImport.update({
-  id: '/menor-esforco',
-  path: '/menor-esforco',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const InteligenciaRoute = InteligenciaRouteImport.update({
   id: '/inteligencia',
   path: '/inteligencia',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FormatosRoute = FormatosRouteImport.update({
-  id: '/formatos',
-  path: '/formatos',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EntregasRoute = EntregasRouteImport.update({
-  id: '/entregas',
-  path: '/entregas',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DiagnosticoRoute = DiagnosticoRouteImport.update({
-  id: '/diagnostico',
-  path: '/diagnostico',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardPerformanceRoute = DashboardPerformanceRouteImport.update({
-  id: '/dashboard-performance',
-  path: '/dashboard-performance',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CustosRoute = CustosRouteImport.update({
@@ -114,16 +61,6 @@ const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
   path: '/configuracoes',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ClientesRoute = ClientesRouteImport.update({
-  id: '/clientes',
-  path: '/clientes',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CampanhasRoute = CampanhasRouteImport.update({
-  id: '/campanhas',
-  path: '/campanhas',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AvataresRoute = AvataresRouteImport.update({
   id: '/avatares',
   path: '/avatares',
@@ -137,11 +74,6 @@ const AutomacoesRoute = AutomacoesRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AprovacoesRoute = AprovacoesRouteImport.update({
-  id: '/aprovacoes',
-  path: '/aprovacoes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -169,16 +101,6 @@ const ConfiguracoesGeminiRoute = ConfiguracoesGeminiRouteImport.update({
   path: '/gemini',
   getParentRoute: () => ConfiguracoesRoute,
 } as any)
-const ClientesIdRoute = ClientesIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => ClientesRoute,
-} as any)
-const CampanhasIdRoute = CampanhasIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => CampanhasRoute,
-} as any)
 const AvataresIdRoute = AvataresIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -187,30 +109,17 @@ const AvataresIdRoute = AvataresIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/aprovacoes': typeof AprovacoesRoute
   '/auth': typeof AuthRoute
   '/automacoes': typeof AutomacoesRoute
   '/avatares': typeof AvataresRouteWithChildren
-  '/campanhas': typeof CampanhasRouteWithChildren
-  '/clientes': typeof ClientesRouteWithChildren
   '/configuracoes': typeof ConfiguracoesRouteWithChildren
   '/criativos': typeof CriativosRoute
   '/custos': typeof CustosRoute
-  '/dashboard-performance': typeof DashboardPerformanceRoute
-  '/diagnostico': typeof DiagnosticoRoute
-  '/entregas': typeof EntregasRoute
-  '/formatos': typeof FormatosRoute
   '/inteligencia': typeof InteligenciaRoute
-  '/menor-esforco': typeof MenorEsforcoRoute
   '/perfis': typeof PerfisRouteWithChildren
-  '/producao': typeof ProducaoRoute
   '/produtos': typeof ProdutosRouteWithChildren
   '/publicacoes': typeof PublicacoesRoute
-  '/recomendacoes': typeof RecomendacoesRoute
-  '/resultados': typeof ResultadosRoute
   '/avatares/$id': typeof AvataresIdRoute
-  '/campanhas/$id': typeof CampanhasIdRoute
-  '/clientes/$id': typeof ClientesIdRoute
   '/configuracoes/gemini': typeof ConfiguracoesGeminiRoute
   '/configuracoes/provedores': typeof ConfiguracoesProvedoresRoute
   '/perfis/$id': typeof PerfisIdRoute
@@ -218,30 +127,17 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/aprovacoes': typeof AprovacoesRoute
   '/auth': typeof AuthRoute
   '/automacoes': typeof AutomacoesRoute
   '/avatares': typeof AvataresRouteWithChildren
-  '/campanhas': typeof CampanhasRouteWithChildren
-  '/clientes': typeof ClientesRouteWithChildren
   '/configuracoes': typeof ConfiguracoesRouteWithChildren
   '/criativos': typeof CriativosRoute
   '/custos': typeof CustosRoute
-  '/dashboard-performance': typeof DashboardPerformanceRoute
-  '/diagnostico': typeof DiagnosticoRoute
-  '/entregas': typeof EntregasRoute
-  '/formatos': typeof FormatosRoute
   '/inteligencia': typeof InteligenciaRoute
-  '/menor-esforco': typeof MenorEsforcoRoute
   '/perfis': typeof PerfisRouteWithChildren
-  '/producao': typeof ProducaoRoute
   '/produtos': typeof ProdutosRouteWithChildren
   '/publicacoes': typeof PublicacoesRoute
-  '/recomendacoes': typeof RecomendacoesRoute
-  '/resultados': typeof ResultadosRoute
   '/avatares/$id': typeof AvataresIdRoute
-  '/campanhas/$id': typeof CampanhasIdRoute
-  '/clientes/$id': typeof ClientesIdRoute
   '/configuracoes/gemini': typeof ConfiguracoesGeminiRoute
   '/configuracoes/provedores': typeof ConfiguracoesProvedoresRoute
   '/perfis/$id': typeof PerfisIdRoute
@@ -250,30 +146,17 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/aprovacoes': typeof AprovacoesRoute
   '/auth': typeof AuthRoute
   '/automacoes': typeof AutomacoesRoute
   '/avatares': typeof AvataresRouteWithChildren
-  '/campanhas': typeof CampanhasRouteWithChildren
-  '/clientes': typeof ClientesRouteWithChildren
   '/configuracoes': typeof ConfiguracoesRouteWithChildren
   '/criativos': typeof CriativosRoute
   '/custos': typeof CustosRoute
-  '/dashboard-performance': typeof DashboardPerformanceRoute
-  '/diagnostico': typeof DiagnosticoRoute
-  '/entregas': typeof EntregasRoute
-  '/formatos': typeof FormatosRoute
   '/inteligencia': typeof InteligenciaRoute
-  '/menor-esforco': typeof MenorEsforcoRoute
   '/perfis': typeof PerfisRouteWithChildren
-  '/producao': typeof ProducaoRoute
   '/produtos': typeof ProdutosRouteWithChildren
   '/publicacoes': typeof PublicacoesRoute
-  '/recomendacoes': typeof RecomendacoesRoute
-  '/resultados': typeof ResultadosRoute
   '/avatares/$id': typeof AvataresIdRoute
-  '/campanhas/$id': typeof CampanhasIdRoute
-  '/clientes/$id': typeof ClientesIdRoute
   '/configuracoes/gemini': typeof ConfiguracoesGeminiRoute
   '/configuracoes/provedores': typeof ConfiguracoesProvedoresRoute
   '/perfis/$id': typeof PerfisIdRoute
@@ -283,30 +166,17 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/aprovacoes'
     | '/auth'
     | '/automacoes'
     | '/avatares'
-    | '/campanhas'
-    | '/clientes'
     | '/configuracoes'
     | '/criativos'
     | '/custos'
-    | '/dashboard-performance'
-    | '/diagnostico'
-    | '/entregas'
-    | '/formatos'
     | '/inteligencia'
-    | '/menor-esforco'
     | '/perfis'
-    | '/producao'
     | '/produtos'
     | '/publicacoes'
-    | '/recomendacoes'
-    | '/resultados'
     | '/avatares/$id'
-    | '/campanhas/$id'
-    | '/clientes/$id'
     | '/configuracoes/gemini'
     | '/configuracoes/provedores'
     | '/perfis/$id'
@@ -314,30 +184,17 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/aprovacoes'
     | '/auth'
     | '/automacoes'
     | '/avatares'
-    | '/campanhas'
-    | '/clientes'
     | '/configuracoes'
     | '/criativos'
     | '/custos'
-    | '/dashboard-performance'
-    | '/diagnostico'
-    | '/entregas'
-    | '/formatos'
     | '/inteligencia'
-    | '/menor-esforco'
     | '/perfis'
-    | '/producao'
     | '/produtos'
     | '/publicacoes'
-    | '/recomendacoes'
-    | '/resultados'
     | '/avatares/$id'
-    | '/campanhas/$id'
-    | '/clientes/$id'
     | '/configuracoes/gemini'
     | '/configuracoes/provedores'
     | '/perfis/$id'
@@ -345,30 +202,17 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/aprovacoes'
     | '/auth'
     | '/automacoes'
     | '/avatares'
-    | '/campanhas'
-    | '/clientes'
     | '/configuracoes'
     | '/criativos'
     | '/custos'
-    | '/dashboard-performance'
-    | '/diagnostico'
-    | '/entregas'
-    | '/formatos'
     | '/inteligencia'
-    | '/menor-esforco'
     | '/perfis'
-    | '/producao'
     | '/produtos'
     | '/publicacoes'
-    | '/recomendacoes'
-    | '/resultados'
     | '/avatares/$id'
-    | '/campanhas/$id'
-    | '/clientes/$id'
     | '/configuracoes/gemini'
     | '/configuracoes/provedores'
     | '/perfis/$id'
@@ -377,45 +221,20 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AprovacoesRoute: typeof AprovacoesRoute
   AuthRoute: typeof AuthRoute
   AutomacoesRoute: typeof AutomacoesRoute
   AvataresRoute: typeof AvataresRouteWithChildren
-  CampanhasRoute: typeof CampanhasRouteWithChildren
-  ClientesRoute: typeof ClientesRouteWithChildren
   ConfiguracoesRoute: typeof ConfiguracoesRouteWithChildren
   CriativosRoute: typeof CriativosRoute
   CustosRoute: typeof CustosRoute
-  DashboardPerformanceRoute: typeof DashboardPerformanceRoute
-  DiagnosticoRoute: typeof DiagnosticoRoute
-  EntregasRoute: typeof EntregasRoute
-  FormatosRoute: typeof FormatosRoute
   InteligenciaRoute: typeof InteligenciaRoute
-  MenorEsforcoRoute: typeof MenorEsforcoRoute
   PerfisRoute: typeof PerfisRouteWithChildren
-  ProducaoRoute: typeof ProducaoRoute
   ProdutosRoute: typeof ProdutosRouteWithChildren
   PublicacoesRoute: typeof PublicacoesRoute
-  RecomendacoesRoute: typeof RecomendacoesRoute
-  ResultadosRoute: typeof ResultadosRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/resultados': {
-      id: '/resultados'
-      path: '/resultados'
-      fullPath: '/resultados'
-      preLoaderRoute: typeof ResultadosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/recomendacoes': {
-      id: '/recomendacoes'
-      path: '/recomendacoes'
-      fullPath: '/recomendacoes'
-      preLoaderRoute: typeof RecomendacoesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/publicacoes': {
       id: '/publicacoes'
       path: '/publicacoes'
@@ -430,13 +249,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProdutosRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/producao': {
-      id: '/producao'
-      path: '/producao'
-      fullPath: '/producao'
-      preLoaderRoute: typeof ProducaoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/perfis': {
       id: '/perfis'
       path: '/perfis'
@@ -444,46 +256,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PerfisRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/menor-esforco': {
-      id: '/menor-esforco'
-      path: '/menor-esforco'
-      fullPath: '/menor-esforco'
-      preLoaderRoute: typeof MenorEsforcoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/inteligencia': {
       id: '/inteligencia'
       path: '/inteligencia'
       fullPath: '/inteligencia'
       preLoaderRoute: typeof InteligenciaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/formatos': {
-      id: '/formatos'
-      path: '/formatos'
-      fullPath: '/formatos'
-      preLoaderRoute: typeof FormatosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/entregas': {
-      id: '/entregas'
-      path: '/entregas'
-      fullPath: '/entregas'
-      preLoaderRoute: typeof EntregasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/diagnostico': {
-      id: '/diagnostico'
-      path: '/diagnostico'
-      fullPath: '/diagnostico'
-      preLoaderRoute: typeof DiagnosticoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard-performance': {
-      id: '/dashboard-performance'
-      path: '/dashboard-performance'
-      fullPath: '/dashboard-performance'
-      preLoaderRoute: typeof DashboardPerformanceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/custos': {
@@ -507,20 +284,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConfiguracoesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/clientes': {
-      id: '/clientes'
-      path: '/clientes'
-      fullPath: '/clientes'
-      preLoaderRoute: typeof ClientesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/campanhas': {
-      id: '/campanhas'
-      path: '/campanhas'
-      fullPath: '/campanhas'
-      preLoaderRoute: typeof CampanhasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/avatares': {
       id: '/avatares'
       path: '/avatares'
@@ -540,13 +303,6 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/aprovacoes': {
-      id: '/aprovacoes'
-      path: '/aprovacoes'
-      fullPath: '/aprovacoes'
-      preLoaderRoute: typeof AprovacoesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -584,20 +340,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConfiguracoesGeminiRouteImport
       parentRoute: typeof ConfiguracoesRoute
     }
-    '/clientes/$id': {
-      id: '/clientes/$id'
-      path: '/$id'
-      fullPath: '/clientes/$id'
-      preLoaderRoute: typeof ClientesIdRouteImport
-      parentRoute: typeof ClientesRoute
-    }
-    '/campanhas/$id': {
-      id: '/campanhas/$id'
-      path: '/$id'
-      fullPath: '/campanhas/$id'
-      preLoaderRoute: typeof CampanhasIdRouteImport
-      parentRoute: typeof CampanhasRoute
-    }
     '/avatares/$id': {
       id: '/avatares/$id'
       path: '/$id'
@@ -618,30 +360,6 @@ const AvataresRouteChildren: AvataresRouteChildren = {
 
 const AvataresRouteWithChildren = AvataresRoute._addFileChildren(
   AvataresRouteChildren,
-)
-
-interface CampanhasRouteChildren {
-  CampanhasIdRoute: typeof CampanhasIdRoute
-}
-
-const CampanhasRouteChildren: CampanhasRouteChildren = {
-  CampanhasIdRoute: CampanhasIdRoute,
-}
-
-const CampanhasRouteWithChildren = CampanhasRoute._addFileChildren(
-  CampanhasRouteChildren,
-)
-
-interface ClientesRouteChildren {
-  ClientesIdRoute: typeof ClientesIdRoute
-}
-
-const ClientesRouteChildren: ClientesRouteChildren = {
-  ClientesIdRoute: ClientesIdRoute,
-}
-
-const ClientesRouteWithChildren = ClientesRoute._addFileChildren(
-  ClientesRouteChildren,
 )
 
 interface ConfiguracoesRouteChildren {
@@ -683,27 +401,16 @@ const ProdutosRouteWithChildren = ProdutosRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AprovacoesRoute: AprovacoesRoute,
   AuthRoute: AuthRoute,
   AutomacoesRoute: AutomacoesRoute,
   AvataresRoute: AvataresRouteWithChildren,
-  CampanhasRoute: CampanhasRouteWithChildren,
-  ClientesRoute: ClientesRouteWithChildren,
   ConfiguracoesRoute: ConfiguracoesRouteWithChildren,
   CriativosRoute: CriativosRoute,
   CustosRoute: CustosRoute,
-  DashboardPerformanceRoute: DashboardPerformanceRoute,
-  DiagnosticoRoute: DiagnosticoRoute,
-  EntregasRoute: EntregasRoute,
-  FormatosRoute: FormatosRoute,
   InteligenciaRoute: InteligenciaRoute,
-  MenorEsforcoRoute: MenorEsforcoRoute,
   PerfisRoute: PerfisRouteWithChildren,
-  ProducaoRoute: ProducaoRoute,
   ProdutosRoute: ProdutosRouteWithChildren,
   PublicacoesRoute: PublicacoesRoute,
-  RecomendacoesRoute: RecomendacoesRoute,
-  ResultadosRoute: ResultadosRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
