@@ -1,13 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageShell } from "@/components/page-shell";
 import { MetricCard } from "@/components/metric-card";
-import {
-  Card, CardContent, CardDescription, CardHeader, CardTitle,
-} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Eye, DollarSign, ShoppingCart, TrendingUp, Sparkles, Film, CheckCircle2, AlertTriangle,
+  Eye, ShoppingCart, TrendingUp, Sparkles, Film, CheckCircle2, AlertTriangle,
 } from "lucide-react";
 import { useReferencias, useMetricas, useAprendizados } from "@/integrations/supabase/hooks";
 
@@ -77,103 +74,131 @@ function Dashboard() {
       title="Dashboard"
       description="Visão da fábrica — o que funciona, o que evitar, e o que está em produção."
       actions={
-        <Button asChild size="sm" className="gap-1.5">
+        <Button asChild size="sm" className="gap-1.5 shadow-[var(--shadow-elegant)]">
           <Link to="/referencias">
             <Sparkles className="h-4 w-4" /> Nova referência
           </Link>
         </Button>
       }
     >
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-        <MetricCard label="Receita" value={brl(totals.receita)} icon={DollarSign} tone="success" />
-        <MetricCard label="Vendas" value={fmt(totals.vendas)} icon={ShoppingCart} tone="brand" />
-        <MetricCard label="Views" value={fmt(totals.views)} icon={Eye} />
-        <MetricCard label="Lucro estimado" value={brl(lucro)} icon={TrendingUp} tone="success" />
-        <MetricCard label="Vendas / 1k views" value={vendasPor1k.toFixed(2)} icon={Sparkles} tone="info" />
-      </div>
+      {/* Bento grid — 12 col */}
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-12 gap-4 stagger-children">
+        {/* Row 1 — hero metric + secondary metrics */}
+        <div className="col-span-2 md:col-span-4 lg:col-span-6 premium-card relative overflow-hidden rounded-2xl p-6">
+          <div className="pointer-events-none absolute inset-0 opacity-70" style={{ background: "var(--gradient-glow)" }} />
+          <div className="relative">
+            <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/80">Receita acumulada</div>
+            <div className="mt-3 font-display text-5xl md:text-6xl font-semibold tracking-tight tabular-nums text-gradient-brand">
+              {brl(totals.receita)}
+            </div>
+            <div className="mt-4 flex flex-wrap gap-6 text-sm">
+              <div>
+                <div className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground">Lucro estimado</div>
+                <div className="font-display text-xl font-semibold tabular-nums text-success mt-0.5">{brl(lucro)}</div>
+              </div>
+              <div>
+                <div className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground">Vendas / 1k views</div>
+                <div className="font-display text-xl font-semibold tabular-nums mt-0.5">{vendasPor1k.toFixed(2)}</div>
+              </div>
+              <div>
+                <div className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground">Custo estimado</div>
+                <div className="font-display text-xl font-semibold tabular-nums text-muted-foreground mt-0.5">{brl(custoEstim)}</div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-      <Card className="bg-card/70 mt-6">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base flex items-center gap-2">
-            <Film className="h-4 w-4 text-primary" /> Funil de produção
-          </CardTitle>
-          <CardDescription>Quantidade de referências em cada etapa.</CardDescription>
-        </CardHeader>
-        <CardContent>
+        <MetricCard className="col-span-1 md:col-span-2 lg:col-span-3" label="Vendas" value={fmt(totals.vendas)} icon={ShoppingCart} tone="brand" />
+        <MetricCard className="col-span-1 md:col-span-2 lg:col-span-3" label="Views" value={fmt(totals.views)} icon={Eye} tone="info" />
+
+        {/* Funil — full width */}
+        <div className="col-span-2 md:col-span-4 lg:col-span-12 premium-card rounded-2xl p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary grid place-items-center ring-1 ring-primary/20">
+              <Film className="h-4 w-4" />
+            </div>
+            <div>
+              <div className="font-display text-base font-semibold">Funil de produção</div>
+              <div className="text-xs text-muted-foreground">Quantidade de referências em cada etapa.</div>
+            </div>
+          </div>
           <div className="grid grid-cols-3 lg:grid-cols-6 gap-2">
-            {funil.map((f) => (
-              <div key={f.key} className="rounded-lg border border-border bg-background/40 p-3 text-center">
-                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{f.label}</div>
-                <div className="font-display text-2xl font-bold mt-1">{f.count}</div>
+            {funil.map((f, i) => (
+              <div key={f.key} className="group relative rounded-xl border border-border/60 bg-background/40 p-4 text-center transition-all duration-500 hover:border-primary/40 hover:bg-background/70">
+                <div className="text-[9px] uppercase tracking-[0.15em] text-muted-foreground">{f.label}</div>
+                <div className="font-display text-3xl font-bold mt-2 tabular-nums">{f.count}</div>
+                <div className="absolute inset-x-3 bottom-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                <div className="mt-1 text-[9px] text-muted-foreground/60 tabular-nums">{i + 1}/{FUNIL.length}</div>
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
-        <Card className="bg-card/70 lg:col-span-1">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 text-success" /> Repetir
-            </CardTitle>
-            <CardDescription>Padrões que estão convertendo.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm">
+        {/* Repetir */}
+        <div className="col-span-2 md:col-span-4 lg:col-span-4 premium-card rounded-2xl p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <CheckCircle2 className="h-4 w-4 text-success" />
+            <div className="font-display text-base font-semibold">Repetir</div>
+          </div>
+          <div className="text-xs text-muted-foreground mb-4">Padrões que estão convertendo.</div>
+          <div className="space-y-2">
             {repetir.length === 0 && (
-              <div className="text-xs text-muted-foreground">Ainda sem aprendizados positivos registrados.</div>
+              <div className="text-xs text-muted-foreground">Ainda sem aprendizados positivos.</div>
             )}
             {repetir.map((a: any) => (
-              <div key={a.id} className="rounded-md border border-success/20 bg-success/5 px-3 py-2 text-xs">
-                <Badge variant="outline" className="border-success/40 text-success mr-2">{a.categoria}</Badge>
+              <div key={a.id} className="rounded-lg border border-success/15 bg-success/5 px-3 py-2 text-xs transition-colors hover:border-success/30">
+                <Badge variant="outline" className="border-success/40 text-success mr-2 text-[10px]">{a.categoria}</Badge>
                 {a.titulo}
               </div>
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="bg-card/70">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-warning" /> Evitar
-            </CardTitle>
-            <CardDescription>Padrões com baixo retorno.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm">
+        {/* Evitar */}
+        <div className="col-span-2 md:col-span-4 lg:col-span-4 premium-card rounded-2xl p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <AlertTriangle className="h-4 w-4 text-warning" />
+            <div className="font-display text-base font-semibold">Evitar</div>
+          </div>
+          <div className="text-xs text-muted-foreground mb-4">Padrões com baixo retorno.</div>
+          <div className="space-y-2">
             {evitar.length === 0 && (
-              <div className="text-xs text-muted-foreground">Ainda sem aprendizados negativos registrados.</div>
+              <div className="text-xs text-muted-foreground">Ainda sem aprendizados negativos.</div>
             )}
             {evitar.map((a: any) => (
-              <div key={a.id} className="rounded-md border border-warning/20 bg-warning/5 px-3 py-2 text-xs">
-                <Badge variant="outline" className="border-warning/40 text-warning mr-2">{a.categoria}</Badge>
+              <div key={a.id} className="rounded-lg border border-warning/15 bg-warning/5 px-3 py-2 text-xs transition-colors hover:border-warning/30">
+                <Badge variant="outline" className="border-warning/40 text-warning mr-2 text-[10px]">{a.categoria}</Badge>
                 {a.titulo}
               </div>
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="bg-card/70">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base">Top 5 criativos</CardTitle>
-            <CardDescription>Vendas por 1.000 views.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm">
+        {/* Top 5 */}
+        <div className="col-span-2 md:col-span-4 lg:col-span-4 premium-card rounded-2xl p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <TrendingUp className="h-4 w-4 text-primary" />
+            <div className="font-display text-base font-semibold">Top 5 criativos</div>
+          </div>
+          <div className="text-xs text-muted-foreground mb-4">Vendas por 1.000 views.</div>
+          <div className="space-y-2">
             {top5.length === 0 && (
               <div className="text-xs text-muted-foreground">Ainda sem métricas.</div>
             )}
-            {top5.map((m: any) => (
-              <div key={m.id} className="flex items-center justify-between rounded-md border border-border bg-card px-3 py-2">
-                <div className="min-w-0">
+            {top5.map((m: any, i: number) => (
+              <div key={m.id} className="flex items-center gap-3 rounded-lg border border-border/60 bg-background/40 px-3 py-2 transition-all hover:border-primary/30 hover:bg-background/70">
+                <div className="text-[10px] font-display font-bold text-muted-foreground/60 tabular-nums w-4">{i + 1}</div>
+                <div className="min-w-0 flex-1">
                   <div className="truncate text-xs font-medium">{m.criativo?.titulo || "Sem título"}</div>
                   <div className="text-[11px] text-muted-foreground truncate">
                     {m.criativo?.produto?.nome || "—"}
                   </div>
                 </div>
-                <Badge variant="secondary" className="shrink-0">{m.v1k.toFixed(2)}</Badge>
+                <Badge variant="secondary" className="shrink-0 tabular-nums bg-primary/10 text-primary border-primary/20">{m.v1k.toFixed(2)}</Badge>
               </div>
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </PageShell>
   );
