@@ -25,7 +25,7 @@ export function createListHook<T = any>(
     return useQuery<T[]>({
       queryKey: [key],
       queryFn: async () => {
-        let q = supabase.from(table).select(select) as any;
+        let q = (supabase as any).from(table).select(select);
         if (orderBy) q = q.order(orderBy, { ascending });
         return unwrap<T[]>(await q, [] as T[]);
       },
@@ -45,7 +45,7 @@ export function createByIdHook<T = any>(
     return useQuery<T>({
       queryKey: [key, id],
       queryFn: async () =>
-        unwrap<T>(await supabase.from(table).select(select).eq("id", id!).single() as any),
+        unwrap<T>(await (supabase as any).from(table).select(select).eq("id", id!).single()),
       enabled: !!id,
     });
   };
