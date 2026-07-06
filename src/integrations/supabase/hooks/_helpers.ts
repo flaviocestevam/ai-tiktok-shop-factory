@@ -12,7 +12,7 @@ export function unwrap<T>(res: { data: T | null; error: unknown }, fallback?: T)
   return (res.data ?? (fallback as T)) as T;
 }
 
-type TableName = Parameters<typeof supabase.from>[0];
+type TableName = string;
 
 /** Hook de listagem simples: SELECT * FROM <table> [ORDER BY column]. */
 export function createListHook<T = any>(
