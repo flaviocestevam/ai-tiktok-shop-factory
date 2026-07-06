@@ -147,10 +147,10 @@ export const useCreateReferencia = () => {
 export const useUpdateReferencia = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, ...patch }: { id: string } & Record<string, unknown>) => {
+    mutationFn: async ({ id, ...patch }: { id: string } & Record<string, any>) => {
       const { data, error } = await supabase
         .from("videos_referencia")
-        .update(patch)
+        .update(patch as any)
         .eq("id", id)
         .select()
         .single();
