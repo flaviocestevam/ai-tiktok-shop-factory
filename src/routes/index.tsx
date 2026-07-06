@@ -1,13 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageShell } from "@/components/page-shell";
 import { MetricCard } from "@/components/metric-card";
-import {
-  Card, CardContent, CardDescription, CardHeader, CardTitle,
-} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Eye, DollarSign, ShoppingCart, TrendingUp, Sparkles, Film, CheckCircle2, AlertTriangle,
+  Eye, ShoppingCart, TrendingUp, Sparkles, Film, CheckCircle2, AlertTriangle,
 } from "lucide-react";
 import { useReferencias, useMetricas, useAprendizados } from "@/integrations/supabase/hooks";
 
