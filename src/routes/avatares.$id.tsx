@@ -48,8 +48,9 @@ function AvatarDetail() {
       }
     >
       <div className="flex flex-wrap gap-2 mb-4 text-xs">
-        {a.nicho && <Badge variant="outline">{a.nicho}</Badge>}
-        {a.tipo && <Badge variant="outline" className="capitalize">{a.tipo}</Badge>}
+        {(a.nichos ?? []).map((n: string) => <Badge key={n} variant="outline">{n}</Badge>)}
+        {a.estilo && <Badge variant="outline" className="capitalize">{a.estilo}</Badge>}
+        {a.genero && <Badge variant="outline" className="capitalize">{a.genero}</Badge>}
         <Badge
           className={
             a.status === "ativo"
