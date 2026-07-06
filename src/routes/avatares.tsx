@@ -70,7 +70,7 @@ function Page() {
                     <Badge variant="outline" className="gap-1">
                       <Camera className="h-3 w-3" /> {fotos} fotos
                     </Badge>
-                    {a.tipo && <Badge variant="outline" className="capitalize">{a.tipo}</Badge>}
+                    {a.estilo && <Badge variant="outline" className="capitalize">{a.estilo}</Badge>}
                   </div>
                 </CardContent>
               </Card>
