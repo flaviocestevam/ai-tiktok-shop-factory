@@ -1,9 +1,7 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import {
-  LayoutDashboard, Users, UserCircle2, Package, Sparkles, Megaphone,
-  Factory, FileVideo, Send, ClipboardCheck, Truck,
-  BarChart3, Activity, Gauge, Brain, Lightbulb, Wallet,
-  Settings, Cpu, Layers, LineChart, Zap, KeyRound,
+  LayoutDashboard, UserCircle2, Package, Sparkles, FileVideo, Send,
+  Brain, Wallet, Settings, Cpu, KeyRound, Film, LogOut, Zap,
 } from "lucide-react";
 
 import {
@@ -11,42 +9,35 @@ import {
   SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, SidebarFooter,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
 
 const groups = [
   {
     label: "Visão",
-    items: [{ title: "Dashboard Geral", url: "/", icon: LayoutDashboard }],
-  },
-  {
-    label: "Operação",
-    items: [
-      { title: "Meus Perfis", url: "/perfis", icon: UserCircle2 },
-      { title: "Clientes", url: "/clientes", icon: Users },
-      { title: "Produtos", url: "/produtos", icon: Package },
-      { title: "Avatares", url: "/avatares", icon: Sparkles },
-      { title: "Campanhas", url: "/campanhas", icon: Megaphone },
-      { title: "Formatos", url: "/formatos", icon: Layers },
-    ],
+    items: [{ title: "Dashboard", url: "/", icon: LayoutDashboard }],
   },
   {
     label: "Fábrica",
     items: [
-      { title: "Produção", url: "/producao", icon: Factory },
-      { title: "Criativos Finais", url: "/criativos", icon: FileVideo },
+      { title: "Referências", url: "/referencias", icon: Film },
+      { title: "Criativos", url: "/criativos", icon: FileVideo },
       { title: "Publicações", url: "/publicacoes", icon: Send },
-      { title: "Aprovações Internas", url: "/aprovacoes", icon: ClipboardCheck },
-      { title: "Entregas", url: "/entregas", icon: Truck },
+    ],
+  },
+  {
+    label: "Ativos",
+    items: [
+      { title: "Perfis", url: "/perfis", icon: UserCircle2 },
+      { title: "Avatares", url: "/avatares", icon: Sparkles },
+      { title: "Produtos", url: "/produtos", icon: Package },
     ],
   },
   {
     label: "Inteligência",
     items: [
-      { title: "Dashboard de Performance", url: "/dashboard-performance", icon: LineChart },
-      { title: "Resultados", url: "/resultados", icon: BarChart3 },
-      { title: "Diagnóstico de Conversão", url: "/diagnostico", icon: Activity },
-      { title: "Menor Esforço, Maior Venda", url: "/menor-esforco", icon: Gauge },
-      { title: "Inteligência da Fábrica", url: "/inteligencia", icon: Brain },
-      { title: "Recomendações", url: "/recomendacoes", icon: Lightbulb },
+      { title: "Inteligência", url: "/inteligencia", icon: Brain },
       { title: "Custos", url: "/custos", icon: Wallet },
     ],
   },
@@ -80,7 +71,7 @@ export function AppSidebar() {
             <div className="leading-tight">
               <div className="font-display text-sm font-semibold">Video Factory</div>
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                AI TikTok Shop
+                Fábrica interna UGC
               </div>
             </div>
           )}
@@ -117,10 +108,10 @@ export function AppSidebar() {
         {!collapsed && (
           <div className="rounded-lg border border-border bg-card/60 p-3">
             <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
-              Modo interno
+              Ciclo
             </div>
             <div className="text-xs mt-1 text-foreground/80">
-              Produzir → Publicar → Medir → Aprender → Repetir.
+              Mapear → Analisar → Produzir → Publicar → Aprender.
             </div>
           </div>
         )}
@@ -129,12 +120,6 @@ export function AppSidebar() {
     </Sidebar>
   );
 }
-
-import { useAuth } from "@/hooks/use-auth";
-import { supabase } from "@/integrations/supabase/client";
-import { LogOut } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "@tanstack/react-router";
 
 function UserMenu({ collapsed }: { collapsed: boolean }) {
   const { user } = useAuth();
@@ -147,13 +132,21 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
   const initial = (user.email ?? "?").slice(0, 1).toUpperCase();
   return (
     <div className="flex items-center gap-2 rounded-lg border border-border bg-card/60 p-2">
-      <div className="h-7 w-7 rounded-full bg-primary/15 text-primary grid place-items-center text-xs font-semibold">{initial}</div>
+      <div className="h-7 w-7 rounded-full bg-primary/15 text-primary grid place-items-center text-xs font-semibold">
+        {initial}
+      </div>
       {!collapsed && (
         <>
           <div className="flex-1 min-w-0">
             <div className="text-xs truncate">{user.email}</div>
           </div>
-          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={handleLogout} title="Sair">
+          <Button
+            size="icon"
+            variant="ghost"
+            className="h-7 w-7"
+            onClick={handleLogout}
+            title="Sair"
+          >
             <LogOut className="h-3.5 w-3.5" />
           </Button>
         </>
