@@ -66,13 +66,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "aprendizados_campanha_id_fkey"
-            columns: ["campanha_id"]
-            isOneToOne: false
-            referencedRelation: "campanhas"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "aprendizados_produto_id_fkey"
             columns: ["produto_id"]
             isOneToOne: false
@@ -80,42 +73,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      aprovacoes: {
-        Row: {
-          created_at: string
-          decidido_em: string | null
-          decidido_por: string | null
-          entidade_id: string
-          entidade_tipo: string
-          etapa: string
-          id: string
-          observacao: string | null
-          status: string
-        }
-        Insert: {
-          created_at?: string
-          decidido_em?: string | null
-          decidido_por?: string | null
-          entidade_id: string
-          entidade_tipo: string
-          etapa: string
-          id?: string
-          observacao?: string | null
-          status?: string
-        }
-        Update: {
-          created_at?: string
-          decidido_em?: string | null
-          decidido_por?: string | null
-          entidade_id?: string
-          entidade_tipo?: string
-          etapa?: string
-          id?: string
-          observacao?: string | null
-          status?: string
-        }
-        Relationships: []
       }
       automacoes: {
         Row: {
@@ -230,146 +187,6 @@ export type Database = {
         }
         Relationships: []
       }
-      campanhas: {
-        Row: {
-          avatar_id: string | null
-          cliente_id: string | null
-          created_at: string
-          formatos: Json | null
-          id: string
-          nicho: string | null
-          nome: string
-          objetivo: string | null
-          observacoes: string | null
-          pais: string | null
-          perfil_id: string | null
-          produto_id: string | null
-          qtd_carrosseis: number | null
-          qtd_videos: number | null
-          status: string
-          tipo: string
-          updated_at: string
-        }
-        Insert: {
-          avatar_id?: string | null
-          cliente_id?: string | null
-          created_at?: string
-          formatos?: Json | null
-          id?: string
-          nicho?: string | null
-          nome: string
-          objetivo?: string | null
-          observacoes?: string | null
-          pais?: string | null
-          perfil_id?: string | null
-          produto_id?: string | null
-          qtd_carrosseis?: number | null
-          qtd_videos?: number | null
-          status?: string
-          tipo: string
-          updated_at?: string
-        }
-        Update: {
-          avatar_id?: string | null
-          cliente_id?: string | null
-          created_at?: string
-          formatos?: Json | null
-          id?: string
-          nicho?: string | null
-          nome?: string
-          objetivo?: string | null
-          observacoes?: string | null
-          pais?: string | null
-          perfil_id?: string | null
-          produto_id?: string | null
-          qtd_carrosseis?: number | null
-          qtd_videos?: number | null
-          status?: string
-          tipo?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "campanhas_avatar_id_fkey"
-            columns: ["avatar_id"]
-            isOneToOne: false
-            referencedRelation: "avatares"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "campanhas_cliente_id_fkey"
-            columns: ["cliente_id"]
-            isOneToOne: false
-            referencedRelation: "clientes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "campanhas_perfil_id_fkey"
-            columns: ["perfil_id"]
-            isOneToOne: false
-            referencedRelation: "perfis"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "campanhas_produto_id_fkey"
-            columns: ["produto_id"]
-            isOneToOne: false
-            referencedRelation: "produtos"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      clientes: {
-        Row: {
-          carrosseis_contratados: number | null
-          contato_email: string | null
-          contato_nome: string | null
-          contato_whatsapp: string | null
-          created_at: string
-          empresa: string
-          id: string
-          nicho: string | null
-          observacoes: string | null
-          pais: string | null
-          plano_mensal: number | null
-          status: string
-          updated_at: string
-          videos_contratados: number | null
-        }
-        Insert: {
-          carrosseis_contratados?: number | null
-          contato_email?: string | null
-          contato_nome?: string | null
-          contato_whatsapp?: string | null
-          created_at?: string
-          empresa: string
-          id?: string
-          nicho?: string | null
-          observacoes?: string | null
-          pais?: string | null
-          plano_mensal?: number | null
-          status?: string
-          updated_at?: string
-          videos_contratados?: number | null
-        }
-        Update: {
-          carrosseis_contratados?: number | null
-          contato_email?: string | null
-          contato_nome?: string | null
-          contato_whatsapp?: string | null
-          created_at?: string
-          empresa?: string
-          id?: string
-          nicho?: string | null
-          observacoes?: string | null
-          pais?: string | null
-          plano_mensal?: number | null
-          status?: string
-          updated_at?: string
-          videos_contratados?: number | null
-        }
-        Relationships: []
-      }
       conectores_api: {
         Row: {
           config: Json | null
@@ -424,9 +241,7 @@ export type Database = {
         Row: {
           arquivo_url: string | null
           avatar_id: string | null
-          campanha_id: string | null
           classificacao_comercial: string | null
-          cliente_id: string | null
           created_at: string
           cta: string | null
           duracao_seg: number | null
@@ -443,13 +258,12 @@ export type Database = {
           tipo: string
           titulo: string | null
           updated_at: string
+          video_referencia_id: string | null
         }
         Insert: {
           arquivo_url?: string | null
           avatar_id?: string | null
-          campanha_id?: string | null
           classificacao_comercial?: string | null
-          cliente_id?: string | null
           created_at?: string
           cta?: string | null
           duracao_seg?: number | null
@@ -466,13 +280,12 @@ export type Database = {
           tipo: string
           titulo?: string | null
           updated_at?: string
+          video_referencia_id?: string | null
         }
         Update: {
           arquivo_url?: string | null
           avatar_id?: string | null
-          campanha_id?: string | null
           classificacao_comercial?: string | null
-          cliente_id?: string | null
           created_at?: string
           cta?: string | null
           duracao_seg?: number | null
@@ -489,6 +302,7 @@ export type Database = {
           tipo?: string
           titulo?: string | null
           updated_at?: string
+          video_referencia_id?: string | null
         }
         Relationships: [
           {
@@ -496,20 +310,6 @@ export type Database = {
             columns: ["avatar_id"]
             isOneToOne: false
             referencedRelation: "avatares"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "criativos_campanha_id_fkey"
-            columns: ["campanha_id"]
-            isOneToOne: false
-            referencedRelation: "campanhas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "criativos_cliente_id_fkey"
-            columns: ["cliente_id"]
-            isOneToOne: false
-            referencedRelation: "clientes"
             referencedColumns: ["id"]
           },
           {
@@ -531,6 +331,13 @@ export type Database = {
             columns: ["produto_id"]
             isOneToOne: false
             referencedRelation: "produtos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "criativos_video_referencia_id_fkey"
+            columns: ["video_referencia_id"]
+            isOneToOne: false
+            referencedRelation: "videos_referencia"
             referencedColumns: ["id"]
           },
         ]
@@ -586,20 +393,6 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "custos_campanha_id_fkey"
-            columns: ["campanha_id"]
-            isOneToOne: false
-            referencedRelation: "campanhas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "custos_cliente_id_fkey"
-            columns: ["cliente_id"]
-            isOneToOne: false
-            referencedRelation: "clientes"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "custos_criativo_id_fkey"
             columns: ["criativo_id"]
             isOneToOne: false
@@ -618,91 +411,6 @@ export type Database = {
             columns: ["provider_account_id"]
             isOneToOne: false
             referencedRelation: "gemini_accounts"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      entregas: {
-        Row: {
-          campanha_id: string | null
-          cliente_id: string
-          created_at: string
-          custo_total: number | null
-          data_entrega: string | null
-          id: string
-          lucro: number | null
-          margem: number | null
-          observacoes: string | null
-          pacote_url: string | null
-          produto_id: string | null
-          qtd_carrosseis: number | null
-          qtd_total: number | null
-          qtd_videos: number | null
-          receita: number | null
-          relatorio_url: string | null
-          status: string
-          updated_at: string
-        }
-        Insert: {
-          campanha_id?: string | null
-          cliente_id: string
-          created_at?: string
-          custo_total?: number | null
-          data_entrega?: string | null
-          id?: string
-          lucro?: number | null
-          margem?: number | null
-          observacoes?: string | null
-          pacote_url?: string | null
-          produto_id?: string | null
-          qtd_carrosseis?: number | null
-          qtd_total?: number | null
-          qtd_videos?: number | null
-          receita?: number | null
-          relatorio_url?: string | null
-          status?: string
-          updated_at?: string
-        }
-        Update: {
-          campanha_id?: string | null
-          cliente_id?: string
-          created_at?: string
-          custo_total?: number | null
-          data_entrega?: string | null
-          id?: string
-          lucro?: number | null
-          margem?: number | null
-          observacoes?: string | null
-          pacote_url?: string | null
-          produto_id?: string | null
-          qtd_carrosseis?: number | null
-          qtd_total?: number | null
-          qtd_videos?: number | null
-          receita?: number | null
-          relatorio_url?: string | null
-          status?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "entregas_campanha_id_fkey"
-            columns: ["campanha_id"]
-            isOneToOne: false
-            referencedRelation: "campanhas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "entregas_cliente_id_fkey"
-            columns: ["cliente_id"]
-            isOneToOne: false
-            referencedRelation: "clientes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "entregas_produto_id_fkey"
-            columns: ["produto_id"]
-            isOneToOne: false
-            referencedRelation: "produtos"
             referencedColumns: ["id"]
           },
         ]
@@ -858,79 +566,51 @@ export type Database = {
       }
       produtos: {
         Row: {
-          cliente_id: string | null
           comissao_pct: number | null
           created_at: string
-          dor: string | null
-          facilidade_visual: number | null
           id: string
           link_tiktok: string | null
           nicho: string | null
           nome: string
           observacoes: string | null
-          oferta: string | null
           pais: string | null
           perfil_id: string | null
           preco: number | null
-          publico: string | null
-          recomendacao_tipo: string | null
           score: number | null
           status: string
-          tem_antes_depois: boolean | null
           updated_at: string
         }
         Insert: {
-          cliente_id?: string | null
           comissao_pct?: number | null
           created_at?: string
-          dor?: string | null
-          facilidade_visual?: number | null
           id?: string
           link_tiktok?: string | null
           nicho?: string | null
           nome: string
           observacoes?: string | null
-          oferta?: string | null
           pais?: string | null
           perfil_id?: string | null
           preco?: number | null
-          publico?: string | null
-          recomendacao_tipo?: string | null
           score?: number | null
           status?: string
-          tem_antes_depois?: boolean | null
           updated_at?: string
         }
         Update: {
-          cliente_id?: string | null
           comissao_pct?: number | null
           created_at?: string
-          dor?: string | null
-          facilidade_visual?: number | null
           id?: string
           link_tiktok?: string | null
           nicho?: string | null
           nome?: string
           observacoes?: string | null
-          oferta?: string | null
           pais?: string | null
           perfil_id?: string | null
           preco?: number | null
-          publico?: string | null
-          recomendacao_tipo?: string | null
           score?: number | null
           status?: string
-          tem_antes_depois?: boolean | null
           updated_at?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "produtos_cliente_id_fkey"
-            columns: ["cliente_id"]
-            isOneToOne: false
-            referencedRelation: "clientes"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "produtos_perfil_id_fkey"
             columns: ["perfil_id"]
@@ -1015,43 +695,93 @@ export type Database = {
           },
         ]
       }
-      user_roles: {
+      videos_referencia: {
         Row: {
+          avatar_id: string | null
           created_at: string
+          duracao_seg: number | null
+          estrutura: string | null
+          gancho: string | null
           id: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
+          observacoes: string | null
+          perfil_id: string | null
+          produto_id: string | null
+          roteiro_adaptado: string | null
+          status: string
+          tipo_criativo: string
+          transcricao: string | null
+          updated_at: string
+          url_tiktok: string
+          views_estimadas: number | null
         }
         Insert: {
+          avatar_id?: string | null
           created_at?: string
+          duracao_seg?: number | null
+          estrutura?: string | null
+          gancho?: string | null
           id?: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
+          observacoes?: string | null
+          perfil_id?: string | null
+          produto_id?: string | null
+          roteiro_adaptado?: string | null
+          status?: string
+          tipo_criativo?: string
+          transcricao?: string | null
+          updated_at?: string
+          url_tiktok: string
+          views_estimadas?: number | null
         }
         Update: {
+          avatar_id?: string | null
           created_at?: string
+          duracao_seg?: number | null
+          estrutura?: string | null
+          gancho?: string | null
           id?: string
-          role?: Database["public"]["Enums"]["app_role"]
-          user_id?: string
+          observacoes?: string | null
+          perfil_id?: string | null
+          produto_id?: string | null
+          roteiro_adaptado?: string | null
+          status?: string
+          tipo_criativo?: string
+          transcricao?: string | null
+          updated_at?: string
+          url_tiktok?: string
+          views_estimadas?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "videos_referencia_avatar_id_fkey"
+            columns: ["avatar_id"]
+            isOneToOne: false
+            referencedRelation: "avatares"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "videos_referencia_perfil_id_fkey"
+            columns: ["perfil_id"]
+            isOneToOne: false
+            referencedRelation: "perfis"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "videos_referencia_produto_id_fkey"
+            columns: ["produto_id"]
+            isOneToOne: false
+            referencedRelation: "produtos"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
-      is_team_member: { Args: { _user_id: string }; Returns: boolean }
+      [_ in never]: never
     }
     Enums: {
-      app_role: "admin" | "operador"
       cost_type:
         | "script_generation"
         | "image_generation"
@@ -1191,7 +921,6 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "operador"],
       cost_type: [
         "script_generation",
         "image_generation",
