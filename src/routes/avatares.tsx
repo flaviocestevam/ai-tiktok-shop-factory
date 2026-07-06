@@ -50,7 +50,7 @@ function Page() {
                     <div className="min-w-0 flex-1">
                       <div className="font-display text-lg font-semibold truncate">{a.nome}</div>
                       <div className="text-xs text-muted-foreground truncate">
-                        {a.nicho || "—"}
+                        {(a.nichos ?? []).join(" • ") || "—"}
                       </div>
                     </div>
                     <Badge
