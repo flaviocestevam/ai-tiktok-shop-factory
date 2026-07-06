@@ -82,7 +82,7 @@ function Page() {
                     </CardDescription>
                   </div>
                   <div className="flex gap-1">
-                    {g.usos?.map((u) => <Badge key={u} variant="outline" className="text-[10px]">{u}</Badge>)}
+                    {g.usos?.map((u: string) => <Badge key={u} variant="outline" className="text-[10px]">{u}</Badge>)}
                   </div>
                 </div>
               </CardHeader>
