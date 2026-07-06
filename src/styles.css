@@ -188,8 +188,6 @@
   border: 1px solid color-mix(in oklab, var(--foreground) 7%, transparent);
   box-shadow: var(--shadow-soft);
   transition: transform 500ms var(--ease-out-expo), border-color 300ms ease, box-shadow 500ms var(--ease-out-expo);
-}
-@utility premium-card {
   &:hover {
     border-color: color-mix(in oklab, var(--primary) 30%, transparent);
     box-shadow: var(--shadow-elegant);
