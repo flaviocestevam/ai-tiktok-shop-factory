@@ -1,243 +1,176 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageShell } from "@/components/page-shell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { useAprendizados } from "@/integrations/supabase/hooks";
-import { classificacoes, saturacaoSinais, produtosIrmaos } from "@/lib/mock/financeiro";
-
-import { Brain, TrendingUp, Layers, AlertTriangle, Recycle, ShieldAlert, Sparkles } from "lucide-react";
+import { MetricCard } from "@/components/metric-card";
+import {
+  useMetricas, useAprendizados, useAvatares, useReferencias, useProdutos, usePerfis,
+} from "@/integrations/supabase/hooks";
+import { Brain, TrendingUp, AlertTriangle, Trophy } from "lucide-react";
 
 export const Route = createFileRoute("/inteligencia")({
-  head: () => ({ meta: [{ title: "Inteligência da Fábrica — Video Factory" }] }),
+  head: () => ({ meta: [{ title: "Inteligência — Video Factory" }] }),
   component: Page,
 });
 
-const aprendizados = {
-  produtosBons: ["Mini seladora", "Organizador magnético", "Suporte de celular dobrável"],
-  produtosRuins: ["Luminária dobrável", "Mini aspirador USB"],
-  menorCusto: ["Mini seladora (R$0,35/venda)", "Organizador magnético (R$0,68/venda)"],
-  menosCriativos: ["Mini seladora — 4 criativos, 62 vendas"],
-  nichosBons: ["Casa Inteligente", "Pet Achadinhos"],
-  nichosRuins: ["Eletrônicos genéricos"],
-  formatosVencedores: ["Carrossel 5 imagens", "Antes/Depois 7 imagens"],
-  formatosViewSemVenda: ["Vídeo viral 45s sem CTA claro"],
-  avataresBons: ["Marina BR — 3 nichos, ROI 25x+"],
-  ganchosBons: ["Eu não sabia que precisava disso", "Pare de comprar X antes de ver isso"],
-  ctasBons: ["Compre antes de acabar o cupom", "Toque no carrinho amarelo"],
-  combosBons: ["Mini seladora + Marina BR + Carrossel + Antes/Depois"],
-  errosEvitar: ["Vídeo >30s sem demonstração nos 2s iniciais", "Carrossel sem preço visível"],
-};
+const brl = (n: number) =>
+  n.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
+const fmt = (n: number) => new Intl.NumberFormat("pt-BR").format(n);
+
+type Rank = { key: string; label: string; vendas: number; views: number; receita: number; v1k: number };
+
+function rankBy(
+  metricas: any[],
+  key: (m: any) => string | null | undefined,
+  labelMap?: Map<string, string>,
+): Rank[] {
+  const map = new Map<string, Rank>();
+  for (const m of metricas) {
+    const k = key(m);
+    if (!k) continue;
+    const label = labelMap?.get(k) ?? k;
+    const cur = map.get(k) ?? { key: k, label, vendas: 0, views: 0, receita: 0, v1k: 0 };
+    cur.vendas += m.vendas || 0;
+    cur.views += m.views || 0;
+    cur.receita += Number(m.receita || 0);
+    map.set(k, cur);
+  }
+  return [...map.values()]
+    .map((r) => ({ ...r, v1k: r.views > 0 ? (r.vendas / r.views) * 1000 : 0 }))
+    .sort((a, b) => b.v1k - a.v1k);
+}
 
 function Page() {
-  const { data: aprendizadosReal, isLoading } = useAprendizados();
+  const { data: metricas = [], isLoading: l1 } = useMetricas();
+  const { data: aprendizados = [], isLoading: l2 } = useAprendizados();
+  const { data: avatares = [] } = useAvatares();
+  const { data: produtos = [] } = useProdutos();
+  const { data: perfis = [] } = usePerfis();
+  const { data: referencias = [] } = useReferencias();
 
-  if (isLoading) {
+  if (l1 || l2) {
     return (
-      <PageShell title="Inteligência da Fábrica" description="Carregando aprendizados...">
+      <PageShell title="Inteligência" description="Carregando aprendizados...">
         <div className="h-64 animate-pulse bg-card/50 rounded-lg" />
       </PageShell>
     );
   }
 
-  // Combine mock and real for presentation if real is empty
-  const hasReal = aprendizadosReal && aprendizadosReal.length > 0;
-  
-  const displayAprendizados = {
-    produtosBons: hasReal ? aprendizadosReal.filter(a => a.categoria === 'produto' && a.peso && a.peso > 0).map(a => a.titulo) : aprendizados.produtosBons,
-    produtosRuins: hasReal ? aprendizadosReal.filter(a => a.categoria === 'produto' && a.peso && a.peso < 0).map(a => a.titulo) : aprendizados.produtosRuins,
-    menorCusto: aprendizados.menorCusto,
-    menosCriativos: aprendizados.menosCriativos,
-    nichosBons: hasReal ? aprendizadosReal.filter(a => a.categoria === 'nicho' && a.peso && a.peso > 0).map(a => a.titulo) : aprendizados.nichosBons,
-    nichosRuins: hasReal ? aprendizadosReal.filter(a => a.categoria === 'nicho' && a.peso && a.peso < 0).map(a => a.titulo) : aprendizados.nichosRuins,
-    formatosVencedores: hasReal ? aprendizadosReal.filter(a => a.categoria === 'formato' && a.peso && a.peso > 0).map(a => a.titulo) : aprendizados.formatosVencedores,
-    formatosViewSemVenda: aprendizados.formatosViewSemVenda,
-    avataresBons: hasReal ? aprendizadosReal.filter(a => a.categoria === 'avatar' && a.peso && a.peso > 0).map(a => a.titulo) : aprendizados.avataresBons,
-    ganchosBons: hasReal ? aprendizadosReal.filter(a => a.categoria === 'gancho' && a.peso && a.peso > 0).map(a => a.titulo) : aprendizados.ganchosBons,
-    ctasBons: hasReal ? aprendizadosReal.filter(a => a.categoria === 'cta' && a.peso && a.peso > 0).map(a => a.titulo) : aprendizados.ctasBons,
-    combosBons: aprendizados.combosBons,
-    errosEvitar: hasReal ? aprendizadosReal.filter(a => a.peso && a.peso < 0).map(a => a.titulo) : aprendizados.errosEvitar,
-  };
+  const avatarLabel = new Map(avatares.map((a: any) => [a.id, a.nome]));
+  const produtoLabel = new Map(produtos.map((p: any) => [p.id, p.nome]));
+  const perfilLabel = new Map(perfis.map((p: any) => [p.id, p.nome]));
 
+  const rAvatares = rankBy(metricas, (m) => m.criativo?.avatar_id, avatarLabel);
+  const rProdutos = rankBy(metricas, (m) => m.criativo?.produto_id, produtoLabel);
+  const rPerfis = rankBy(metricas, (m) => m.criativo?.perfil_id, perfilLabel);
+  const rGanchos = rankBy(metricas, (m) => m.criativo?.gancho);
+  const rFormatos = rankBy(metricas, (m) => m.criativo?.tipo);
+
+  const totals = metricas.reduce(
+    (a, m: any) => ({
+      views: a.views + (m.views || 0),
+      vendas: a.vendas + (m.vendas || 0),
+      receita: a.receita + Number(m.receita || 0),
+    }),
+    { views: 0, vendas: 0, receita: 0 },
+  );
+  const custo = referencias.length * 45;
+  const lucro = totals.receita - custo;
+  const cps = totals.vendas > 0 ? custo / totals.vendas : 0;
+
+  const repetir = aprendizados.filter((a: any) => (a.peso ?? 0) > 0);
+  const evitar = aprendizados.filter((a: any) => (a.peso ?? 0) < 0);
 
   return (
     <PageShell
       title="Inteligência da Fábrica"
-      description="Base de conhecimento alimentada por resultados reais via API."
+      description="Métricas que ensinam o que converte. Rankings ordenados por vendas por 1.000 views."
     >
-      <Tabs defaultValue="aprendizados">
-        <TabsList>
-          <TabsTrigger value="aprendizados">Aprendizados</TabsTrigger>
-          <TabsTrigger value="classificacoes">Classificação Comercial</TabsTrigger>
-          <TabsTrigger value="reaproveitamento">Reaproveitamento</TabsTrigger>
-          <TabsTrigger value="erros">Não repetir erro</TabsTrigger>
-          <TabsTrigger value="saturacao">Saturação</TabsTrigger>
-          <TabsTrigger value="irmaos">Produtos Irmãos</TabsTrigger>
-        </TabsList>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <MetricCard label="Receita" value={brl(totals.receita)} icon={TrendingUp} tone="success" />
+        <MetricCard label="Vendas" value={fmt(totals.vendas)} tone="brand" />
+        <MetricCard label="Lucro" value={brl(lucro)} tone="success" />
+        <MetricCard label="Custo/venda" value={brl(cps)} tone="warning" />
+      </div>
 
-        <TabsContent value="aprendizados">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <KCard icon={TrendingUp} title="Produtos que funcionaram" items={displayAprendizados.produtosBons} tone="success" />
-            <KCard icon={AlertTriangle} title="Produtos que não funcionaram" items={displayAprendizados.produtosRuins} tone="warning" />
-            <KCard icon={Sparkles} title="Vendas com menor custo" items={displayAprendizados.menorCusto} tone="success" />
-            <KCard icon={Sparkles} title="Vendas com menos criativos" items={displayAprendizados.menosCriativos} tone="success" />
-            <KCard icon={Layers} title="Formatos vencedores" items={displayAprendizados.formatosVencedores} tone="success" />
-            <KCard icon={Layers} title="View bait — sem venda" items={displayAprendizados.formatosViewSemVenda} tone="warning" />
-            <KCard icon={Brain} title="Avatares vencedores" items={displayAprendizados.avataresBons} tone="success" />
-            <KCard icon={Brain} title="Ganchos vencedores" items={displayAprendizados.ganchosBons} tone="success" />
-            <KCard icon={Brain} title="CTAs vencedores" items={displayAprendizados.ctasBons} tone="success" />
-            <KCard icon={Sparkles} title="Melhores combinações" items={displayAprendizados.combosBons} tone="success" />
-            <KCard icon={AlertTriangle} title="Erros a evitar" items={displayAprendizados.errosEvitar} tone="warning" />
-            <KCard icon={TrendingUp} title="Nichos bons / ruins" items={[...displayAprendizados.nichosBons.map((n) => `✓ ${n}`), ...displayAprendizados.nichosRuins.map((n) => `✗ ${n}`)]} />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
+        <RankCard title="Melhores avatares" ranks={rAvatares} />
+        <RankCard title="Melhores produtos" ranks={rProdutos} />
+        <RankCard title="Melhores perfis" ranks={rPerfis} />
+        <RankCard title="Melhores formatos" ranks={rFormatos} />
+        <RankCard title="Melhores ganchos" ranks={rGanchos} />
+      </div>
 
-          </div>
-        </TabsContent>
-
-        <TabsContent value="classificacoes">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {classificacoes.map((c) => (
-              <Card key={c.tipo} className={`bg-card/70 border-${c.cor}/30`}>
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-base">{c.tipo}</CardTitle>
-                    <Badge className={`bg-${c.cor}/15 text-${c.cor} border-${c.cor}/30`}>ação</Badge>
-                  </div>
-                  <CardDescription>{c.desc}</CardDescription>
-                </CardHeader>
-                <CardContent className="text-sm font-medium">{c.acao}</CardContent>
-              </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+        <Card className="bg-card/70">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Trophy className="h-4 w-4 text-success" /> Repetir
+            </CardTitle>
+            <CardDescription>Aprendizados positivos.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {repetir.length === 0 && (
+              <p className="text-xs text-muted-foreground">Nenhum aprendizado positivo ainda.</p>
+            )}
+            {repetir.map((a: any) => (
+              <div key={a.id} className="rounded-md border border-success/20 bg-success/5 px-3 py-2 text-sm">
+                <Badge variant="outline" className="border-success/40 text-success mr-2">{a.categoria}</Badge>
+                {a.titulo}
+              </div>
             ))}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="reaproveitamento">
-          <Card className="bg-card/70">
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <Recycle className="h-5 w-5 text-primary" />
-                <CardTitle className="text-base">Quando um criativo funciona</CardTitle>
+          </CardContent>
+        </Card>
+        <Card className="bg-card/70">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-warning" /> Evitar
+            </CardTitle>
+            <CardDescription>Aprendizados negativos.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {evitar.length === 0 && (
+              <p className="text-xs text-muted-foreground">Nenhum aprendizado negativo ainda.</p>
+            )}
+            {evitar.map((a: any) => (
+              <div key={a.id} className="rounded-md border border-warning/20 bg-warning/5 px-3 py-2 text-sm">
+                <Badge variant="outline" className="border-warning/40 text-warning mr-2">{a.categoria}</Badge>
+                {a.titulo}
               </div>
-              <CardDescription>Sugerir variações automaticamente.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
-                {["3 novos ganchos", "2 carrosséis", "1 review honesta", "1 antes/depois", "1 comparação", "1 com objeção", "1 com outro avatar", "1 versão curta 9s"].map((s) => (
-                  <div key={s} className="rounded-md border border-primary/20 bg-primary/5 px-3 py-2">{s}</div>
-                ))}
-              </div>
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div className="rounded-md border border-success/20 bg-success/5 p-3 text-sm">
-                  <strong>Vídeo vendeu bem →</strong> transformar em carrossel
-                </div>
-                <div className="rounded-md border border-success/20 bg-success/5 p-3 text-sm">
-                  <strong>Carrossel vendeu bem →</strong> transformar em vídeo
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="erros">
-          <Card className="bg-card/70">
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <ShieldAlert className="h-5 w-5 text-warning" />
-                <CardTitle className="text-base">Motor de não repetir erro</CardTitle>
-              </div>
-              <CardDescription>Antes de criar, o sistema valida histórico.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm">
-              {[
-                "Esse formato já falhou 3x nesse nicho?",
-                "Esse avatar já converteu mal nesse produto?",
-                "Esse gancho já teve clique baixo?",
-                "Esse tipo de criativo teve custo alto?",
-                "Esse produto teve muitas views e poucas vendas?",
-                "Esse produto teve muitos cliques e poucas vendas?",
-                "Esse formato gerou ROI negativo?",
-              ].map((q) => (
-                <div key={q} className="flex justify-between rounded-md border border-border px-3 py-2">
-                  <span>{q}</span>
-                  <Badge variant="outline">Verificação automática</Badge>
-                </div>
-              ))}
-              <div className="mt-3 rounded-md border border-destructive/30 bg-destructive/10 p-3 text-destructive font-medium">
-                ⛔ Exemplo de alerta: "Não recomendado. Histórico ruim nesse nicho."
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="saturacao">
-          <Card className="bg-card/70">
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-warning" />
-                <CardTitle className="text-base">Detector de Saturação</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <div>
-                <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">Sinais monitorados</div>
-                <div className="grid grid-cols-2 gap-2">
-                  {saturacaoSinais.map((s) => (
-                    <div key={s} className="rounded-md border border-warning/20 bg-warning/5 px-3 py-2">{s}</div>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2 mt-3">Ações sugeridas</div>
-                <div className="flex flex-wrap gap-2">
-                  {["Trocar ângulo", "Trocar avatar", "Criar oferta nova", "Pausar por alguns dias", "Testar produto parecido", "Vídeo → carrossel", "Carrossel → vídeo", "Criar novo gancho"].map((a) => (
-                    <Badge key={a} variant="outline">{a}</Badge>
-                  ))}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="irmaos">
-          <Card className="bg-card/70">
-            <CardHeader>
-              <CardTitle className="text-base">Ranking de produtos irmãos</CardTitle>
-              <CardDescription>Quando um produto funciona, sugerir similares por nicho, dor, categoria.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {Object.entries(produtosIrmaos).map(([base, irmaos]) => (
-                <div key={base} className="rounded-md border border-border bg-card p-3">
-                  <div className="text-sm font-semibold mb-2">{base}</div>
-                  <div className="flex flex-wrap gap-2">
-                    {irmaos.map((i) => (
-                      <Badge key={i} variant="outline" className="text-xs">{i}</Badge>
-                    ))}
-                  </div>
-                  <Button size="sm" variant="outline" className="mt-3">Gerar campanhas para irmãos</Button>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
     </PageShell>
   );
 }
 
-function KCard({ icon: Icon, title, items, tone }: { icon: typeof Brain; title: string; items: string[]; tone?: "success" | "warning" }) {
+function RankCard({ title, ranks }: { title: string; ranks: Rank[] }) {
   return (
     <Card className="bg-card/70">
       <CardHeader className="pb-2">
-        <div className="flex items-center gap-2">
-          <div className={`h-8 w-8 rounded-lg grid place-items-center ${tone === "success" ? "bg-success/10 text-success" : tone === "warning" ? "bg-warning/10 text-warning" : "bg-primary/10 text-primary"}`}>
-            <Icon className="h-4 w-4" />
-          </div>
-          <CardTitle className="text-sm">{title}</CardTitle>
-        </div>
+        <CardTitle className="text-base flex items-center gap-2">
+          <Brain className="h-4 w-4 text-primary" /> {title}
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-1.5">
-        {items.map((it) => (
-          <div key={it} className="text-xs rounded-md border border-border bg-card px-2.5 py-1.5">{it}</div>
+        {ranks.length === 0 && (
+          <p className="text-xs text-muted-foreground">Sem dados suficientes.</p>
+        )}
+        {ranks.slice(0, 5).map((r, i) => (
+          <div
+            key={r.key}
+            className="flex items-center justify-between rounded-md border border-border bg-card px-3 py-2 text-sm"
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="text-xs text-muted-foreground w-4">{i + 1}.</span>
+              <span className="truncate">{r.label}</span>
+            </div>
+            <div className="flex gap-3 text-xs text-muted-foreground shrink-0">
+              <span>V/1k <b className="text-foreground">{r.v1k.toFixed(2)}</b></span>
+              <span>{brl(r.receita)}</span>
+            </div>
+          </div>
         ))}
       </CardContent>
     </Card>
