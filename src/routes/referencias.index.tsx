@@ -16,6 +16,9 @@ import {
 
 export const Route = createFileRoute("/referencias/")({
   head: () => ({ meta: [{ title: "Referências — Video Factory" }] }),
+  validateSearch: (search: Record<string, unknown>) => ({
+    new: search.new === 1 || search.new === "1" ? 1 : undefined,
+  }),
   component: Page,
 });
 

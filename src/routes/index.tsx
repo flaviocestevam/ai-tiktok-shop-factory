@@ -75,7 +75,7 @@ function Dashboard() {
       description="Visão da fábrica — o que funciona, o que evitar, e o que está em produção."
       actions={
         <Button asChild size="sm" className="gap-1.5 shadow-[var(--shadow-elegant)]">
-          <Link to="/referencias">
+          <Link to="/referencias" search={{ new: 1 }}>
             <Sparkles className="h-4 w-4" /> Nova referência
           </Link>
         </Button>
