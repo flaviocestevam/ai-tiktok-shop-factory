@@ -227,8 +227,9 @@ function ReferenciaDetail() {
               <Button onClick={salvarAnalise} disabled={update.isPending} className="gap-1.5">
                 <Save className="h-4 w-4" /> Salvar análise
               </Button>
-              <Button variant="outline" onClick={gerarRoteiroIA} className="gap-1.5">
-                <Wand2 className="h-4 w-4" /> Gerar roteiro com IA
+              <Button variant="outline" onClick={gerarRoteiroIA} disabled={gerandoRoteiro} className="gap-1.5">
+                {gerandoRoteiro ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wand2 className="h-4 w-4" />}
+                {gerandoRoteiro ? "Gerando..." : "Gerar roteiro com IA"}
               </Button>
             </div>
           </CardContent>
