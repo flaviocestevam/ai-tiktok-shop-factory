@@ -1,0 +1,25 @@
+{
+  "_comment": "Placeholder ComfyUI API-format workflow. Replace with the real workflow_api.json exported from ComfyUI (Save (API Format)). Tokens {{AVATAR_URL}}, {{PRODUTO_URL}}, {{PROMPT}} and {{DURACAO_SEG}} are string-replaced at runtime by src/lib/ai/runpod.server.ts before being sent to RunPod.",
+  "1": {
+    "class_type": "LoadImageFromUrl",
+    "inputs": { "url": "{{AVATAR_URL}}" }
+  },
+  "2": {
+    "class_type": "LoadImageFromUrl",
+    "inputs": { "url": "{{PRODUTO_URL}}" }
+  },
+  "3": {
+    "class_type": "VideoUGCSampler",
+    "inputs": {
+      "avatar_image": ["1", 0],
+      "product_image": ["2", 0],
+      "prompt": "{{PROMPT}}",
+      "duration_seconds": "{{DURACAO_SEG}}",
+      "aspect_ratio": "9:16"
+    }
+  },
+  "4": {
+    "class_type": "SaveVideo",
+    "inputs": { "frames": ["3", 0], "filename_prefix": "ugc" }
+  }
+}
