@@ -90,34 +90,34 @@ const AvataresIndexRoute = AvataresIndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReferenciasIdRoute = ReferenciasIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => ReferenciasRoute,
+  id: '/referencias/$id',
+  path: '/referencias/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ProdutosIdRoute = ProdutosIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => ProdutosRoute,
+  id: '/produtos/$id',
+  path: '/produtos/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const PerfisIdRoute = PerfisIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => PerfisRoute,
+  id: '/perfis/$id',
+  path: '/perfis/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ConfiguracoesProvedoresRoute = ConfiguracoesProvedoresRouteImport.update({
-  id: '/provedores',
-  path: '/provedores',
-  getParentRoute: () => ConfiguracoesRoute,
+  id: '/configuracoes/provedores',
+  path: '/configuracoes/provedores',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ConfiguracoesGeminiRoute = ConfiguracoesGeminiRouteImport.update({
-  id: '/gemini',
-  path: '/gemini',
-  getParentRoute: () => ConfiguracoesRoute,
+  id: '/configuracoes/gemini',
+  path: '/configuracoes/gemini',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AvataresIdRoute = AvataresIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => AvataresRoute,
+  id: '/avatares/$id',
+  path: '/avatares/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicRunpodWebhookRoute = ApiPublicRunpodWebhookRouteImport.update({
   id: '/api/public/runpod-webhook',
@@ -263,6 +263,12 @@ export interface RootRouteChildren {
   CustosRoute: typeof CustosRoute
   InteligenciaRoute: typeof InteligenciaRoute
   PublicacoesRoute: typeof PublicacoesRoute
+  AvataresIdRoute: typeof AvataresIdRoute
+  ConfiguracoesGeminiRoute: typeof ConfiguracoesGeminiRoute
+  ConfiguracoesProvedoresRoute: typeof ConfiguracoesProvedoresRoute
+  PerfisIdRoute: typeof PerfisIdRoute
+  ProdutosIdRoute: typeof ProdutosIdRoute
+  ReferenciasIdRoute: typeof ReferenciasIdRoute
   AvataresIndexRoute: typeof AvataresIndexRoute
   ConfiguracoesIndexRoute: typeof ConfiguracoesIndexRoute
   PerfisIndexRoute: typeof PerfisIndexRoute
@@ -359,45 +365,45 @@ declare module '@tanstack/react-router' {
     }
     '/referencias/$id': {
       id: '/referencias/$id'
-      path: '/$id'
+      path: '/referencias/$id'
       fullPath: '/referencias/$id'
       preLoaderRoute: typeof ReferenciasIdRouteImport
-      parentRoute: typeof ReferenciasRoute
+      parentRoute: typeof rootRouteImport
     }
     '/produtos/$id': {
       id: '/produtos/$id'
-      path: '/$id'
+      path: '/produtos/$id'
       fullPath: '/produtos/$id'
       preLoaderRoute: typeof ProdutosIdRouteImport
-      parentRoute: typeof ProdutosRoute
+      parentRoute: typeof rootRouteImport
     }
     '/perfis/$id': {
       id: '/perfis/$id'
-      path: '/$id'
+      path: '/perfis/$id'
       fullPath: '/perfis/$id'
       preLoaderRoute: typeof PerfisIdRouteImport
-      parentRoute: typeof PerfisRoute
+      parentRoute: typeof rootRouteImport
     }
     '/configuracoes/provedores': {
       id: '/configuracoes/provedores'
-      path: '/provedores'
+      path: '/configuracoes/provedores'
       fullPath: '/configuracoes/provedores'
       preLoaderRoute: typeof ConfiguracoesProvedoresRouteImport
-      parentRoute: typeof ConfiguracoesRoute
+      parentRoute: typeof rootRouteImport
     }
     '/configuracoes/gemini': {
       id: '/configuracoes/gemini'
-      path: '/gemini'
+      path: '/configuracoes/gemini'
       fullPath: '/configuracoes/gemini'
       preLoaderRoute: typeof ConfiguracoesGeminiRouteImport
-      parentRoute: typeof ConfiguracoesRoute
+      parentRoute: typeof rootRouteImport
     }
     '/avatares/$id': {
       id: '/avatares/$id'
-      path: '/$id'
+      path: '/avatares/$id'
       fullPath: '/avatares/$id'
       preLoaderRoute: typeof AvataresIdRouteImport
-      parentRoute: typeof AvataresRoute
+      parentRoute: typeof rootRouteImport
     }
     '/api/public/runpod-webhook': {
       id: '/api/public/runpod-webhook'
@@ -417,6 +423,12 @@ const rootRouteChildren: RootRouteChildren = {
   CustosRoute: CustosRoute,
   InteligenciaRoute: InteligenciaRoute,
   PublicacoesRoute: PublicacoesRoute,
+  AvataresIdRoute: AvataresIdRoute,
+  ConfiguracoesGeminiRoute: ConfiguracoesGeminiRoute,
+  ConfiguracoesProvedoresRoute: ConfiguracoesProvedoresRoute,
+  PerfisIdRoute: PerfisIdRoute,
+  ProdutosIdRoute: ProdutosIdRoute,
+  ReferenciasIdRoute: ReferenciasIdRoute,
   AvataresIndexRoute: AvataresIndexRoute,
   ConfiguracoesIndexRoute: ConfiguracoesIndexRoute,
   PerfisIndexRoute: PerfisIndexRoute,
@@ -427,13 +439,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
