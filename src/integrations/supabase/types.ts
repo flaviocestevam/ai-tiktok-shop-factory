@@ -147,6 +147,7 @@ export type Database = {
           created_at: string
           descricao: string | null
           estilo: string | null
+          foto_canonica_url: string | null
           genero: string | null
           id: string
           idade_estimada: string | null
@@ -161,6 +162,7 @@ export type Database = {
           created_at?: string
           descricao?: string | null
           estilo?: string | null
+          foto_canonica_url?: string | null
           genero?: string | null
           id?: string
           idade_estimada?: string | null
@@ -175,6 +177,7 @@ export type Database = {
           created_at?: string
           descricao?: string | null
           estilo?: string | null
+          foto_canonica_url?: string | null
           genero?: string | null
           id?: string
           idade_estimada?: string | null
@@ -472,6 +475,85 @@ export type Database = {
         }
         Relationships: []
       }
+      geracoes_video: {
+        Row: {
+          avatar_id: string | null
+          concluido_em: string | null
+          created_at: string
+          custo_usd: number | null
+          erro: string | null
+          id: string
+          iniciado_em: string | null
+          input_payload: Json | null
+          produto_id: string | null
+          referencia_id: string | null
+          runpod_job_id: string | null
+          status: string
+          tempo_execucao_ms: number | null
+          updated_at: string
+          video_url: string | null
+          workflow_snapshot: Json | null
+        }
+        Insert: {
+          avatar_id?: string | null
+          concluido_em?: string | null
+          created_at?: string
+          custo_usd?: number | null
+          erro?: string | null
+          id?: string
+          iniciado_em?: string | null
+          input_payload?: Json | null
+          produto_id?: string | null
+          referencia_id?: string | null
+          runpod_job_id?: string | null
+          status?: string
+          tempo_execucao_ms?: number | null
+          updated_at?: string
+          video_url?: string | null
+          workflow_snapshot?: Json | null
+        }
+        Update: {
+          avatar_id?: string | null
+          concluido_em?: string | null
+          created_at?: string
+          custo_usd?: number | null
+          erro?: string | null
+          id?: string
+          iniciado_em?: string | null
+          input_payload?: Json | null
+          produto_id?: string | null
+          referencia_id?: string | null
+          runpod_job_id?: string | null
+          status?: string
+          tempo_execucao_ms?: number | null
+          updated_at?: string
+          video_url?: string | null
+          workflow_snapshot?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "geracoes_video_avatar_id_fkey"
+            columns: ["avatar_id"]
+            isOneToOne: false
+            referencedRelation: "avatares"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "geracoes_video_produto_id_fkey"
+            columns: ["produto_id"]
+            isOneToOne: false
+            referencedRelation: "produtos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "geracoes_video_referencia_id_fkey"
+            columns: ["referencia_id"]
+            isOneToOne: false
+            referencedRelation: "videos_referencia"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       metricas: {
         Row: {
           capturado_em: string
@@ -568,6 +650,7 @@ export type Database = {
         Row: {
           comissao_pct: number | null
           created_at: string
+          foto_principal_url: string | null
           id: string
           link_tiktok: string | null
           nicho: string | null
@@ -583,6 +666,7 @@ export type Database = {
         Insert: {
           comissao_pct?: number | null
           created_at?: string
+          foto_principal_url?: string | null
           id?: string
           link_tiktok?: string | null
           nicho?: string | null
@@ -598,6 +682,7 @@ export type Database = {
         Update: {
           comissao_pct?: number | null
           created_at?: string
+          foto_principal_url?: string | null
           id?: string
           link_tiktok?: string | null
           nicho?: string | null
