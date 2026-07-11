@@ -3,19 +3,34 @@ import { PageShell } from "@/components/page-shell";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useAvatar, useUpdateAvatar } from "@/integrations/supabase/hooks";
+import {
+  useAvatar,
+  useUpdateAvatar,
+  useUpsertAvatarFoto,
+  useDeleteAvatarFoto,
+} from "@/integrations/supabase/hooks";
 import { MediaUploader } from "@/components/media-uploader";
-import { ChevronLeft, Camera, Sparkles } from "lucide-react";
+import { toast } from "sonner";
+import { ChevronLeft, Camera, Sparkles, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/avatares/$id")({
   head: () => ({ meta: [{ title: "Avatar — Video Factory" }] }),
   component: AvatarDetail,
 });
 
+const POSICOES = [
+  { key: "frente", label: "Frente" },
+  { key: "perfil", label: "Perfil" },
+  { key: "costas", label: "Costas" },
+  { key: "corpo_inteiro", label: "Corpo inteiro" },
+] as const;
+
 function AvatarDetail() {
   const { id } = useParams({ from: "/avatares/$id" });
   const { data: a, isLoading } = useAvatar(id);
   const update = useUpdateAvatar();
+  const upsertFoto = useUpsertAvatarFoto();
+  const removeFoto = useDeleteAvatarFoto();
 
   if (isLoading) {
     return (
