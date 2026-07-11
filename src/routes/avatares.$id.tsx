@@ -79,9 +79,9 @@ function AvatarDetail() {
               bucket="avatar-fotos"
               path={(a as any).foto_canonica_url}
               prefix={id}
-              onUploaded={(newPath) =>
-                update.mutateAsync({ id, foto_canonica_url: newPath })
-              }
+              onUploaded={async (newPath) => {
+                await update.mutateAsync({ id, foto_canonica_url: newPath });
+              }}
             />
           </CardContent>
         </Card>
