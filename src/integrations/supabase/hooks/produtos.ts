@@ -20,3 +20,12 @@ export const useUpdateProduto = () => {
     onSuccess: (_d, v) => invalidate([["produtos", v.id]]),
   });
 };
+
+export const useCreateProduto = () => {
+  const invalidate = useInvalidator(["produtos"]);
+  return useMutation({
+    mutationFn: async (payload: Record<string, any>) =>
+      unwrap(await (supabase as any).from("produtos").insert(payload).select().single()),
+    onSuccess: () => invalidate(),
+  });
+};
