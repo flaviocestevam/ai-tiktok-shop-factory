@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { usePerfis } from "@/integrations/supabase/hooks";
 
-export const Route = createFileRoute("/perfis")({
+export const Route = createFileRoute("/perfis/")({
   head: () => ({ meta: [{ title: "Meus Perfis — Video Factory" }] }),
   component: Page,
 });

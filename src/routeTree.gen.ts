@@ -9,18 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ReferenciasRouteImport } from './routes/referencias'
 import { Route as PublicacoesRouteImport } from './routes/publicacoes'
-import { Route as ProdutosRouteImport } from './routes/produtos'
-import { Route as PerfisRouteImport } from './routes/perfis'
 import { Route as InteligenciaRouteImport } from './routes/inteligencia'
 import { Route as CustosRouteImport } from './routes/custos'
 import { Route as CriativosRouteImport } from './routes/criativos'
-import { Route as AvataresRouteImport } from './routes/avatares'
 import { Route as AutomacoesRouteImport } from './routes/automacoes'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ReferenciasIndexRouteImport } from './routes/referencias.index'
+import { Route as ProdutosIndexRouteImport } from './routes/produtos.index'
+import { Route as PerfisIndexRouteImport } from './routes/perfis.index'
 import { Route as ConfiguracoesIndexRouteImport } from './routes/configuracoes.index'
+import { Route as AvataresIndexRouteImport } from './routes/avatares.index'
 import { Route as ReferenciasIdRouteImport } from './routes/referencias.$id'
 import { Route as ProdutosIdRouteImport } from './routes/produtos.$id'
 import { Route as PerfisIdRouteImport } from './routes/perfis.$id'
@@ -29,24 +29,9 @@ import { Route as ConfiguracoesGeminiRouteImport } from './routes/configuracoes.
 import { Route as AvataresIdRouteImport } from './routes/avatares.$id'
 import { Route as ApiPublicRunpodWebhookRouteImport } from './routes/api/public/runpod-webhook'
 
-const ReferenciasRoute = ReferenciasRouteImport.update({
-  id: '/referencias',
-  path: '/referencias',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PublicacoesRoute = PublicacoesRouteImport.update({
   id: '/publicacoes',
   path: '/publicacoes',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProdutosRoute = ProdutosRouteImport.update({
-  id: '/produtos',
-  path: '/produtos',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PerfisRoute = PerfisRouteImport.update({
-  id: '/perfis',
-  path: '/perfis',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InteligenciaRoute = InteligenciaRouteImport.update({
@@ -64,11 +49,6 @@ const CriativosRoute = CriativosRouteImport.update({
   path: '/criativos',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AvataresRoute = AvataresRouteImport.update({
-  id: '/avatares',
-  path: '/avatares',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AutomacoesRoute = AutomacoesRouteImport.update({
   id: '/automacoes',
   path: '/automacoes',
@@ -84,25 +64,45 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReferenciasIndexRoute = ReferenciasIndexRouteImport.update({
+  id: '/referencias/',
+  path: '/referencias/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProdutosIndexRoute = ProdutosIndexRouteImport.update({
+  id: '/produtos/',
+  path: '/produtos/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerfisIndexRoute = PerfisIndexRouteImport.update({
+  id: '/perfis/',
+  path: '/perfis/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ConfiguracoesIndexRoute = ConfiguracoesIndexRouteImport.update({
   id: '/configuracoes/',
   path: '/configuracoes/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AvataresIndexRoute = AvataresIndexRouteImport.update({
+  id: '/avatares/',
+  path: '/avatares/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReferenciasIdRoute = ReferenciasIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => ReferenciasRoute,
+  id: '/referencias/$id',
+  path: '/referencias/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ProdutosIdRoute = ProdutosIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => ProdutosRoute,
+  id: '/produtos/$id',
+  path: '/produtos/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const PerfisIdRoute = PerfisIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => PerfisRoute,
+  id: '/perfis/$id',
+  path: '/perfis/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ConfiguracoesProvedoresRoute = ConfiguracoesProvedoresRouteImport.update({
   id: '/configuracoes/provedores',
@@ -115,9 +115,9 @@ const ConfiguracoesGeminiRoute = ConfiguracoesGeminiRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const AvataresIdRoute = AvataresIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => AvataresRoute,
+  id: '/avatares/$id',
+  path: '/avatares/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicRunpodWebhookRoute = ApiPublicRunpodWebhookRouteImport.update({
   id: '/api/public/runpod-webhook',
@@ -129,42 +129,42 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/automacoes': typeof AutomacoesRoute
-  '/avatares': typeof AvataresRouteWithChildren
   '/criativos': typeof CriativosRoute
   '/custos': typeof CustosRoute
   '/inteligencia': typeof InteligenciaRoute
-  '/perfis': typeof PerfisRouteWithChildren
-  '/produtos': typeof ProdutosRouteWithChildren
   '/publicacoes': typeof PublicacoesRoute
-  '/referencias': typeof ReferenciasRouteWithChildren
   '/avatares/$id': typeof AvataresIdRoute
   '/configuracoes/gemini': typeof ConfiguracoesGeminiRoute
   '/configuracoes/provedores': typeof ConfiguracoesProvedoresRoute
   '/perfis/$id': typeof PerfisIdRoute
   '/produtos/$id': typeof ProdutosIdRoute
   '/referencias/$id': typeof ReferenciasIdRoute
+  '/avatares/': typeof AvataresIndexRoute
   '/configuracoes/': typeof ConfiguracoesIndexRoute
+  '/perfis/': typeof PerfisIndexRoute
+  '/produtos/': typeof ProdutosIndexRoute
+  '/referencias/': typeof ReferenciasIndexRoute
   '/api/public/runpod-webhook': typeof ApiPublicRunpodWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/automacoes': typeof AutomacoesRoute
-  '/avatares': typeof AvataresRouteWithChildren
   '/criativos': typeof CriativosRoute
   '/custos': typeof CustosRoute
   '/inteligencia': typeof InteligenciaRoute
-  '/perfis': typeof PerfisRouteWithChildren
-  '/produtos': typeof ProdutosRouteWithChildren
   '/publicacoes': typeof PublicacoesRoute
-  '/referencias': typeof ReferenciasRouteWithChildren
   '/avatares/$id': typeof AvataresIdRoute
   '/configuracoes/gemini': typeof ConfiguracoesGeminiRoute
   '/configuracoes/provedores': typeof ConfiguracoesProvedoresRoute
   '/perfis/$id': typeof PerfisIdRoute
   '/produtos/$id': typeof ProdutosIdRoute
   '/referencias/$id': typeof ReferenciasIdRoute
+  '/avatares': typeof AvataresIndexRoute
   '/configuracoes': typeof ConfiguracoesIndexRoute
+  '/perfis': typeof PerfisIndexRoute
+  '/produtos': typeof ProdutosIndexRoute
+  '/referencias': typeof ReferenciasIndexRoute
   '/api/public/runpod-webhook': typeof ApiPublicRunpodWebhookRoute
 }
 export interface FileRoutesById {
@@ -172,21 +172,21 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/automacoes': typeof AutomacoesRoute
-  '/avatares': typeof AvataresRouteWithChildren
   '/criativos': typeof CriativosRoute
   '/custos': typeof CustosRoute
   '/inteligencia': typeof InteligenciaRoute
-  '/perfis': typeof PerfisRouteWithChildren
-  '/produtos': typeof ProdutosRouteWithChildren
   '/publicacoes': typeof PublicacoesRoute
-  '/referencias': typeof ReferenciasRouteWithChildren
   '/avatares/$id': typeof AvataresIdRoute
   '/configuracoes/gemini': typeof ConfiguracoesGeminiRoute
   '/configuracoes/provedores': typeof ConfiguracoesProvedoresRoute
   '/perfis/$id': typeof PerfisIdRoute
   '/produtos/$id': typeof ProdutosIdRoute
   '/referencias/$id': typeof ReferenciasIdRoute
+  '/avatares/': typeof AvataresIndexRoute
   '/configuracoes/': typeof ConfiguracoesIndexRoute
+  '/perfis/': typeof PerfisIndexRoute
+  '/produtos/': typeof ProdutosIndexRoute
+  '/referencias/': typeof ReferenciasIndexRoute
   '/api/public/runpod-webhook': typeof ApiPublicRunpodWebhookRoute
 }
 export interface FileRouteTypes {
@@ -195,63 +195,63 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/automacoes'
-    | '/avatares'
     | '/criativos'
     | '/custos'
     | '/inteligencia'
-    | '/perfis'
-    | '/produtos'
     | '/publicacoes'
-    | '/referencias'
     | '/avatares/$id'
     | '/configuracoes/gemini'
     | '/configuracoes/provedores'
     | '/perfis/$id'
     | '/produtos/$id'
     | '/referencias/$id'
+    | '/avatares/'
     | '/configuracoes/'
+    | '/perfis/'
+    | '/produtos/'
+    | '/referencias/'
     | '/api/public/runpod-webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/automacoes'
-    | '/avatares'
     | '/criativos'
     | '/custos'
     | '/inteligencia'
-    | '/perfis'
-    | '/produtos'
     | '/publicacoes'
-    | '/referencias'
     | '/avatares/$id'
     | '/configuracoes/gemini'
     | '/configuracoes/provedores'
     | '/perfis/$id'
     | '/produtos/$id'
     | '/referencias/$id'
+    | '/avatares'
     | '/configuracoes'
+    | '/perfis'
+    | '/produtos'
+    | '/referencias'
     | '/api/public/runpod-webhook'
   id:
     | '__root__'
     | '/'
     | '/auth'
     | '/automacoes'
-    | '/avatares'
     | '/criativos'
     | '/custos'
     | '/inteligencia'
-    | '/perfis'
-    | '/produtos'
     | '/publicacoes'
-    | '/referencias'
     | '/avatares/$id'
     | '/configuracoes/gemini'
     | '/configuracoes/provedores'
     | '/perfis/$id'
     | '/produtos/$id'
     | '/referencias/$id'
+    | '/avatares/'
     | '/configuracoes/'
+    | '/perfis/'
+    | '/produtos/'
+    | '/referencias/'
     | '/api/public/runpod-webhook'
   fileRoutesById: FileRoutesById
 }
@@ -259,48 +259,31 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
   AutomacoesRoute: typeof AutomacoesRoute
-  AvataresRoute: typeof AvataresRouteWithChildren
   CriativosRoute: typeof CriativosRoute
   CustosRoute: typeof CustosRoute
   InteligenciaRoute: typeof InteligenciaRoute
-  PerfisRoute: typeof PerfisRouteWithChildren
-  ProdutosRoute: typeof ProdutosRouteWithChildren
   PublicacoesRoute: typeof PublicacoesRoute
-  ReferenciasRoute: typeof ReferenciasRouteWithChildren
+  AvataresIdRoute: typeof AvataresIdRoute
   ConfiguracoesGeminiRoute: typeof ConfiguracoesGeminiRoute
   ConfiguracoesProvedoresRoute: typeof ConfiguracoesProvedoresRoute
+  PerfisIdRoute: typeof PerfisIdRoute
+  ProdutosIdRoute: typeof ProdutosIdRoute
+  ReferenciasIdRoute: typeof ReferenciasIdRoute
+  AvataresIndexRoute: typeof AvataresIndexRoute
   ConfiguracoesIndexRoute: typeof ConfiguracoesIndexRoute
+  PerfisIndexRoute: typeof PerfisIndexRoute
+  ProdutosIndexRoute: typeof ProdutosIndexRoute
+  ReferenciasIndexRoute: typeof ReferenciasIndexRoute
   ApiPublicRunpodWebhookRoute: typeof ApiPublicRunpodWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/referencias': {
-      id: '/referencias'
-      path: '/referencias'
-      fullPath: '/referencias'
-      preLoaderRoute: typeof ReferenciasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/publicacoes': {
       id: '/publicacoes'
       path: '/publicacoes'
       fullPath: '/publicacoes'
       preLoaderRoute: typeof PublicacoesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/produtos': {
-      id: '/produtos'
-      path: '/produtos'
-      fullPath: '/produtos'
-      preLoaderRoute: typeof ProdutosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/perfis': {
-      id: '/perfis'
-      path: '/perfis'
-      fullPath: '/perfis'
-      preLoaderRoute: typeof PerfisRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/inteligencia': {
@@ -324,13 +307,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CriativosRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/avatares': {
-      id: '/avatares'
-      path: '/avatares'
-      fullPath: '/avatares'
-      preLoaderRoute: typeof AvataresRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/automacoes': {
       id: '/automacoes'
       path: '/automacoes'
@@ -352,6 +328,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/referencias/': {
+      id: '/referencias/'
+      path: '/referencias'
+      fullPath: '/referencias/'
+      preLoaderRoute: typeof ReferenciasIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/produtos/': {
+      id: '/produtos/'
+      path: '/produtos'
+      fullPath: '/produtos/'
+      preLoaderRoute: typeof ProdutosIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/perfis/': {
+      id: '/perfis/'
+      path: '/perfis'
+      fullPath: '/perfis/'
+      preLoaderRoute: typeof PerfisIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/configuracoes/': {
       id: '/configuracoes/'
       path: '/configuracoes'
@@ -359,26 +356,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConfiguracoesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/avatares/': {
+      id: '/avatares/'
+      path: '/avatares'
+      fullPath: '/avatares/'
+      preLoaderRoute: typeof AvataresIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/referencias/$id': {
       id: '/referencias/$id'
-      path: '/$id'
+      path: '/referencias/$id'
       fullPath: '/referencias/$id'
       preLoaderRoute: typeof ReferenciasIdRouteImport
-      parentRoute: typeof ReferenciasRoute
+      parentRoute: typeof rootRouteImport
     }
     '/produtos/$id': {
       id: '/produtos/$id'
-      path: '/$id'
+      path: '/produtos/$id'
       fullPath: '/produtos/$id'
       preLoaderRoute: typeof ProdutosIdRouteImport
-      parentRoute: typeof ProdutosRoute
+      parentRoute: typeof rootRouteImport
     }
     '/perfis/$id': {
       id: '/perfis/$id'
-      path: '/$id'
+      path: '/perfis/$id'
       fullPath: '/perfis/$id'
       preLoaderRoute: typeof PerfisIdRouteImport
-      parentRoute: typeof PerfisRoute
+      parentRoute: typeof rootRouteImport
     }
     '/configuracoes/provedores': {
       id: '/configuracoes/provedores'
@@ -396,10 +400,10 @@ declare module '@tanstack/react-router' {
     }
     '/avatares/$id': {
       id: '/avatares/$id'
-      path: '/$id'
+      path: '/avatares/$id'
       fullPath: '/avatares/$id'
       preLoaderRoute: typeof AvataresIdRouteImport
-      parentRoute: typeof AvataresRoute
+      parentRoute: typeof rootRouteImport
     }
     '/api/public/runpod-webhook': {
       id: '/api/public/runpod-webhook'
@@ -411,68 +415,25 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AvataresRouteChildren {
-  AvataresIdRoute: typeof AvataresIdRoute
-}
-
-const AvataresRouteChildren: AvataresRouteChildren = {
-  AvataresIdRoute: AvataresIdRoute,
-}
-
-const AvataresRouteWithChildren = AvataresRoute._addFileChildren(
-  AvataresRouteChildren,
-)
-
-interface PerfisRouteChildren {
-  PerfisIdRoute: typeof PerfisIdRoute
-}
-
-const PerfisRouteChildren: PerfisRouteChildren = {
-  PerfisIdRoute: PerfisIdRoute,
-}
-
-const PerfisRouteWithChildren =
-  PerfisRoute._addFileChildren(PerfisRouteChildren)
-
-interface ProdutosRouteChildren {
-  ProdutosIdRoute: typeof ProdutosIdRoute
-}
-
-const ProdutosRouteChildren: ProdutosRouteChildren = {
-  ProdutosIdRoute: ProdutosIdRoute,
-}
-
-const ProdutosRouteWithChildren = ProdutosRoute._addFileChildren(
-  ProdutosRouteChildren,
-)
-
-interface ReferenciasRouteChildren {
-  ReferenciasIdRoute: typeof ReferenciasIdRoute
-}
-
-const ReferenciasRouteChildren: ReferenciasRouteChildren = {
-  ReferenciasIdRoute: ReferenciasIdRoute,
-}
-
-const ReferenciasRouteWithChildren = ReferenciasRoute._addFileChildren(
-  ReferenciasRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
   AutomacoesRoute: AutomacoesRoute,
-  AvataresRoute: AvataresRouteWithChildren,
   CriativosRoute: CriativosRoute,
   CustosRoute: CustosRoute,
   InteligenciaRoute: InteligenciaRoute,
-  PerfisRoute: PerfisRouteWithChildren,
-  ProdutosRoute: ProdutosRouteWithChildren,
   PublicacoesRoute: PublicacoesRoute,
-  ReferenciasRoute: ReferenciasRouteWithChildren,
+  AvataresIdRoute: AvataresIdRoute,
   ConfiguracoesGeminiRoute: ConfiguracoesGeminiRoute,
   ConfiguracoesProvedoresRoute: ConfiguracoesProvedoresRoute,
+  PerfisIdRoute: PerfisIdRoute,
+  ProdutosIdRoute: ProdutosIdRoute,
+  ReferenciasIdRoute: ReferenciasIdRoute,
+  AvataresIndexRoute: AvataresIndexRoute,
   ConfiguracoesIndexRoute: ConfiguracoesIndexRoute,
+  PerfisIndexRoute: PerfisIndexRoute,
+  ProdutosIndexRoute: ProdutosIndexRoute,
+  ReferenciasIndexRoute: ReferenciasIndexRoute,
   ApiPublicRunpodWebhookRoute: ApiPublicRunpodWebhookRoute,
 }
 export const routeTree = rootRouteImport
