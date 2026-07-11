@@ -27,6 +27,7 @@ import { Route as PerfisIdRouteImport } from './routes/perfis.$id'
 import { Route as ConfiguracoesProvedoresRouteImport } from './routes/configuracoes.provedores'
 import { Route as ConfiguracoesGeminiRouteImport } from './routes/configuracoes.gemini'
 import { Route as AvataresIdRouteImport } from './routes/avatares.$id'
+import { Route as ApiPublicRunpodWebhookRouteImport } from './routes/api/public/runpod-webhook'
 
 const ReferenciasRoute = ReferenciasRouteImport.update({
   id: '/referencias',
@@ -118,6 +119,11 @@ const AvataresIdRoute = AvataresIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => AvataresRoute,
 } as any)
+const ApiPublicRunpodWebhookRoute = ApiPublicRunpodWebhookRouteImport.update({
+  id: '/api/public/runpod-webhook',
+  path: '/api/public/runpod-webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -138,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/perfis/$id': typeof PerfisIdRoute
   '/produtos/$id': typeof ProdutosIdRoute
   '/referencias/$id': typeof ReferenciasIdRoute
+  '/api/public/runpod-webhook': typeof ApiPublicRunpodWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -158,6 +165,7 @@ export interface FileRoutesByTo {
   '/perfis/$id': typeof PerfisIdRoute
   '/produtos/$id': typeof ProdutosIdRoute
   '/referencias/$id': typeof ReferenciasIdRoute
+  '/api/public/runpod-webhook': typeof ApiPublicRunpodWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -179,6 +187,7 @@ export interface FileRoutesById {
   '/perfis/$id': typeof PerfisIdRoute
   '/produtos/$id': typeof ProdutosIdRoute
   '/referencias/$id': typeof ReferenciasIdRoute
+  '/api/public/runpod-webhook': typeof ApiPublicRunpodWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -201,6 +210,7 @@ export interface FileRouteTypes {
     | '/perfis/$id'
     | '/produtos/$id'
     | '/referencias/$id'
+    | '/api/public/runpod-webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -221,6 +231,7 @@ export interface FileRouteTypes {
     | '/perfis/$id'
     | '/produtos/$id'
     | '/referencias/$id'
+    | '/api/public/runpod-webhook'
   id:
     | '__root__'
     | '/'
@@ -241,6 +252,7 @@ export interface FileRouteTypes {
     | '/perfis/$id'
     | '/produtos/$id'
     | '/referencias/$id'
+    | '/api/public/runpod-webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -256,6 +268,7 @@ export interface RootRouteChildren {
   ProdutosRoute: typeof ProdutosRouteWithChildren
   PublicacoesRoute: typeof PublicacoesRoute
   ReferenciasRoute: typeof ReferenciasRouteWithChildren
+  ApiPublicRunpodWebhookRoute: typeof ApiPublicRunpodWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -386,6 +399,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AvataresIdRouteImport
       parentRoute: typeof AvataresRoute
     }
+    '/api/public/runpod-webhook': {
+      id: '/api/public/runpod-webhook'
+      path: '/api/public/runpod-webhook'
+      fullPath: '/api/public/runpod-webhook'
+      preLoaderRoute: typeof ApiPublicRunpodWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -463,6 +483,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProdutosRoute: ProdutosRouteWithChildren,
   PublicacoesRoute: PublicacoesRoute,
   ReferenciasRoute: ReferenciasRouteWithChildren,
+  ApiPublicRunpodWebhookRoute: ApiPublicRunpodWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
