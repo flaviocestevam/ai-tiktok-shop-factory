@@ -86,3 +86,56 @@ function Stat({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+
+function NovoProdutoDialog() {
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState({ nome: "", nicho: "", preco: "", comissao_pct: "", link_tiktok: "", observacoes: "" });
+  const create = useCreateProduto();
+  const navigate = useNavigate();
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.nome.trim()) return toast.error("Informe o nome do produto.");
+    try {
+      const p: any = await create.mutateAsync({
+        nome: form.nome.trim(),
+        nicho: form.nicho || null,
+        preco: form.preco ? Number(form.preco) : null,
+        comissao_pct: form.comissao_pct ? Number(form.comissao_pct) : null,
+        link_tiktok: form.link_tiktok || null,
+        observacoes: form.observacoes || null,
+      });
+      toast.success("Produto criado.");
+      setOpen(false);
+      navigate({ to: "/produtos/$id", params: { id: p.id } });
+    } catch (err: any) {
+      toast.error(err?.message ?? "Erro ao criar produto.");
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button size="sm" className="gap-1.5">
+          <Plus className="h-4 w-4" /> Novo produto
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader><DialogTitle>Novo produto</DialogTitle></DialogHeader>
+        <form onSubmit={submit} className="space-y-3">
+          <div><Label>Nome *</Label><Input value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })} /></div>
+          <div className="grid grid-cols-2 gap-3">
+            <div><Label>Nicho</Label><Input value={form.nicho} onChange={(e) => setForm({ ...form, nicho: e.target.value })} /></div>
+            <div><Label>Preço (R$)</Label><Input type="number" step="0.01" value={form.preco} onChange={(e) => setForm({ ...form, preco: e.target.value })} /></div>
+            <div><Label>Comissão (%)</Label><Input type="number" step="1" value={form.comissao_pct} onChange={(e) => setForm({ ...form, comissao_pct: e.target.value })} /></div>
+            <div><Label>Link TikTok</Label><Input value={form.link_tiktok} onChange={(e) => setForm({ ...form, link_tiktok: e.target.value })} /></div>
+          </div>
+          <div><Label>Observações</Label><Textarea value={form.observacoes} onChange={(e) => setForm({ ...form, observacoes: e.target.value })} /></div>
+          <DialogFooter>
+            <Button type="submit" disabled={create.isPending}>{create.isPending ? "Criando..." : "Criar"}</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
