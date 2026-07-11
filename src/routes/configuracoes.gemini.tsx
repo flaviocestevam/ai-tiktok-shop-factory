@@ -5,8 +5,19 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { MetricCard } from "@/components/metric-card";
-import { useGeminiAccounts } from "@/integrations/supabase/hooks";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  useGeminiAccounts,
+  useCreateGeminiAccount,
+  useUpdateGeminiAccount,
+} from "@/integrations/supabase/hooks";
 import { ChevronLeft, Plus, KeyRound, Activity, AlertTriangle, Pause } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/configuracoes/gemini")({
   head: () => ({ meta: [{ title: "Contas Gemini — Video Factory" }] }),
@@ -25,8 +36,15 @@ const statusColor: Record<string, string> = {
   aguardando: "bg-muted text-muted-foreground",
 };
 
+function maskKey(key: string) {
+  const clean = key.trim();
+  if (clean.length <= 4) return `****${clean}`;
+  return `****${clean.slice(-4).toUpperCase()}`;
+}
+
 function Page() {
   const { data: geminiAccounts, isLoading } = useGeminiAccounts();
+  const update = useUpdateGeminiAccount();
 
   if (isLoading) {
     return (
@@ -46,6 +64,15 @@ function Page() {
   const orcamentoTotal = geminiAccounts?.reduce((s, g) => s + (g.orcamento || 0), 0) || 0;
   const restante = orcamentoTotal - usoTotal;
 
+  const setStatus = async (id: string, status: string) => {
+    try {
+      await update.mutateAsync({ id, status });
+      toast.success(`Conta ${status}.`);
+    } catch (e: any) {
+      toast.error(e.message || "Falha ao atualizar.");
+    }
+  };
+
   return (
     <PageShell
       title="Contas Gemini"
@@ -53,7 +80,7 @@ function Page() {
       actions={
         <div className="flex gap-2">
           <Button asChild variant="ghost" size="sm"><Link to="/configuracoes/provedores"><ChevronLeft className="h-4 w-4 mr-1" />Provedores</Link></Button>
-          <Button size="sm" className="gap-1.5"><Plus className="h-4 w-4" />Adicionar conta</Button>
+          <AdicionarContaDialog nextPriority={(geminiAccounts?.length ?? 0) + 1} />
         </div>
       }
     >
@@ -104,10 +131,24 @@ function Page() {
                   <Mini k="Erros" v={g.ultimo_erro ?? "—"} />
                 </div>
                 <div className="flex gap-2">
-                  <Button size="sm" variant="outline">Pausar</Button>
-                  <Button size="sm" variant="outline">Reativar</Button>
-                  <Button size="sm" variant="outline">Editar limites</Button>
-                  <Button size="sm" variant="outline">Trocar chave</Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={g.status === "pausada" || update.isPending}
+                    onClick={() => setStatus(g.id, "pausada")}
+                  >
+                    Pausar
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={g.status === "ativa" || update.isPending}
+                    onClick={() => setStatus(g.id, "ativa")}
+                  >
+                    Reativar
+                  </Button>
+                  <EditarLimitesDialog conta={g} />
+                  <TrocarChaveDialog conta={g} />
                 </div>
               </CardContent>
             </Card>
@@ -138,6 +179,183 @@ function Page() {
   );
 }
 
+function AdicionarContaDialog({ nextPriority }: { nextPriority: number }) {
+  const [open, setOpen] = useState(false);
+  const create = useCreateGeminiAccount();
+  const [form, setForm] = useState({
+    nome: "",
+    api_key: "",
+    gcp_project: "",
+    prioridade: nextPriority,
+    orcamento: 300,
+    limite_diario: 20,
+    alerta_pct: 80,
+  });
+
+  const submit = async () => {
+    if (!form.nome.trim() || !form.api_key.trim()) {
+      toast.error("Nome e API key são obrigatórios.");
+      return;
+    }
+    try {
+      await create.mutateAsync({
+        nome: form.nome,
+        api_key_masked: maskKey(form.api_key),
+        gcp_project: form.gcp_project || null,
+        prioridade: form.prioridade,
+        orcamento: form.orcamento,
+        limite_diario: form.limite_diario,
+        alerta_pct: form.alerta_pct,
+        status: "reserva",
+      });
+      toast.success("Conta Gemini adicionada. Salve a chave em Secrets para uso real.");
+      setOpen(false);
+    } catch (e: any) {
+      toast.error(e.message || "Falha ao adicionar.");
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button size="sm" className="gap-1.5"><Plus className="h-4 w-4" />Adicionar conta</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader><DialogTitle>Nova conta Gemini</DialogTitle></DialogHeader>
+        <div className="space-y-3">
+          <div>
+            <Label>Nome</Label>
+            <Input value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })} placeholder="Gemini 4" />
+          </div>
+          <div>
+            <Label>API Key</Label>
+            <Input type="password" value={form.api_key} onChange={(e) => setForm({ ...form, api_key: e.target.value })} placeholder="AIza..." />
+            <p className="text-[11px] text-muted-foreground mt-1">Só o final é exibido publicamente. Salve o valor completo em Secrets para uso real.</p>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label>Projeto GCP</Label>
+              <Input value={form.gcp_project} onChange={(e) => setForm({ ...form, gcp_project: e.target.value })} placeholder="default" />
+            </div>
+            <div>
+              <Label>Prioridade</Label>
+              <Input type="number" value={form.prioridade} onChange={(e) => setForm({ ...form, prioridade: Number(e.target.value) })} />
+            </div>
+            <div>
+              <Label>Orçamento (R$)</Label>
+              <Input type="number" value={form.orcamento} onChange={(e) => setForm({ ...form, orcamento: Number(e.target.value) })} />
+            </div>
+            <div>
+              <Label>Limite diário (R$)</Label>
+              <Input type="number" value={form.limite_diario} onChange={(e) => setForm({ ...form, limite_diario: Number(e.target.value) })} />
+            </div>
+            <div>
+              <Label>Alerta em %</Label>
+              <Input type="number" value={form.alerta_pct} onChange={(e) => setForm({ ...form, alerta_pct: Number(e.target.value) })} />
+            </div>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
+          <Button onClick={submit} disabled={create.isPending}>{create.isPending ? "Salvando..." : "Adicionar"}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function EditarLimitesDialog({ conta }: { conta: any }) {
+  const [open, setOpen] = useState(false);
+  const update = useUpdateGeminiAccount();
+  const [form, setForm] = useState({
+    orcamento: conta.orcamento ?? 0,
+    limite_diario: conta.limite_diario ?? 0,
+    alerta_pct: conta.alerta_pct ?? 80,
+    prioridade: conta.prioridade ?? 99,
+  });
+
+  const submit = async () => {
+    try {
+      await update.mutateAsync({ id: conta.id, ...form });
+      toast.success("Limites atualizados.");
+      setOpen(false);
+    } catch (e: any) {
+      toast.error(e.message || "Falha ao atualizar.");
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild><Button size="sm" variant="outline">Editar limites</Button></DialogTrigger>
+      <DialogContent>
+        <DialogHeader><DialogTitle>Editar limites — {conta.nome}</DialogTitle></DialogHeader>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label>Orçamento (R$)</Label>
+            <Input type="number" value={form.orcamento} onChange={(e) => setForm({ ...form, orcamento: Number(e.target.value) })} />
+          </div>
+          <div>
+            <Label>Limite diário (R$)</Label>
+            <Input type="number" value={form.limite_diario} onChange={(e) => setForm({ ...form, limite_diario: Number(e.target.value) })} />
+          </div>
+          <div>
+            <Label>Alerta em %</Label>
+            <Input type="number" value={form.alerta_pct} onChange={(e) => setForm({ ...form, alerta_pct: Number(e.target.value) })} />
+          </div>
+          <div>
+            <Label>Prioridade</Label>
+            <Input type="number" value={form.prioridade} onChange={(e) => setForm({ ...form, prioridade: Number(e.target.value) })} />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
+          <Button onClick={submit} disabled={update.isPending}>Salvar</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function TrocarChaveDialog({ conta }: { conta: any }) {
+  const [open, setOpen] = useState(false);
+  const update = useUpdateGeminiAccount();
+  const [key, setKey] = useState("");
+
+  const submit = async () => {
+    if (!key.trim()) {
+      toast.error("Cole a nova chave.");
+      return;
+    }
+    try {
+      await update.mutateAsync({ id: conta.id, api_key_masked: maskKey(key) });
+      toast.success("Chave trocada. Atualize o valor em Secrets para uso real.");
+      setOpen(false);
+      setKey("");
+    } catch (e: any) {
+      toast.error(e.message || "Falha ao trocar chave.");
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild><Button size="sm" variant="outline">Trocar chave</Button></DialogTrigger>
+      <DialogContent>
+        <DialogHeader><DialogTitle>Trocar chave — {conta.nome}</DialogTitle></DialogHeader>
+        <div>
+          <Label>Nova API Key</Label>
+          <Input type="password" value={key} onChange={(e) => setKey(e.target.value)} placeholder="AIza..." />
+          <p className="text-[11px] text-muted-foreground mt-1">
+            Só o final é exibido. Salve o valor completo em Secrets ({conta.api_key_secret_name || "GEMINI_API_KEY"}).
+          </p>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
+          <Button onClick={submit} disabled={update.isPending}>Trocar</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 function Mini({ k, v, tone }: { k: string; v: string; tone?: "success" | "warning" }) {
   const c = tone === "success" ? "text-success" : tone === "warning" ? "text-warning" : "";

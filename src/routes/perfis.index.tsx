@@ -3,10 +3,17 @@ import { PageShell } from "@/components/page-shell";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter,
+} from "@/components/ui/dialog";
 import { Plus, ArrowUpRight, RefreshCw, CheckCircle2, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
-import { usePerfis } from "@/integrations/supabase/hooks";
+import { usePerfis, useCreatePerfil } from "@/integrations/supabase/hooks";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/perfis/")({
   head: () => ({ meta: [{ title: "Meus Perfis — Video Factory" }] }),
@@ -32,11 +39,7 @@ function Page() {
     <PageShell
       title="Meus Perfis"
       description="Perfis próprios do TikTok Shop. Cada perfil concentra referências, criativos e métricas."
-      actions={
-        <Button size="sm" className="gap-1.5">
-          <Plus className="h-4 w-4" /> Novo perfil
-        </Button>
-      }
+      actions={<NovoPerfilDialog />}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {perfis?.map((p: any) => {
@@ -83,7 +86,7 @@ function Page() {
                 )}
 
                 <div className="mt-5 pt-4 border-t border-border flex items-center justify-between">
-                  <SyncButton profileId={p.id} />
+                  <SyncButton />
                   <Link
                     to="/perfis/$id"
                     params={{ id: p.id }}
@@ -101,15 +104,20 @@ function Page() {
   );
 }
 
-function SyncButton({ profileId: _profileId }: { profileId: string }) {
+function SyncButton() {
+  const qc = useQueryClient();
   const [syncing, setSyncing] = useState(false);
-  const handleSync = () => {
+  const handleSync = async () => {
     setSyncing(true);
-    toast.info("Iniciando sincronização de métricas...");
-    setTimeout(() => {
+    try {
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: ["perfis"] }),
+        qc.invalidateQueries({ queryKey: ["metricas"] }),
+      ]);
+      toast.success("Dados atualizados.");
+    } finally {
       setSyncing(false);
-      toast.success("Métricas atualizadas via TikTok API.");
-    }, 1500);
+    }
   };
   return (
     <Button
@@ -120,7 +128,77 @@ function SyncButton({ profileId: _profileId }: { profileId: string }) {
       disabled={syncing}
     >
       <RefreshCw className={`h-3 w-3 ${syncing ? "animate-spin" : ""}`} />
-      {syncing ? "Sincronizando..." : "Atualizar métricas"}
+      {syncing ? "Atualizando..." : "Atualizar"}
     </Button>
+  );
+}
+
+function NovoPerfilDialog() {
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState({
+    nome: "",
+    nicho: "",
+    pais: "BR",
+    plataforma: "TikTok Shop",
+    descricao: "",
+  });
+  const create = useCreatePerfil();
+
+  const submit = async () => {
+    if (!form.nome.trim()) {
+      toast.error("Informe o nome do perfil.");
+      return;
+    }
+    try {
+      await create.mutateAsync(form);
+      toast.success("Perfil criado.");
+      setOpen(false);
+      setForm({ nome: "", nicho: "", pais: "BR", plataforma: "TikTok Shop", descricao: "" });
+    } catch (e: any) {
+      toast.error(e.message || "Falha ao criar perfil.");
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button size="sm" className="gap-1.5">
+          <Plus className="h-4 w-4" /> Novo perfil
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader><DialogTitle>Novo perfil</DialogTitle></DialogHeader>
+        <div className="space-y-3">
+          <div>
+            <Label>Nome</Label>
+            <Input value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })} />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label>Nicho</Label>
+              <Input value={form.nicho} onChange={(e) => setForm({ ...form, nicho: e.target.value })} />
+            </div>
+            <div>
+              <Label>País</Label>
+              <Input value={form.pais} onChange={(e) => setForm({ ...form, pais: e.target.value })} />
+            </div>
+            <div>
+              <Label>Plataforma</Label>
+              <Input value={form.plataforma} onChange={(e) => setForm({ ...form, plataforma: e.target.value })} />
+            </div>
+          </div>
+          <div>
+            <Label>Descrição</Label>
+            <Textarea rows={3} value={form.descricao} onChange={(e) => setForm({ ...form, descricao: e.target.value })} />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
+          <Button onClick={submit} disabled={create.isPending}>
+            {create.isPending ? "Criando..." : "Criar perfil"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

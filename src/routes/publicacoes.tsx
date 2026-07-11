@@ -4,7 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { usePublicacoes, useMetricas } from "@/integrations/supabase/hooks";
+import { useQueryClient } from "@tanstack/react-query";
 import { RefreshCw, ExternalLink } from "lucide-react";
+import { toast } from "sonner";
+import { useState } from "react";
 
 export const Route = createFileRoute("/publicacoes")({
   head: () => ({ meta: [{ title: "Publicações — Video Factory" }] }),
@@ -18,6 +21,21 @@ const fmt = (n: number) => new Intl.NumberFormat("pt-BR").format(n);
 function Page() {
   const { data: publicacoes = [], isLoading: l1 } = usePublicacoes();
   const { data: metricas = [], isLoading: l2 } = useMetricas();
+  const qc = useQueryClient();
+  const [syncing, setSyncing] = useState(false);
+
+  const handleSync = async () => {
+    setSyncing(true);
+    try {
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: ["publicacoes"] }),
+        qc.invalidateQueries({ queryKey: ["metricas"] }),
+      ]);
+      toast.success("Dados atualizados.");
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   if (l1 || l2) {
     return (
@@ -37,8 +55,9 @@ function Page() {
       title="Publicações"
       description="Vídeos e carrosséis publicados. Métricas via API ou entrada manual."
       actions={
-        <Button size="sm" className="gap-1.5">
-          <RefreshCw className="h-4 w-4" /> Sincronizar
+        <Button size="sm" className="gap-1.5" onClick={handleSync} disabled={syncing}>
+          <RefreshCw className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`} />
+          {syncing ? "Sincronizando..." : "Sincronizar"}
         </Button>
       }
     >

@@ -7,6 +7,7 @@ import { usePerfil } from "@/integrations/supabase/hooks";
 import { ChevronLeft, CheckCircle2, Clock, RefreshCw } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/perfis/$id")({
   head: () => ({ meta: [{ title: "Perfil — Video Factory" }] }),
@@ -102,19 +103,24 @@ function Field({ label, value, full }: { label: string; value: string; full?: bo
 }
 
 function SyncButton() {
+  const qc = useQueryClient();
   const [syncing, setSyncing] = useState(false);
-  const handleSync = () => {
+  const handleSync = async () => {
     setSyncing(true);
-    toast.info("Iniciando sincronização com o TikTok...");
-    setTimeout(() => {
+    try {
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: ["perfis"] }),
+        qc.invalidateQueries({ queryKey: ["metricas"] }),
+      ]);
+      toast.success("Dados atualizados.");
+    } finally {
       setSyncing(false);
-      toast.success("Métricas atualizadas.");
-    }, 1500);
+    }
   };
   return (
     <Button variant="outline" size="sm" className="h-9 gap-1.5" onClick={handleSync} disabled={syncing}>
       <RefreshCw className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`} />
-      {syncing ? "Sincronizando..." : "Sincronizar TikTok"}
+      {syncing ? "Atualizando..." : "Atualizar dados"}
     </Button>
   );
 }
