@@ -16,11 +16,11 @@ import { Route as PerfisRouteImport } from './routes/perfis'
 import { Route as InteligenciaRouteImport } from './routes/inteligencia'
 import { Route as CustosRouteImport } from './routes/custos'
 import { Route as CriativosRouteImport } from './routes/criativos'
-import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
 import { Route as AvataresRouteImport } from './routes/avatares'
 import { Route as AutomacoesRouteImport } from './routes/automacoes'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ConfiguracoesIndexRouteImport } from './routes/configuracoes.index'
 import { Route as ReferenciasIdRouteImport } from './routes/referencias.$id'
 import { Route as ProdutosIdRouteImport } from './routes/produtos.$id'
 import { Route as PerfisIdRouteImport } from './routes/perfis.$id'
@@ -64,11 +64,6 @@ const CriativosRoute = CriativosRouteImport.update({
   path: '/criativos',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
-  id: '/configuracoes',
-  path: '/configuracoes',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AvataresRoute = AvataresRouteImport.update({
   id: '/avatares',
   path: '/avatares',
@@ -89,6 +84,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ConfiguracoesIndexRoute = ConfiguracoesIndexRouteImport.update({
+  id: '/configuracoes/',
+  path: '/configuracoes/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReferenciasIdRoute = ReferenciasIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -105,14 +105,14 @@ const PerfisIdRoute = PerfisIdRouteImport.update({
   getParentRoute: () => PerfisRoute,
 } as any)
 const ConfiguracoesProvedoresRoute = ConfiguracoesProvedoresRouteImport.update({
-  id: '/provedores',
-  path: '/provedores',
-  getParentRoute: () => ConfiguracoesRoute,
+  id: '/configuracoes/provedores',
+  path: '/configuracoes/provedores',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ConfiguracoesGeminiRoute = ConfiguracoesGeminiRouteImport.update({
-  id: '/gemini',
-  path: '/gemini',
-  getParentRoute: () => ConfiguracoesRoute,
+  id: '/configuracoes/gemini',
+  path: '/configuracoes/gemini',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AvataresIdRoute = AvataresIdRouteImport.update({
   id: '/$id',
@@ -130,7 +130,6 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/automacoes': typeof AutomacoesRoute
   '/avatares': typeof AvataresRouteWithChildren
-  '/configuracoes': typeof ConfiguracoesRouteWithChildren
   '/criativos': typeof CriativosRoute
   '/custos': typeof CustosRoute
   '/inteligencia': typeof InteligenciaRoute
@@ -144,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/perfis/$id': typeof PerfisIdRoute
   '/produtos/$id': typeof ProdutosIdRoute
   '/referencias/$id': typeof ReferenciasIdRoute
+  '/configuracoes/': typeof ConfiguracoesIndexRoute
   '/api/public/runpod-webhook': typeof ApiPublicRunpodWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -151,7 +151,6 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/automacoes': typeof AutomacoesRoute
   '/avatares': typeof AvataresRouteWithChildren
-  '/configuracoes': typeof ConfiguracoesRouteWithChildren
   '/criativos': typeof CriativosRoute
   '/custos': typeof CustosRoute
   '/inteligencia': typeof InteligenciaRoute
@@ -165,6 +164,7 @@ export interface FileRoutesByTo {
   '/perfis/$id': typeof PerfisIdRoute
   '/produtos/$id': typeof ProdutosIdRoute
   '/referencias/$id': typeof ReferenciasIdRoute
+  '/configuracoes': typeof ConfiguracoesIndexRoute
   '/api/public/runpod-webhook': typeof ApiPublicRunpodWebhookRoute
 }
 export interface FileRoutesById {
@@ -173,7 +173,6 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/automacoes': typeof AutomacoesRoute
   '/avatares': typeof AvataresRouteWithChildren
-  '/configuracoes': typeof ConfiguracoesRouteWithChildren
   '/criativos': typeof CriativosRoute
   '/custos': typeof CustosRoute
   '/inteligencia': typeof InteligenciaRoute
@@ -187,6 +186,7 @@ export interface FileRoutesById {
   '/perfis/$id': typeof PerfisIdRoute
   '/produtos/$id': typeof ProdutosIdRoute
   '/referencias/$id': typeof ReferenciasIdRoute
+  '/configuracoes/': typeof ConfiguracoesIndexRoute
   '/api/public/runpod-webhook': typeof ApiPublicRunpodWebhookRoute
 }
 export interface FileRouteTypes {
@@ -196,7 +196,6 @@ export interface FileRouteTypes {
     | '/auth'
     | '/automacoes'
     | '/avatares'
-    | '/configuracoes'
     | '/criativos'
     | '/custos'
     | '/inteligencia'
@@ -210,6 +209,7 @@ export interface FileRouteTypes {
     | '/perfis/$id'
     | '/produtos/$id'
     | '/referencias/$id'
+    | '/configuracoes/'
     | '/api/public/runpod-webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -217,7 +217,6 @@ export interface FileRouteTypes {
     | '/auth'
     | '/automacoes'
     | '/avatares'
-    | '/configuracoes'
     | '/criativos'
     | '/custos'
     | '/inteligencia'
@@ -231,6 +230,7 @@ export interface FileRouteTypes {
     | '/perfis/$id'
     | '/produtos/$id'
     | '/referencias/$id'
+    | '/configuracoes'
     | '/api/public/runpod-webhook'
   id:
     | '__root__'
@@ -238,7 +238,6 @@ export interface FileRouteTypes {
     | '/auth'
     | '/automacoes'
     | '/avatares'
-    | '/configuracoes'
     | '/criativos'
     | '/custos'
     | '/inteligencia'
@@ -252,6 +251,7 @@ export interface FileRouteTypes {
     | '/perfis/$id'
     | '/produtos/$id'
     | '/referencias/$id'
+    | '/configuracoes/'
     | '/api/public/runpod-webhook'
   fileRoutesById: FileRoutesById
 }
@@ -260,7 +260,6 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   AutomacoesRoute: typeof AutomacoesRoute
   AvataresRoute: typeof AvataresRouteWithChildren
-  ConfiguracoesRoute: typeof ConfiguracoesRouteWithChildren
   CriativosRoute: typeof CriativosRoute
   CustosRoute: typeof CustosRoute
   InteligenciaRoute: typeof InteligenciaRoute
@@ -268,6 +267,9 @@ export interface RootRouteChildren {
   ProdutosRoute: typeof ProdutosRouteWithChildren
   PublicacoesRoute: typeof PublicacoesRoute
   ReferenciasRoute: typeof ReferenciasRouteWithChildren
+  ConfiguracoesGeminiRoute: typeof ConfiguracoesGeminiRoute
+  ConfiguracoesProvedoresRoute: typeof ConfiguracoesProvedoresRoute
+  ConfiguracoesIndexRoute: typeof ConfiguracoesIndexRoute
   ApiPublicRunpodWebhookRoute: typeof ApiPublicRunpodWebhookRoute
 }
 
@@ -322,13 +324,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CriativosRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/configuracoes': {
-      id: '/configuracoes'
-      path: '/configuracoes'
-      fullPath: '/configuracoes'
-      preLoaderRoute: typeof ConfiguracoesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/avatares': {
       id: '/avatares'
       path: '/avatares'
@@ -357,6 +352,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/configuracoes/': {
+      id: '/configuracoes/'
+      path: '/configuracoes'
+      fullPath: '/configuracoes/'
+      preLoaderRoute: typeof ConfiguracoesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/referencias/$id': {
       id: '/referencias/$id'
       path: '/$id'
@@ -380,17 +382,17 @@ declare module '@tanstack/react-router' {
     }
     '/configuracoes/provedores': {
       id: '/configuracoes/provedores'
-      path: '/provedores'
+      path: '/configuracoes/provedores'
       fullPath: '/configuracoes/provedores'
       preLoaderRoute: typeof ConfiguracoesProvedoresRouteImport
-      parentRoute: typeof ConfiguracoesRoute
+      parentRoute: typeof rootRouteImport
     }
     '/configuracoes/gemini': {
       id: '/configuracoes/gemini'
-      path: '/gemini'
+      path: '/configuracoes/gemini'
       fullPath: '/configuracoes/gemini'
       preLoaderRoute: typeof ConfiguracoesGeminiRouteImport
-      parentRoute: typeof ConfiguracoesRoute
+      parentRoute: typeof rootRouteImport
     }
     '/avatares/$id': {
       id: '/avatares/$id'
@@ -419,20 +421,6 @@ const AvataresRouteChildren: AvataresRouteChildren = {
 
 const AvataresRouteWithChildren = AvataresRoute._addFileChildren(
   AvataresRouteChildren,
-)
-
-interface ConfiguracoesRouteChildren {
-  ConfiguracoesGeminiRoute: typeof ConfiguracoesGeminiRoute
-  ConfiguracoesProvedoresRoute: typeof ConfiguracoesProvedoresRoute
-}
-
-const ConfiguracoesRouteChildren: ConfiguracoesRouteChildren = {
-  ConfiguracoesGeminiRoute: ConfiguracoesGeminiRoute,
-  ConfiguracoesProvedoresRoute: ConfiguracoesProvedoresRoute,
-}
-
-const ConfiguracoesRouteWithChildren = ConfiguracoesRoute._addFileChildren(
-  ConfiguracoesRouteChildren,
 )
 
 interface PerfisRouteChildren {
@@ -475,7 +463,6 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   AutomacoesRoute: AutomacoesRoute,
   AvataresRoute: AvataresRouteWithChildren,
-  ConfiguracoesRoute: ConfiguracoesRouteWithChildren,
   CriativosRoute: CriativosRoute,
   CustosRoute: CustosRoute,
   InteligenciaRoute: InteligenciaRoute,
@@ -483,6 +470,9 @@ const rootRouteChildren: RootRouteChildren = {
   ProdutosRoute: ProdutosRouteWithChildren,
   PublicacoesRoute: PublicacoesRoute,
   ReferenciasRoute: ReferenciasRouteWithChildren,
+  ConfiguracoesGeminiRoute: ConfiguracoesGeminiRoute,
+  ConfiguracoesProvedoresRoute: ConfiguracoesProvedoresRoute,
+  ConfiguracoesIndexRoute: ConfiguracoesIndexRoute,
   ApiPublicRunpodWebhookRoute: ApiPublicRunpodWebhookRoute,
 }
 export const routeTree = rootRouteImport

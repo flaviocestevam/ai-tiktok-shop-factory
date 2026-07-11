@@ -3,7 +3,7 @@ import { PageShell } from "@/components/page-shell";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Cpu, Building2, Users, KeyRound, Bell } from "lucide-react";
 
-export const Route = createFileRoute("/configuracoes")({
+export const Route = createFileRoute("/configuracoes/")({
   head: () => ({ meta: [{ title: "Configurações — Video Factory" }] }),
   component: Page,
 });
