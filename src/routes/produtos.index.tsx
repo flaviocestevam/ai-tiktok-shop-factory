@@ -45,11 +45,7 @@ function Page() {
     <PageShell
       title="Produtos"
       description="Produtos do TikTok Shop que você promove."
-      actions={
-        <Button size="sm" className="gap-1.5">
-          <Plus className="h-4 w-4" /> Novo produto
-        </Button>
-      }
+      actions={<NovoProdutoDialog />}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {produtos?.map((p: any) => (
