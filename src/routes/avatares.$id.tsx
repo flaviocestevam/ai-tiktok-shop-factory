@@ -3,8 +3,9 @@ import { PageShell } from "@/components/page-shell";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useAvatar } from "@/integrations/supabase/hooks";
-import { ChevronLeft, Camera, Upload } from "lucide-react";
+import { useAvatar, useUpdateAvatar } from "@/integrations/supabase/hooks";
+import { MediaUploader } from "@/components/media-uploader";
+import { ChevronLeft, Camera, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/avatares/$id")({
   head: () => ({ meta: [{ title: "Avatar — Video Factory" }] }),
