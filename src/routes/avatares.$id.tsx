@@ -15,6 +15,7 @@ export const Route = createFileRoute("/avatares/$id")({
 function AvatarDetail() {
   const { id } = useParams({ from: "/avatares/$id" });
   const { data: a, isLoading } = useAvatar(id);
+  const update = useUpdateAvatar();
 
   if (isLoading) {
     return (
@@ -63,42 +64,60 @@ function AvatarDetail() {
         </Badge>
       </div>
 
-      <Card className="bg-card/70">
-        <CardHeader className="pb-2 flex flex-row items-center justify-between">
-          <div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="bg-card/70">
+          <CardHeader className="pb-2">
             <CardTitle className="text-base flex items-center gap-2">
-              <Camera className="h-4 w-4" /> Fotos canônicas
+              <Sparkles className="h-4 w-4 text-primary" /> Foto canônica
+            </CardTitle>
+            <CardDescription>
+              Imagem principal que será usada pela IA em toda produção deste avatar.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <MediaUploader
+              bucket="avatar-fotos"
+              path={(a as any).foto_canonica_url}
+              prefix={id}
+              onUploaded={(newPath) =>
+                update.mutateAsync({ id, foto_canonica_url: newPath })
+              }
+            />
+          </CardContent>
+        </Card>
+
+        <Card className="bg-card/70 md:col-span-2">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Camera className="h-4 w-4" /> Fotos adicionais
             </CardTitle>
             <CardDescription>{fotos.length} fotos cadastradas.</CardDescription>
-          </div>
-          <Button size="sm" variant="outline" className="gap-1.5">
-            <Upload className="h-4 w-4" /> Upload
-          </Button>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {fotos.length === 0 && (
-              <div className="col-span-full text-sm text-muted-foreground">
-                Nenhuma foto cadastrada ainda.
-              </div>
-            )}
-            {fotos.map((f: any) => (
-              <div
-                key={f.id}
-                className="aspect-[3/4] rounded-lg border border-primary/30 bg-primary/5 overflow-hidden"
-              >
-                {f.url ? (
-                  <img src={f.url} alt={f.tipo || "foto"} className="h-full w-full object-cover" />
-                ) : (
-                  <div className="h-full w-full grid place-items-center text-xs text-muted-foreground">
-                    {f.tipo || "Foto"}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {fotos.length === 0 && (
+                <div className="col-span-full text-sm text-muted-foreground">
+                  Nenhuma foto adicional cadastrada.
+                </div>
+              )}
+              {fotos.map((f: any) => (
+                <div
+                  key={f.id}
+                  className="aspect-[3/4] rounded-lg border border-primary/30 bg-primary/5 overflow-hidden"
+                >
+                  {f.url ? (
+                    <img src={f.url} alt={f.tipo || "foto"} className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="h-full w-full grid place-items-center text-xs text-muted-foreground">
+                      {f.tipo || "Foto"}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </PageShell>
   );
 }
