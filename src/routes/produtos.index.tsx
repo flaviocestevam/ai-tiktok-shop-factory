@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useProdutos } from "@/integrations/supabase/hooks";
 
-export const Route = createFileRoute("/produtos")({
+export const Route = createFileRoute("/produtos/")({
   head: () => ({ meta: [{ title: "Produtos — Video Factory" }] }),
   component: Page,
 });

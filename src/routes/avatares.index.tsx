@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Camera } from "lucide-react";
 import { useAvatares } from "@/integrations/supabase/hooks";
 
-export const Route = createFileRoute("/avatares")({
+export const Route = createFileRoute("/avatares/")({
   head: () => ({ meta: [{ title: "Avatares — Video Factory" }] }),
   component: Page,
 });

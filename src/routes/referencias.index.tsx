@@ -14,7 +14,7 @@ import {
   useReferencias, useCreateReferencia, useProdutos, usePerfis, useAvatares,
 } from "@/integrations/supabase/hooks";
 
-export const Route = createFileRoute("/referencias")({
+export const Route = createFileRoute("/referencias/")({
   head: () => ({ meta: [{ title: "Referências — Video Factory" }] }),
   component: Page,
 });
