@@ -105,14 +105,14 @@ const PerfisIdRoute = PerfisIdRouteImport.update({
   getParentRoute: () => PerfisRoute,
 } as any)
 const ConfiguracoesProvedoresRoute = ConfiguracoesProvedoresRouteImport.update({
-  id: '/configuracoes/provedores',
-  path: '/configuracoes/provedores',
-  getParentRoute: () => rootRouteImport,
+  id: '/provedores',
+  path: '/provedores',
+  getParentRoute: () => ConfiguracoesRoute,
 } as any)
 const ConfiguracoesGeminiRoute = ConfiguracoesGeminiRouteImport.update({
-  id: '/configuracoes/gemini',
-  path: '/configuracoes/gemini',
-  getParentRoute: () => rootRouteImport,
+  id: '/gemini',
+  path: '/gemini',
+  getParentRoute: () => ConfiguracoesRoute,
 } as any)
 const AvataresIdRoute = AvataresIdRouteImport.update({
   id: '/$id',
@@ -267,8 +267,6 @@ export interface RootRouteChildren {
   ProdutosRoute: typeof ProdutosRouteWithChildren
   PublicacoesRoute: typeof PublicacoesRoute
   ReferenciasRoute: typeof ReferenciasRouteWithChildren
-  ConfiguracoesGeminiRoute: typeof ConfiguracoesGeminiRoute
-  ConfiguracoesProvedoresRoute: typeof ConfiguracoesProvedoresRoute
   ConfiguracoesIndexRoute: typeof ConfiguracoesIndexRoute
   ApiPublicRunpodWebhookRoute: typeof ApiPublicRunpodWebhookRoute
 }
@@ -382,17 +380,17 @@ declare module '@tanstack/react-router' {
     }
     '/configuracoes/provedores': {
       id: '/configuracoes/provedores'
-      path: '/configuracoes/provedores'
+      path: '/provedores'
       fullPath: '/configuracoes/provedores'
       preLoaderRoute: typeof ConfiguracoesProvedoresRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof ConfiguracoesRoute
     }
     '/configuracoes/gemini': {
       id: '/configuracoes/gemini'
-      path: '/configuracoes/gemini'
+      path: '/gemini'
       fullPath: '/configuracoes/gemini'
       preLoaderRoute: typeof ConfiguracoesGeminiRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof ConfiguracoesRoute
     }
     '/avatares/$id': {
       id: '/avatares/$id'
@@ -470,11 +468,19 @@ const rootRouteChildren: RootRouteChildren = {
   ProdutosRoute: ProdutosRouteWithChildren,
   PublicacoesRoute: PublicacoesRoute,
   ReferenciasRoute: ReferenciasRouteWithChildren,
-  ConfiguracoesGeminiRoute: ConfiguracoesGeminiRoute,
-  ConfiguracoesProvedoresRoute: ConfiguracoesProvedoresRoute,
   ConfiguracoesIndexRoute: ConfiguracoesIndexRoute,
   ApiPublicRunpodWebhookRoute: ApiPublicRunpodWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
