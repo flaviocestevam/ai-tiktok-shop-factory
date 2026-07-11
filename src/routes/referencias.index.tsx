@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Plus, Film, Images, ArrowUpRight, ExternalLink } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
   useReferencias, useCreateReferencia, useProdutos, usePerfis, useAvatares,
@@ -45,6 +45,16 @@ const STATUS_COLOR: Record<string, string> = {
 function Page() {
   const { data: referencias = [], isLoading } = useReferencias();
   const [statusFilter, setStatusFilter] = useState<string>("todos");
+  const search = Route.useSearch();
+  const navigate = Route.useNavigate();
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  useEffect(() => {
+    if (search.new === 1) {
+      setDialogOpen(true);
+      navigate({ search: {} as any, replace: true });
+    }
+  }, [search.new, navigate]);
 
   const filtradas = referencias.filter((r: any) =>
     statusFilter === "todos" ? true : r.status === statusFilter,
@@ -54,7 +64,7 @@ function Page() {
     <PageShell
       title="Vídeos de Referência"
       description="Vídeos que estão vendendo no TikTok Shop. Cole o link, analise e gere o kit de produção."
-      actions={<NovaReferenciaDialog />}
+      actions={<NovaReferenciaDialog open={dialogOpen} onOpenChange={setDialogOpen} />}
     >
       <div className="flex items-center gap-2 mb-4">
         <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -146,8 +156,13 @@ function Meta({ k, v }: { k: string; v: string }) {
   );
 }
 
-function NovaReferenciaDialog() {
-  const [open, setOpen] = useState(false);
+function NovaReferenciaDialog({
+  open: openProp,
+  onOpenChange,
+}: { open?: boolean; onOpenChange?: (v: boolean) => void } = {}) {
+  const [openState, setOpenState] = useState(false);
+  const open = openProp ?? openState;
+  const setOpen = onOpenChange ?? setOpenState;
   const [url, setUrl] = useState("");
   const [tipo, setTipo] = useState<"video" | "carrossel">("video");
   const [produtoId, setProdutoId] = useState<string>("");
