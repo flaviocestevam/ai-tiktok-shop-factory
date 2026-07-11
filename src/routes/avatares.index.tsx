@@ -38,11 +38,7 @@ function Page() {
     <PageShell
       title="Avatares"
       description="Personagens fictícios que estrelam os criativos. Escolha um por referência."
-      actions={
-        <Button size="sm" className="gap-1.5">
-          <Plus className="h-4 w-4" /> Novo avatar
-        </Button>
-      }
+      actions={<NovoAvatarDialog />}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {avatares?.map((a: any) => {
