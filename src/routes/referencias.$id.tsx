@@ -8,11 +8,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  ChevronLeft, Copy, ExternalLink, Sparkles, CheckCircle2, Wand2, Save, Film, Images,
+  ChevronLeft, Copy, ExternalLink, Sparkles, CheckCircle2, Wand2, Save, Film, Images, Video, Loader2, RefreshCw,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { useReferencia, useUpdateReferencia } from "@/integrations/supabase/hooks";
+import { useReferencia, useUpdateReferencia, useGeracoesByReferencia, useInvalidateGeracoes } from "@/integrations/supabase/hooks";
+import { useServerFn } from "@tanstack/react-start";
+import { gerarVideo, atualizarStatusGeracao } from "@/lib/ai/runpod.functions";
 
 export const Route = createFileRoute("/referencias/$id")({
   head: () => ({ meta: [{ title: "Referência — Video Factory" }] }),
@@ -316,6 +318,12 @@ function ReferenciaDetail() {
               </KitBlock>
             )}
 
+            <GeracoesVideoBlock
+              referenciaId={r.id}
+              prompt={promptVideo}
+              duracaoSeg={form.duracao_seg || 6}
+            />
+
             {r.status !== "produzido" && r.status !== "publicado" && r.status !== "concluido" && (
               <Button onClick={marcarProduzido} className="gap-1.5">
                 <CheckCircle2 className="h-4 w-4" /> Marcar como produzido
@@ -325,6 +333,111 @@ function ReferenciaDetail() {
         </Card>
       )}
     </PageShell>
+  );
+}
+
+function GeracoesVideoBlock({
+  referenciaId,
+  prompt,
+  duracaoSeg,
+}: {
+  referenciaId: string;
+  prompt: string;
+  duracaoSeg: number;
+}) {
+  const { data: geracoes = [] } = useGeracoesByReferencia(referenciaId);
+  const invalidate = useInvalidateGeracoes();
+  const gerar = useServerFn(gerarVideo);
+  const atualizar = useServerFn(atualizarStatusGeracao);
+  const [loading, setLoading] = useState(false);
+
+  const onGerar = async () => {
+    setLoading(true);
+    try {
+      const res = await gerar({ data: { referencia_id: referenciaId, prompt, duracao_seg: duracaoSeg } });
+      if (res.status === "mock") {
+        toast.info("Modo simulação — configure RUNPOD_API_KEY para gerar de verdade.");
+      } else {
+        toast.success("Job enviado para o RunPod.");
+      }
+      await invalidate(referenciaId);
+    } catch (e: any) {
+      toast.error(e.message || "Falha ao gerar vídeo.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onAtualizar = async (id: string) => {
+    try {
+      await atualizar({ data: { geracao_id: id } });
+      await invalidate(referenciaId);
+    } catch (e: any) {
+      toast.error(e.message || "Falha ao atualizar.");
+    }
+  };
+
+  return (
+    <KitBlock title="Geração de vídeo (RunPod + ComfyUI)">
+      <div className="flex items-center gap-2">
+        <Button onClick={onGerar} disabled={loading} className="gap-1.5">
+          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Video className="h-4 w-4" />}
+          Gerar vídeo
+        </Button>
+        <span className="text-xs text-muted-foreground">
+          Usa foto do avatar + foto do produto + roteiro. Duração: {duracaoSeg}s.
+        </span>
+      </div>
+
+      {geracoes.length === 0 ? (
+        <p className="text-xs text-muted-foreground">Nenhuma geração ainda.</p>
+      ) : (
+        <div className="space-y-2">
+          {geracoes.map((g: any) => (
+            <div key={g.id} className="rounded-md border border-border bg-background/60 p-2 text-xs">
+              <div className="flex items-center gap-2">
+                <StatusPill status={g.status} />
+                <span className="text-muted-foreground font-mono truncate">{g.runpod_job_id}</span>
+                <span className="ml-auto text-muted-foreground">
+                  {new Date(g.created_at).toLocaleString("pt-BR")}
+                </span>
+                {["queued", "running"].includes(g.status) && (
+                  <Button size="sm" variant="ghost" className="h-6 px-2" onClick={() => onAtualizar(g.id)}>
+                    <RefreshCw className="h-3 w-3" />
+                  </Button>
+                )}
+              </div>
+              {g.video_url && (
+                <video
+                  src={g.video_url}
+                  controls
+                  className="mt-2 w-full max-w-xs aspect-[9/16] rounded-md bg-black"
+                />
+              )}
+              {g.erro && <p className="mt-1 text-destructive">{g.erro}</p>}
+              {g.custo_usd != null && (
+                <p className="mt-1 text-muted-foreground">Custo: US$ {Number(g.custo_usd).toFixed(4)}</p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </KitBlock>
+  );
+}
+
+function StatusPill({ status }: { status: string }) {
+  const map: Record<string, string> = {
+    queued: "bg-muted text-muted-foreground",
+    running: "bg-primary/20 text-primary",
+    completed: "bg-emerald-500/20 text-emerald-400",
+    failed: "bg-destructive/20 text-destructive",
+    mock: "bg-yellow-500/20 text-yellow-400",
+  };
+  return (
+    <span className={`px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider ${map[status] ?? "bg-muted"}`}>
+      {status}
+    </span>
   );
 }
 
