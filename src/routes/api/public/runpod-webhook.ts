@@ -10,24 +10,35 @@ export const Route = createFileRoute("/api/public/runpod-webhook")({
         const secret = process.env.RUNPOD_WEBHOOK_SECRET;
         const signature = request.headers.get("x-runpod-signature");
 
-        if (secret) {
-          if (!signature) return new Response("missing signature", { status: 401 });
-          const enc = new TextEncoder();
-          const key = await crypto.subtle.importKey(
-            "raw",
-            enc.encode(secret),
-            { name: "HMAC", hash: "SHA-256" },
-            false,
-            ["sign"],
-          );
-          const sig = await crypto.subtle.sign("HMAC", key, enc.encode(raw));
-          const expected = Array.from(new Uint8Array(sig))
-            .map((b) => b.toString(16).padStart(2, "0"))
-            .join("");
-          if (expected !== signature.toLowerCase()) {
-            return new Response("bad signature", { status: 401 });
-          }
+        // HMAC obrigatório — sem secret configurado, endpoint fica bloqueado.
+        if (!secret) {
+          console.error("[runpod-webhook] RUNPOD_WEBHOOK_SECRET não configurado");
+          return new Response("webhook not configured", { status: 503 });
         }
+        if (!signature) return new Response("missing signature", { status: 401 });
+
+        const enc = new TextEncoder();
+        const key = await crypto.subtle.importKey(
+          "raw",
+          enc.encode(secret),
+          { name: "HMAC", hash: "SHA-256" },
+          false,
+          ["sign"],
+        );
+        const sig = await crypto.subtle.sign("HMAC", key, enc.encode(raw));
+        const expected = Array.from(new Uint8Array(sig))
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("");
+        // Comparação timing-safe simples via length + XOR acumulado.
+        const provided = signature.toLowerCase();
+        if (expected.length !== provided.length) {
+          return new Response("bad signature", { status: 401 });
+        }
+        let diff = 0;
+        for (let i = 0; i < expected.length; i++) {
+          diff |= expected.charCodeAt(i) ^ provided.charCodeAt(i);
+        }
+        if (diff !== 0) return new Response("bad signature", { status: 401 });
 
         let payload: any;
         try {

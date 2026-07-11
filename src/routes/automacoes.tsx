@@ -3,8 +3,8 @@ import { PageShell } from "@/components/page-shell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { useAutomacoes } from "@/integrations/supabase/hooks";
-
+import { toast } from "sonner";
+import { useAutomacoes, useToggleAutomacao } from "@/integrations/supabase/hooks";
 import { Zap } from "lucide-react";
 
 export const Route = createFileRoute("/automacoes")({
@@ -14,6 +14,7 @@ export const Route = createFileRoute("/automacoes")({
 
 function Page() {
   const { data: automacoes, isLoading } = useAutomacoes();
+  const toggle = useToggleAutomacao();
 
   if (isLoading) {
     return (
@@ -27,16 +28,14 @@ function Page() {
     );
   }
 
-
   return (
     <PageShell
       title="Automações"
       description="Gatilhos internos que conectam aprovações, geração, métricas e aprendizado."
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {automacoes?.map((a) => (
-
-          <Card key={a.trigger} className="bg-card/70">
+        {automacoes?.map((a: any) => (
+          <Card key={a.id} className="bg-card/70">
             <CardHeader className="pb-2">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-2">
@@ -48,7 +47,17 @@ function Page() {
                     <CardTitle className="text-sm">{a.trigger}</CardTitle>
                   </div>
                 </div>
-                <Switch defaultChecked={a.ativo} />
+                <Switch
+                  checked={a.ativo}
+                  disabled={toggle.isPending}
+                  onCheckedChange={async (v) => {
+                    try {
+                      await toggle.mutateAsync({ id: a.id, ativo: v });
+                    } catch (e: any) {
+                      toast.error(e?.message ?? "Falha ao atualizar automação.");
+                    }
+                  }}
+                />
               </div>
             </CardHeader>
             <CardContent>
