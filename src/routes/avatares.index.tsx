@@ -85,3 +85,56 @@ function Page() {
     </PageShell>
   );
 }
+
+function NovoAvatarDialog() {
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState({ nome: "", genero: "", idade_estimada: "", estilo: "", nichos: "", descricao: "" });
+  const create = useCreateAvatar();
+  const navigate = useNavigate();
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.nome.trim()) return toast.error("Informe o nome do avatar.");
+    try {
+      const a: any = await create.mutateAsync({
+        nome: form.nome.trim(),
+        genero: form.genero || null,
+        idade_estimada: form.idade_estimada || null,
+        estilo: form.estilo || null,
+        nichos: form.nichos ? form.nichos.split(",").map((s) => s.trim()).filter(Boolean) : [],
+        descricao: form.descricao || null,
+      });
+      toast.success("Avatar criado. Envie a foto canônica na próxima tela.");
+      setOpen(false);
+      navigate({ to: "/avatares/$id", params: { id: a.id } });
+    } catch (err: any) {
+      toast.error(err?.message ?? "Erro ao criar avatar.");
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button size="sm" className="gap-1.5">
+          <Plus className="h-4 w-4" /> Novo avatar
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader><DialogTitle>Novo avatar</DialogTitle></DialogHeader>
+        <form onSubmit={submit} className="space-y-3">
+          <div><Label>Nome *</Label><Input value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })} /></div>
+          <div className="grid grid-cols-2 gap-3">
+            <div><Label>Gênero</Label><Input value={form.genero} onChange={(e) => setForm({ ...form, genero: e.target.value })} /></div>
+            <div><Label>Idade estimada</Label><Input value={form.idade_estimada} onChange={(e) => setForm({ ...form, idade_estimada: e.target.value })} placeholder="ex.: 25-30" /></div>
+            <div><Label>Estilo</Label><Input value={form.estilo} onChange={(e) => setForm({ ...form, estilo: e.target.value })} placeholder="casual, fitness..." /></div>
+            <div><Label>Nichos (vírgula)</Label><Input value={form.nichos} onChange={(e) => setForm({ ...form, nichos: e.target.value })} placeholder="beleza, saúde" /></div>
+          </div>
+          <div><Label>Descrição</Label><Textarea value={form.descricao} onChange={(e) => setForm({ ...form, descricao: e.target.value })} /></div>
+          <DialogFooter>
+            <Button type="submit" disabled={create.isPending}>{create.isPending ? "Criando..." : "Criar"}</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
