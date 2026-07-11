@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { useReferencia, useUpdateReferencia, useGeracoesByReferencia, useInvalidateGeracoes } from "@/integrations/supabase/hooks";
 import { useServerFn } from "@tanstack/react-start";
 import { gerarVideo, atualizarStatusGeracao } from "@/lib/ai/runpod.functions";
+import { gerarRoteiroAdaptado } from "@/lib/ai/lovable-ai.functions";
 
 export const Route = createFileRoute("/referencias/$id")({
   head: () => ({ meta: [{ title: "Referência — Video Factory" }] }),
@@ -35,6 +36,8 @@ function ReferenciaDetail() {
   const { id } = useParams({ from: "/referencias/$id" });
   const { data: r, isLoading } = useReferencia(id);
   const update = useUpdateReferencia();
+  const gerarRoteiro = useServerFn(gerarRoteiroAdaptado);
+  const [gerandoRoteiro, setGerandoRoteiro] = useState(false);
 
   const [form, setForm] = useState({
     transcricao: "",
@@ -92,13 +95,24 @@ function ReferenciaDetail() {
   };
 
   const gerarRoteiroIA = async () => {
-    // Placeholder — integração com Lovable AI virá depois
-    toast.info("Gerando roteiro adaptado com IA...");
-    setTimeout(() => {
-      const roteiro = `[Roteiro adaptado a partir da referência]\n\nGancho: ${form.gancho || "?"}\n\nCena 1: Apresentação\nCena 2: Demonstração do produto (${r.produto?.nome || "produto"})\nCena 3: Prova social / antes-depois\nCena 4: CTA — link do produto\n\nDuração alvo: ${form.duracao_seg || "?"}s`;
-      setForm((f) => ({ ...f, roteiro_adaptado: roteiro }));
+    setGerandoRoteiro(true);
+    try {
+      const res = await gerarRoteiro({
+        data: {
+          gancho: form.gancho,
+          transcricao: form.transcricao,
+          estrutura: form.estrutura,
+          duracao_seg: form.duracao_seg || 15,
+          produto_nome: r?.produto?.nome || "",
+        },
+      });
+      setForm((f) => ({ ...f, roteiro_adaptado: res.roteiro }));
       toast.success("Roteiro gerado.");
-    }, 1200);
+    } catch (e: any) {
+      toast.error(e.message || "Falha ao gerar roteiro.");
+    } finally {
+      setGerandoRoteiro(false);
+    }
   };
 
   const marcarProduzido = async () => {
