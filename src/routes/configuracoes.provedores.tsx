@@ -5,23 +5,34 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { ChevronLeft } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/configuracoes/provedores")({
   head: () => ({ meta: [{ title: "Provedores de IA — Video Factory" }] }),
   component: Page,
 });
 
-const provedores = [
-  { nome: "OpenAI GPT-5", area: "Roteiros e ganchos", status: "ativo", custo: "$0.005 / 1k tokens" },
-  { nome: "Anthropic Claude 4.5", area: "Roteiros longos", status: "ativo", custo: "$0.008 / 1k tokens" },
-  { nome: "Google Gemini 2.5", area: "Análise de produto", status: "pausado", custo: "$0.004 / 1k tokens" },
-  { nome: "Flux Pro", area: "Imagens para carrossel", status: "ativo", custo: "$0.04 / imagem" },
-  { nome: "Midjourney v7", area: "Imagens premium", status: "ativo", custo: "$0.10 / imagem" },
-  { nome: "Runway Gen-4", area: "Vídeos curtos", status: "ativo", custo: "$0.18 / segundo" },
-  { nome: "ElevenLabs", area: "Voz / dublagem", status: "ativo", custo: "$0.30 / minuto" },
+type Provedor = { nome: string; area: string; ativo: boolean; custo: string };
+
+const INITIAL: Provedor[] = [
+  { nome: "OpenAI GPT-5", area: "Roteiros e ganchos", ativo: true, custo: "$0.005 / 1k tokens" },
+  { nome: "Anthropic Claude 4.5", area: "Roteiros longos", ativo: true, custo: "$0.008 / 1k tokens" },
+  { nome: "Google Gemini 2.5", area: "Análise de produto", ativo: false, custo: "$0.004 / 1k tokens" },
+  { nome: "Flux Pro", area: "Imagens para carrossel", ativo: true, custo: "$0.04 / imagem" },
+  { nome: "Midjourney v7", area: "Imagens premium", ativo: true, custo: "$0.10 / imagem" },
+  { nome: "Runway Gen-4", area: "Vídeos curtos", ativo: true, custo: "$0.18 / segundo" },
+  { nome: "ElevenLabs", area: "Voz / dublagem", ativo: true, custo: "$0.30 / minuto" },
 ];
 
 function Page() {
+  const [provedores, setProvedores] = useState<Provedor[]>(INITIAL);
+
+  const toggle = (nome: string, ativo: boolean) => {
+    setProvedores((prev) => prev.map((p) => (p.nome === nome ? { ...p, ativo } : p)));
+    toast.success(`${nome} ${ativo ? "ativado" : "pausado"}.`);
+  };
+
   return (
     <PageShell
       title="Provedores de IA"
@@ -37,13 +48,13 @@ function Page() {
                   <CardDescription>{p.area}</CardDescription>
                   <CardTitle className="text-base">{p.nome}</CardTitle>
                 </div>
-                <Switch defaultChecked={p.status === "ativo"} />
+                <Switch checked={p.ativo} onCheckedChange={(v) => toggle(p.nome, v)} />
               </div>
             </CardHeader>
             <CardContent className="flex items-center justify-between text-xs">
               <Badge variant="outline">{p.custo}</Badge>
-              <Badge className={p.status === "ativo" ? "bg-success/15 text-success border-success/30" : "bg-muted text-muted-foreground"}>
-                {p.status}
+              <Badge className={p.ativo ? "bg-success/15 text-success border-success/30" : "bg-muted text-muted-foreground"}>
+                {p.ativo ? "ativo" : "pausado"}
               </Badge>
             </CardContent>
           </Card>
