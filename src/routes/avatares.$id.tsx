@@ -106,29 +106,53 @@ function AvatarDetail() {
             <CardTitle className="text-base flex items-center gap-2">
               <Camera className="h-4 w-4" /> Fotos adicionais
             </CardTitle>
-            <CardDescription>{fotos.length} fotos cadastradas.</CardDescription>
+            <CardDescription>
+              {fotos.length} de {POSICOES.length} ângulos cadastrados.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {fotos.length === 0 && (
-                <div className="col-span-full text-sm text-muted-foreground">
-                  Nenhuma foto adicional cadastrada.
-                </div>
-              )}
-              {fotos.map((f: any) => (
-                <div
-                  key={f.id}
-                  className="aspect-[3/4] rounded-lg border border-primary/30 bg-primary/5 overflow-hidden"
-                >
-                  {f.url ? (
-                    <img src={f.url} alt={f.tipo || "foto"} className="h-full w-full object-cover" />
-                  ) : (
-                    <div className="h-full w-full grid place-items-center text-xs text-muted-foreground">
-                      {f.tipo || "Foto"}
+              {POSICOES.map((pos, idx) => {
+                const foto = fotos.find((f: any) => f.posicao === pos.key);
+                return (
+                  <div key={pos.key} className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-medium">{pos.label}</span>
+                      {foto && (
+                        <button
+                          type="button"
+                          className="text-muted-foreground hover:text-destructive"
+                          disabled={removeFoto.isPending}
+                          onClick={async () => {
+                            try {
+                              await removeFoto.mutateAsync({ id: foto.id, avatar_id: id });
+                              toast.success("Foto removida.");
+                            } catch (e: any) {
+                              toast.error(e?.message ?? "Falha ao remover.");
+                            }
+                          }}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      )}
                     </div>
-                  )}
-                </div>
-              ))}
+                    <MediaUploader
+                      bucket="avatar-fotos"
+                      path={foto?.storage_path}
+                      prefix={`${id}/${pos.key}`}
+                      label={`Enviar ${pos.label.toLowerCase()}`}
+                      onUploaded={async (newPath) => {
+                        await upsertFoto.mutateAsync({
+                          avatar_id: id,
+                          posicao: pos.key,
+                          storage_path: newPath,
+                          ordem: idx,
+                        });
+                      }}
+                    />
+                  </div>
+                );
+              })}
             </div>
           </CardContent>
         </Card>
