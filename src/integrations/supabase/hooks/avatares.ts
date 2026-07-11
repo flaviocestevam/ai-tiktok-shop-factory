@@ -20,3 +20,12 @@ export const useUpdateAvatar = () => {
     onSuccess: (_d, v) => invalidate([["avatares", v.id]]),
   });
 };
+
+export const useCreateAvatar = () => {
+  const invalidate = useInvalidator(["avatares"]);
+  return useMutation({
+    mutationFn: async (payload: Record<string, any>) =>
+      unwrap(await (supabase as any).from("avatares").insert(payload).select().single()),
+    onSuccess: () => invalidate(),
+  });
+};
