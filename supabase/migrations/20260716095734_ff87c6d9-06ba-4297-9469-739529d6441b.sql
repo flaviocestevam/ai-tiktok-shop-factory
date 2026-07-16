@@ -1,0 +1,28 @@
+DROP POLICY IF EXISTS "geracoes_video_anon_all" ON public.geracoes_video;
+REVOKE ALL ON public.geracoes_video FROM anon;
+
+DROP POLICY IF EXISTS "media_buckets_read" ON storage.objects;
+DROP POLICY IF EXISTS "media_buckets_insert" ON storage.objects;
+DROP POLICY IF EXISTS "media_buckets_update" ON storage.objects;
+DROP POLICY IF EXISTS "media_buckets_delete" ON storage.objects;
+DROP POLICY IF EXISTS "media_buckets_auth_read" ON storage.objects;
+DROP POLICY IF EXISTS "media_buckets_auth_insert" ON storage.objects;
+DROP POLICY IF EXISTS "media_buckets_auth_update" ON storage.objects;
+DROP POLICY IF EXISTS "media_buckets_auth_delete" ON storage.objects;
+
+CREATE POLICY "media_buckets_auth_read"
+ON storage.objects FOR SELECT TO authenticated
+USING (bucket_id IN ('avatar-fotos','produto-fotos','videos-gerados'));
+
+CREATE POLICY "media_buckets_auth_insert"
+ON storage.objects FOR INSERT TO authenticated
+WITH CHECK (bucket_id IN ('avatar-fotos','produto-fotos','videos-gerados'));
+
+CREATE POLICY "media_buckets_auth_update"
+ON storage.objects FOR UPDATE TO authenticated
+USING (bucket_id IN ('avatar-fotos','produto-fotos','videos-gerados'))
+WITH CHECK (bucket_id IN ('avatar-fotos','produto-fotos','videos-gerados'));
+
+CREATE POLICY "media_buckets_auth_delete"
+ON storage.objects FOR DELETE TO authenticated
+USING (bucket_id IN ('avatar-fotos','produto-fotos','videos-gerados'));
