@@ -1,6 +1,5 @@
-// Server-only helpers for RunPod ComfyUI integration.
-// Never imported from client code. Uses fetch (Worker-safe).
-import workflowTemplate from "./comfy-workflows/video-ugc.template.json";
+// Server-only client for the authenticated Railway generation gateway.
+// RunPod credentials never enter the Lovable frontend process.
 
 export type RunpodJobStatus =
   | "queued"
@@ -9,67 +8,79 @@ export type RunpodJobStatus =
   | "failed"
   | "cancelled";
 
-function requireRunpodConfig() {
-  const apiKey = process.env.RUNPOD_API_KEY;
-  const endpointId = process.env.RUNPOD_ENDPOINT_ID;
-
-  if (!apiKey || !endpointId) {
-    throw new Error(
-      "Geração indisponível: RUNPOD_API_KEY e RUNPOD_ENDPOINT_ID precisam estar configurados.",
-    );
+function requireGatewayConfig() {
+  const baseUrl = (
+    process.env.VIDEO_FACTORY_BACKEND_URL ??
+    "https://editor-video-tiktok-backend-production.up.railway.app"
+  ).replace(/\/$/, "");
+  const apiKey = process.env.VIDEO_FACTORY_API_KEY;
+  if (!apiKey) {
+    throw new Error("Geração indisponível: VIDEO_FACTORY_API_KEY não configurada.");
   }
-
-  return { apiKey, endpointId };
+  return { baseUrl, apiKey };
 }
 
 export function buildWorkflow(params: {
+  jobId: string;
   avatarUrl: string;
-  produtoUrl: string;
   prompt: string;
-  duracaoSeg: number;
+  gender?: string | null;
 }) {
-  const json = JSON.stringify(workflowTemplate)
-    .replaceAll("{{AVATAR_URL}}", params.avatarUrl)
-    .replaceAll("{{PRODUTO_URL}}", params.produtoUrl)
-    .replaceAll("{{PROMPT}}", params.prompt.replace(/"/g, '\\"'))
-    .replaceAll('"{{DURACAO_SEG}}"', String(params.duracaoSeg))
-    .replaceAll("{{DURACAO_SEG}}", String(params.duracaoSeg));
-  return JSON.parse(json);
+  const normalizedGender = (params.gender ?? "").toLowerCase();
+  const gender = ["masculino", "male", "homem", "m"].includes(normalizedGender)
+    ? "male"
+    : "female";
+  return {
+    job_id: params.jobId,
+    mode: "photo_to_talking_video" as const,
+    character_image_url: params.avatarUrl,
+    text: params.prompt,
+    language: "pt-BR" as const,
+    gender,
+    width: 480,
+    height: 832,
+    audio_cfg: 1,
+  };
 }
 
-export async function submitRunpodJob(input: {
-  workflow: unknown;
-  webhookUrl?: string;
-}): Promise<{ id: string; status: RunpodJobStatus }> {
-  const { apiKey, endpointId } = requireRunpodConfig();
-
-  const res = await fetch(`https://api.runpod.ai/v2/${endpointId}/run`, {
-    method: "POST",
+async function gatewayFetch(path: string, init?: RequestInit) {
+  const { baseUrl, apiKey } = requireGatewayConfig();
+  const res = await fetch(`${baseUrl}${path}`, {
+    ...init,
     headers: {
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
+      ...init?.headers,
     },
-    body: JSON.stringify({
-      input: { workflow: input.workflow },
-      webhook: input.webhookUrl,
-    }),
   });
-
   if (!res.ok) {
-    throw new Error(`RunPod submit failed: ${res.status} ${await res.text()}`);
+    const payload = await res.json().catch(() => null) as { detail?: string } | null;
+    throw new Error(payload?.detail ?? `Falha no serviço de geração (HTTP ${res.status}).`);
   }
-  const data = (await res.json()) as { id: string; status?: string };
-  return { id: data.id, status: (data.status?.toLowerCase() as RunpodJobStatus) ?? "queued" };
+  return res.json();
+}
+
+export async function submitRunpodJob(input: {
+  workflow: ReturnType<typeof buildWorkflow>;
+  webhookUrl?: string;
+}): Promise<{ id: string; status: RunpodJobStatus }> {
+  const data = await gatewayFetch("/api/generation/jobs", {
+    method: "POST",
+    body: JSON.stringify(input.workflow),
+  }) as { id: string; status?: string };
+  return { id: data.id, status: mapRunpodStatus(data.status ?? "queued") };
 }
 
 export async function fetchRunpodStatus(jobId: string) {
-  const { apiKey, endpointId } = requireRunpodConfig();
-  const res = await fetch(`https://api.runpod.ai/v2/${endpointId}/status/${jobId}`, {
-    headers: { Authorization: `Bearer ${apiKey}` },
-  });
-  if (!res.ok) throw new Error(`RunPod status failed: ${res.status}`);
-  const data = (await res.json()) as { status: string; output?: any };
-  return { status: data.status.toLowerCase() as RunpodJobStatus, output: data.output ?? null };
+  const data = await gatewayFetch(`/api/generation/jobs/${encodeURIComponent(jobId)}`) as {
+    status: string;
+    output?: Record<string, unknown>;
+    error?: string;
+  };
+  return {
+    status: data.status.toLowerCase() as RunpodJobStatus,
+    output: data.output ?? (data.error ? { error: data.error } : null),
+  };
 }
 
 export function mapRunpodStatus(s: string): "queued" | "running" | "completed" | "failed" {
