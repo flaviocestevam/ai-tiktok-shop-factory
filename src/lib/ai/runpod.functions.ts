@@ -3,9 +3,8 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 // Kicks off a RunPod ComfyUI job to generate a video for a given referência.
-// Runs in mock mode when RUNPOD_* env vars are missing, so the whole UI flow
-// (button → progresso → registro em geracoes_video) já funciona antes da
-// integração real. Basta ligar as chaves depois.
+// Fails closed when RunPod is not configured; production must never record a
+// simulated generation as if it were a real job.
 export const gerarVideo = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) =>
@@ -47,7 +46,7 @@ export const gerarVideo = createServerFn({ method: "POST" })
       throw new Error("Falha ao gerar URLs assinadas das imagens.");
     }
 
-    // 3. Monta workflow + chama RunPod (ou entra em modo mock).
+    // 3. Monta workflow + chama RunPod.
     const { buildWorkflow, submitRunpodJob } = await import("./runpod.server");
     const workflow = buildWorkflow({
       avatarUrl: aSig.signedUrl,
@@ -72,7 +71,7 @@ export const gerarVideo = createServerFn({ method: "POST" })
         produto_id: (ref.produto as any)?.id ?? null,
         avatar_id: (ref.avatar as any)?.id ?? null,
         runpod_job_id: job.id,
-        status: job.status === "mock" ? "mock" : "queued",
+        status: "queued",
         iniciado_em: new Date().toISOString(),
         input_payload: {
           prompt: data.prompt,
@@ -108,8 +107,6 @@ export const atualizarStatusGeracao = createServerFn({ method: "POST" })
     if (!gen.runpod_job_id) return { status: gen.status };
 
     const remote = await fetchRunpodStatus(gen.runpod_job_id);
-    if (remote.status === "mock") return { status: gen.status };
-
     const status = mapRunpodStatus(remote.status);
     const videoUrl =
       status === "completed"
