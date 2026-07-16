@@ -7,8 +7,20 @@ export type RunpodJobStatus =
   | "running"
   | "completed"
   | "failed"
-  | "cancelled"
-  | "mock";
+  | "cancelled";
+
+function requireRunpodConfig() {
+  const apiKey = process.env.RUNPOD_API_KEY;
+  const endpointId = process.env.RUNPOD_ENDPOINT_ID;
+
+  if (!apiKey || !endpointId) {
+    throw new Error(
+      "Geração indisponível: RUNPOD_API_KEY e RUNPOD_ENDPOINT_ID precisam estar configurados.",
+    );
+  }
+
+  return { apiKey, endpointId };
+}
 
 export function buildWorkflow(params: {
   avatarUrl: string;
@@ -29,13 +41,7 @@ export async function submitRunpodJob(input: {
   workflow: unknown;
   webhookUrl?: string;
 }): Promise<{ id: string; status: RunpodJobStatus }> {
-  const apiKey = process.env.RUNPOD_API_KEY;
-  const endpointId = process.env.RUNPOD_ENDPOINT_ID;
-
-  if (!apiKey || !endpointId) {
-    // Mock mode — lets the UI flow work end-to-end before RunPod is wired up.
-    return { id: `mock_${crypto.randomUUID()}`, status: "mock" };
-  }
+  const { apiKey, endpointId } = requireRunpodConfig();
 
   const res = await fetch(`https://api.runpod.ai/v2/${endpointId}/run`, {
     method: "POST",
@@ -57,11 +63,7 @@ export async function submitRunpodJob(input: {
 }
 
 export async function fetchRunpodStatus(jobId: string) {
-  const apiKey = process.env.RUNPOD_API_KEY;
-  const endpointId = process.env.RUNPOD_ENDPOINT_ID;
-  if (!apiKey || !endpointId || jobId.startsWith("mock_")) {
-    return { status: "mock" as RunpodJobStatus, output: null };
-  }
+  const { apiKey, endpointId } = requireRunpodConfig();
   const res = await fetch(`https://api.runpod.ai/v2/${endpointId}/status/${jobId}`, {
     headers: { Authorization: `Bearer ${apiKey}` },
   });
