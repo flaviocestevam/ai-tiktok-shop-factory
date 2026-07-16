@@ -13,11 +13,7 @@ function requireGatewayConfig() {
     process.env.VIDEO_FACTORY_BACKEND_URL ??
     "https://editor-video-tiktok-backend-production.up.railway.app"
   ).replace(/\/$/, "");
-  const apiKey = process.env.VIDEO_FACTORY_API_KEY;
-  if (!apiKey) {
-    throw new Error("Geração indisponível: VIDEO_FACTORY_API_KEY não configurada.");
-  }
-  return { baseUrl, apiKey };
+  return { baseUrl };
 }
 
 export function buildWorkflow(params: {
@@ -43,12 +39,12 @@ export function buildWorkflow(params: {
   };
 }
 
-async function gatewayFetch(path: string, init?: RequestInit) {
-  const { baseUrl, apiKey } = requireGatewayConfig();
+async function gatewayFetch(path: string, authToken: string, init?: RequestInit) {
+  const { baseUrl } = requireGatewayConfig();
   const res = await fetch(`${baseUrl}${path}`, {
     ...init,
     headers: {
-      Authorization: `Bearer ${apiKey}`,
+      Authorization: `Bearer ${authToken}`,
       "Content-Type": "application/json",
       ...init?.headers,
     },
@@ -62,17 +58,18 @@ async function gatewayFetch(path: string, init?: RequestInit) {
 
 export async function submitRunpodJob(input: {
   workflow: ReturnType<typeof buildWorkflow>;
+  authToken: string;
   webhookUrl?: string;
 }): Promise<{ id: string; status: RunpodJobStatus }> {
-  const data = await gatewayFetch("/api/generation/jobs", {
+  const data = await gatewayFetch("/api/generation/jobs", input.authToken, {
     method: "POST",
     body: JSON.stringify(input.workflow),
   }) as { id: string; status?: string };
   return { id: data.id, status: mapRunpodStatus(data.status ?? "queued") };
 }
 
-export async function fetchRunpodStatus(jobId: string) {
-  const data = await gatewayFetch(`/api/generation/jobs/${encodeURIComponent(jobId)}`) as {
+export async function fetchRunpodStatus(jobId: string, authToken: string) {
+  const data = await gatewayFetch(`/api/generation/jobs/${encodeURIComponent(jobId)}`, authToken) as {
     status: string;
     output?: Record<string, unknown>;
     error?: string;

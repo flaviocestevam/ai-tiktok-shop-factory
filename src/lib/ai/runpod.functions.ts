@@ -56,7 +56,10 @@ export const gerarVideo = createServerFn({ method: "POST" })
       ? `${process.env.PUBLIC_BASE_URL}/api/public/runpod-webhook`
       : undefined;
 
-    const job = await submitRunpodJob({ workflow, webhookUrl });
+    const { getRequest } = await import("@tanstack/react-start/server");
+    const authToken = getRequest().headers.get("authorization")?.replace(/^Bearer\s+/i, "");
+    if (!authToken) throw new Error("Sessão inválida. Entre novamente.");
+    const job = await submitRunpodJob({ workflow, webhookUrl, authToken });
 
     // 4. Registra em geracoes_video usando supabaseAdmin (bypassa RLS para
     //    conseguir criar mesmo antes de terminarmos as policies finais).
@@ -103,7 +106,10 @@ export const atualizarStatusGeracao = createServerFn({ method: "POST" })
     if (error || !gen) throw new Error(error?.message ?? "Geração não encontrada");
     if (!gen.runpod_job_id) return { status: gen.status };
 
-    const remote = await fetchRunpodStatus(gen.runpod_job_id);
+    const { getRequest } = await import("@tanstack/react-start/server");
+    const authToken = getRequest().headers.get("authorization")?.replace(/^Bearer\s+/i, "");
+    if (!authToken) throw new Error("Sessão inválida. Entre novamente.");
+    const remote = await fetchRunpodStatus(gen.runpod_job_id, authToken);
     const status = mapRunpodStatus(remote.status);
     const videoUrl =
       status === "completed"
