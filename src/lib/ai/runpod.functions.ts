@@ -23,36 +23,33 @@ export const gerarVideo = createServerFn({ method: "POST" })
     const { data: ref, error: refErr } = await supabase
       .from("videos_referencia")
       .select(
-        "id, produto:produtos(id, foto_principal_url), avatar:avatares(id, foto_canonica_url)",
+        "id, produto:produtos(id, nome), avatar:avatares(id, foto_canonica_url, genero)",
       )
       .eq("id", data.referencia_id)
       .single();
     if (refErr || !ref) throw new Error(refErr?.message ?? "Referência não encontrada");
 
     const avatarPath = (ref.avatar as any)?.foto_canonica_url;
-    const produtoPath = (ref.produto as any)?.foto_principal_url;
-    if (!avatarPath || !produtoPath) {
-      throw new Error(
-        "Faltam imagens: cadastre a foto canônica do avatar e a foto principal do produto.",
-      );
+    if (!avatarPath) {
+      throw new Error("Cadastre a foto canônica do avatar antes de gerar o vídeo.");
     }
 
     // 2. Assina URLs por 1h para o ComfyUI conseguir baixar.
-    const [{ data: aSig }, { data: pSig }] = await Promise.all([
-      supabase.storage.from("avatar-fotos").createSignedUrl(avatarPath, 3600),
-      supabase.storage.from("produto-fotos").createSignedUrl(produtoPath, 3600),
-    ]);
-    if (!aSig?.signedUrl || !pSig?.signedUrl) {
-      throw new Error("Falha ao gerar URLs assinadas das imagens.");
+    const { data: aSig } = await supabase.storage
+      .from("avatar-fotos")
+      .createSignedUrl(avatarPath, 10800);
+    if (!aSig?.signedUrl) {
+      throw new Error("Falha ao gerar a URL assinada do avatar.");
     }
 
     // 3. Monta workflow + chama RunPod.
     const { buildWorkflow, submitRunpodJob } = await import("./runpod.server");
+    const workerJobId = crypto.randomUUID();
     const workflow = buildWorkflow({
+      jobId: workerJobId,
       avatarUrl: aSig.signedUrl,
-      produtoUrl: pSig.signedUrl,
       prompt: data.prompt,
-      duracaoSeg: data.duracao_seg,
+      gender: (ref.avatar as any)?.genero,
     });
 
     const webhookUrl = process.env.PUBLIC_BASE_URL
@@ -77,7 +74,7 @@ export const gerarVideo = createServerFn({ method: "POST" })
           prompt: data.prompt,
           duracao_seg: data.duracao_seg,
           avatar_url: aSig.signedUrl,
-          produto_url: pSig.signedUrl,
+          worker_job_id: workerJobId,
         },
         workflow_snapshot: workflow,
       })
@@ -110,7 +107,7 @@ export const atualizarStatusGeracao = createServerFn({ method: "POST" })
     const status = mapRunpodStatus(remote.status);
     const videoUrl =
       status === "completed"
-        ? (remote.output?.video_url ?? remote.output?.url ?? null)
+        ? (remote.output?.output_video_url ?? remote.output?.video_url ?? remote.output?.url ?? null)
         : null;
 
     await supabaseAdmin
