@@ -111,9 +111,10 @@ export const atualizarStatusGeracao = createServerFn({ method: "POST" })
     if (!authToken) throw new Error("Sessão inválida. Entre novamente.");
     const remote = await fetchRunpodStatus(gen.runpod_job_id, authToken);
     const status = mapRunpodStatus(remote.status);
+    const output = (remote.output ?? {}) as Record<string, unknown>;
     const videoUrl =
       status === "completed"
-        ? (remote.output?.output_video_url ?? remote.output?.video_url ?? remote.output?.url ?? null)
+        ? ((output.output_video_url as string | undefined) ?? (output.video_url as string | undefined) ?? (output.url as string | undefined) ?? null)
         : null;
 
     await supabaseAdmin
@@ -122,7 +123,7 @@ export const atualizarStatusGeracao = createServerFn({ method: "POST" })
         status,
         video_url: videoUrl,
         concluido_em: status === "completed" || status === "failed" ? new Date().toISOString() : null,
-        erro: status === "failed" ? (remote.output?.error ?? "RunPod job failed") : null,
+        erro: status === "failed" ? ((output.error as string | undefined) ?? "RunPod job failed") : null,
       })
       .eq("id", gen.id);
 
